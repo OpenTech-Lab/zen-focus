@@ -8,12 +8,21 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "amplify:init": "amplify init",
+    "amplify:push": "amplify push",
+    "amplify:pull": "amplify pull",
+    "amplify:status": "amplify status",
+    "amplify:console": "amplify console",
+    "amplify:delete": "amplify delete"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@aws-amplify/auth": "^6.15.1",
+    "@aws-amplify/datastore": "^5.0.89",
+    "@aws-amplify/ui-react": "^6.12.0",
     "@radix-ui/react-dialog": "^1.1.15",
     "@radix-ui/react-label": "^2.1.7",
     "@radix-ui/react-progress": "^1.1.7",
@@ -23,6 +32,7 @@
     "@radix-ui/react-switch": "^1.2.6",
     "@radix-ui/react-tabs": "^1.1.13",
     "@radix-ui/react-tooltip": "^1.2.8",
+    "aws-amplify": "^6.15.6",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^0.544.0",
@@ -33,6 +43,7 @@
     "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
+    "@aws-amplify/cli": "^14.0.1",
     "@tailwindcss/postcss": "^4.1.13",
     "@types/node": "^24.5.2",
     "@types/react": "^19.1.13",
