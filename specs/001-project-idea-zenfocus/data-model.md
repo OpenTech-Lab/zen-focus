@@ -7,9 +7,11 @@
 ## Core Entities
 
 ### User
+
 Represents registered users who can save sessions and preferences across devices.
 
 **Fields**:
+
 - `id`: string (UUID) - Primary identifier
 - `email`: string - User email address (unique)
 - `createdAt`: timestamp - Account creation date
@@ -20,20 +22,24 @@ Represents registered users who can save sessions and preferences across devices
 - `preferences`: UserPreferences - Embedded user settings
 
 **Validation Rules**:
+
 - Email must be valid format and unique
 - Total focus time cannot be negative
 - Streak values cannot be negative
 - Last active timestamp cannot be in the future
 
 **State Transitions**:
+
 - Created → Active (on first login)
 - Active → Inactive (no activity for 90 days)
 - Active → Deleted (user-initiated deletion)
 
 ### UserPreferences
+
 User-specific settings and customizations.
 
 **Fields**:
+
 - `theme`: enum ('light', 'dark', 'system') - UI theme preference
 - `defaultSessionMode`: enum ('study', 'deepwork', 'yoga', 'zen') - Preferred session type
 - `ambientSound`: string - Selected ambient sound ID ('rain', 'forest', 'ocean', 'silence')
@@ -43,15 +49,18 @@ User-specific settings and customizations.
 - `customIntervals`: CustomInterval[] - User-defined session intervals
 
 **Validation Rules**:
+
 - Theme must be one of allowed values
 - Session mode must be valid
 - Ambient volume must be 0-100
 - Custom intervals must have positive durations
 
 ### Session
+
 Represents a completed focus/work session with timing and mode information.
 
 **Fields**:
+
 - `id`: string (UUID) - Primary identifier
 - `userId`: string (UUID, optional) - Associated user (null for guest sessions)
 - `mode`: SessionMode - Session type and configuration
@@ -66,6 +75,7 @@ Represents a completed focus/work session with timing and mode information.
 - `notes`: string (optional) - User notes about the session
 
 **Validation Rules**:
+
 - Start time must be before end time
 - Actual duration must be positive
 - Planned duration must be positive
@@ -74,13 +84,16 @@ Represents a completed focus/work session with timing and mode information.
 - End time cannot be in the future
 
 **Relationships**:
+
 - Belongs to User (optional, for guest sessions)
 - References SessionMode for configuration
 
 ### SessionMode
+
 Defines the different types of focus sessions with their characteristics.
 
 **Fields**:
+
 - `id`: string - Mode identifier ('study', 'deepwork', 'yoga', 'zen')
 - `name`: string - Display name
 - `description`: string - Mode description
@@ -93,6 +106,7 @@ Defines the different types of focus sessions with their characteristics.
 - `maxBreakDuration`: number (optional) - Maximum break period allowed
 
 **Validation Rules**:
+
 - Work duration must be positive
 - Break duration must be positive (except for zen mode)
 - Max durations must be greater than defaults if specified
@@ -100,6 +114,7 @@ Defines the different types of focus sessions with their characteristics.
 - Mode ID must be unique and lowercase
 
 **Default Configurations**:
+
 ```typescript
 const DEFAULT_MODES: SessionMode[] = [
   {
@@ -112,7 +127,7 @@ const DEFAULT_MODES: SessionMode[] = [
     icon: 'book',
     isCustomizable: true,
     maxWorkDuration: 90,
-    maxBreakDuration: 30
+    maxBreakDuration: 30,
   },
   {
     id: 'deepwork',
@@ -124,7 +139,7 @@ const DEFAULT_MODES: SessionMode[] = [
     icon: 'brain',
     isCustomizable: true,
     maxWorkDuration: 120,
-    maxBreakDuration: 30
+    maxBreakDuration: 30,
   },
   {
     id: 'yoga',
@@ -136,7 +151,7 @@ const DEFAULT_MODES: SessionMode[] = [
     icon: 'flower',
     isCustomizable: true,
     maxWorkDuration: 60,
-    maxBreakDuration: 15
+    maxBreakDuration: 15,
   },
   {
     id: 'zen',
@@ -146,15 +161,17 @@ const DEFAULT_MODES: SessionMode[] = [
     defaultBreakDuration: 0,
     color: '#6B7280', // gray-500
     icon: 'infinity',
-    isCustomizable: false
-  }
-];
+    isCustomizable: false,
+  },
+]
 ```
 
 ### CustomInterval
+
 User-defined session intervals for personalized timing.
 
 **Fields**:
+
 - `id`: string (UUID) - Primary identifier
 - `userId`: string (UUID) - Associated user
 - `name`: string - User-defined name for the interval
@@ -165,6 +182,7 @@ User-defined session intervals for personalized timing.
 - `isActive`: boolean - Whether interval is currently in use
 
 **Validation Rules**:
+
 - Work duration must be positive
 - Break duration must be non-negative
 - Name must be non-empty and max 50 characters
@@ -172,9 +190,11 @@ User-defined session intervals for personalized timing.
 - User must own the custom interval
 
 ### TimerState (Client-side only)
+
 Represents the current state of an active timer session.
 
 **Fields**:
+
 - `isActive`: boolean - Whether timer is currently running
 - `isPaused`: boolean - Whether timer is paused
 - `mode`: SessionMode - Current session mode
@@ -187,6 +207,7 @@ Represents the current state of an active timer session.
 - `totalPauseTime`: number - Cumulative pause time in seconds
 
 **State Transitions**:
+
 - Idle → Active (user starts timer)
 - Active → Paused (user pauses timer)
 - Paused → Active (user resumes timer)
@@ -266,28 +287,33 @@ erDiagram
 ## Storage Implementation
 
 ### AWS Amplify DataStore (Authenticated Users)
+
 - **User**: Full CRUD, sync across devices
 - **Session**: Create/Read, batch sync for performance
 - **CustomInterval**: Full CRUD, immediate sync
 - **UserPreferences**: Full CRUD, immediate sync
 
 ### Local Storage (Guest Users)
+
 - **Session**: Store last 30 days, JSON serialization
 - **Preferences**: Store current session, fallback to defaults
 - **TimerState**: Session storage for page refresh persistence
 
 ### Session Storage (Active Sessions)
+
 - **TimerState**: Persist active timer through page refresh
 - **CurrentSession**: Temporary session data before completion
 
 ## Data Migration Strategy
 
 ### Version 1.0 → 1.1 (Future)
+
 - Add new fields with default values
 - Maintain backward compatibility for 6 months
 - Provide migration scripts for data transformation
 
 ### Schema Versioning
+
 - Include schema version in data models
 - Graceful degradation for newer schema on older clients
 - Version-specific validation rules

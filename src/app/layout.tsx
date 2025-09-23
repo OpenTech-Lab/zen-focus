@@ -3,7 +3,8 @@ import '@/styles/globals.css'
 
 export const metadata: Metadata = {
   title: 'ZenFocus - Minimalistic Focus & Wellness',
-  description: 'A minimalistic focus and wellness web application with customizable Pomodoro-style timers',
+  description:
+    'A minimalistic focus and wellness web application with customizable Pomodoro-style timers',
   keywords: 'pomodoro, focus, meditation, timer, productivity, wellness',
   authors: [{ name: 'ZenFocus Team' }],
 }
@@ -14,13 +15,9 @@ export const viewport: Viewport = {
   themeColor: '#10B981',
 }
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang='en'>
       <body>{children}</body>
     </html>
   )

@@ -169,7 +169,6 @@ git branch -d feature/<task-name>
 To ensure a clean, consistent, and professional Git history:
 
 - Branch types must follow the naming conventions:
-
   - `feature/*`, `fix/*`, `refactor/*`, `chore/*`, `hotfix/*`, `release/*`
 
 - Always branch from `<default-branch>` (typically `dev`)
@@ -181,7 +180,6 @@ To ensure a clean, consistent, and professional Git history:
   ```
 
 - Before merging back:
-
   - Squash all commits into one:
 
     ```bash
@@ -191,7 +189,6 @@ To ensure a clean, consistent, and professional Git history:
   - Ensure only fully completed tasks are merged
 
 - Merge strategy:
-
   - Use `--ff-only` if no other merges have occurred
   - Use `--no-ff` if you want a visible record of merges (e.g. release branches)
 

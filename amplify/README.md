@@ -7,11 +7,13 @@ This directory contains AWS Amplify configuration for the ZenFocus application.
 ### Prerequisites
 
 1. **AWS CLI**: Install and configure AWS CLI with appropriate credentials
+
    ```bash
    aws configure
    ```
 
 2. **Amplify CLI**: Install globally
+
    ```bash
    npm install -g @aws-amplify/cli
    ```
@@ -24,6 +26,7 @@ This directory contains AWS Amplify configuration for the ZenFocus application.
 ### Initialize Amplify Project
 
 1. **Initialize Amplify in the project**:
+
    ```bash
    amplify init
    ```
@@ -40,6 +43,7 @@ This directory contains AWS Amplify configuration for the ZenFocus application.
    - Start command: `npm run start`
 
 2. **Add Authentication**:
+
    ```bash
    amplify add auth
    ```
@@ -50,6 +54,7 @@ This directory contains AWS Amplify configuration for the ZenFocus application.
    - Do you want to configure advanced settings? `No, I am done`
 
 3. **Add API (GraphQL)**:
+
    ```bash
    amplify add api
    ```
@@ -64,6 +69,7 @@ This directory contains AWS Amplify configuration for the ZenFocus application.
    - Do you want to edit the schema now? `Yes`
 
 4. **Add Storage (S3)**:
+
    ```bash
    amplify add storage
    ```
@@ -77,6 +83,7 @@ This directory contains AWS Amplify configuration for the ZenFocus application.
    - What kind of access do you want for Guest users? `read`
 
 5. **Add Hosting**:
+
    ```bash
    amplify add hosting
    ```
@@ -86,6 +93,7 @@ This directory contains AWS Amplify configuration for the ZenFocus application.
    - hosting bucket name: Accept default
 
 6. **Deploy the backend**:
+
    ```bash
    amplify push
    ```
@@ -100,7 +108,7 @@ This directory contains AWS Amplify configuration for the ZenFocus application.
 The following schema is used for the ZenFocus application:
 
 ```graphql
-type User @model @auth(rules: [{allow: owner}]) {
+type User @model @auth(rules: [{ allow: owner }]) {
   id: ID!
   email: String! @index(name: "byEmail")
   totalFocusTime: Int!
@@ -113,7 +121,7 @@ type User @model @auth(rules: [{allow: owner}]) {
   customIntervals: [CustomInterval] @hasMany
 }
 
-type UserPreferences @model @auth(rules: [{allow: owner}]) {
+type UserPreferences @model @auth(rules: [{ allow: owner }]) {
   id: ID!
   userId: ID! @index(name: "byUser")
   theme: Theme!
@@ -125,7 +133,7 @@ type UserPreferences @model @auth(rules: [{allow: owner}]) {
   user: User @belongsTo
 }
 
-type Session @model @auth(rules: [{allow: owner}]) {
+type Session @model @auth(rules: [{ allow: owner }]) {
   id: ID!
   userId: ID @index(name: "byUser")
   mode: SessionModeType!
@@ -141,7 +149,7 @@ type Session @model @auth(rules: [{allow: owner}]) {
   user: User @belongsTo
 }
 
-type CustomInterval @model @auth(rules: [{allow: owner}]) {
+type CustomInterval @model @auth(rules: [{ allow: owner }]) {
   id: ID!
   userId: ID! @index(name: "byUser")
   name: String!

@@ -4,7 +4,7 @@ import { uploadData, downloadData, remove, list } from 'aws-amplify/storage'
 export interface UploadOptions {
   contentType?: string
   metadata?: Record<string, string>
-  onProgress?: (progress: { transferredBytes: number; totalBytes?: number }) => void
+  onProgress?: (_progressEvent: { transferredBytes: number; totalBytes?: number }) => void
 }
 
 export interface StorageItem {
@@ -19,20 +19,17 @@ export class StorageService {
   /**
    * Upload a file to S3
    */
-  static async uploadFile(
-    key: string,
-    file: File | Blob,
-    options: UploadOptions = {}
-  ) {
+  static async uploadFile(key: string, file: File | Blob, options: UploadOptions = {}) {
     try {
+      const uploadOptions: any = {}
+      if (options.contentType) uploadOptions.contentType = options.contentType
+      if (options.metadata) uploadOptions.metadata = options.metadata
+      if (options.onProgress) uploadOptions.onProgress = options.onProgress
+
       const result = await uploadData({
         key,
         data: file,
-        options: {
-          contentType: options.contentType,
-          metadata: options.metadata,
-          onProgress: options.onProgress,
-        },
+        options: uploadOptions,
       }).result
 
       return {
@@ -104,12 +101,13 @@ export class StorageService {
         },
       })
 
-      const items: StorageItem[] = result.items.map((item) => ({
-        key: item.key,
-        size: item.size,
-        lastModified: item.lastModified,
-        eTag: item.eTag,
-      }))
+      const items: StorageItem[] = result.items.map((item) => {
+        const storageItem: StorageItem = { key: item.key }
+        if (item.size !== undefined) storageItem.size = item.size
+        if (item.lastModified !== undefined) storageItem.lastModified = item.lastModified
+        if (item.eTag !== undefined) storageItem.eTag = item.eTag
+        return storageItem
+      })
 
       return {
         success: true,
@@ -128,7 +126,7 @@ export class StorageService {
   /**
    * Get a signed URL for direct access (for ambient sounds)
    */
-  static async getFileUrl(key: string, expiresIn: number = 3600) {
+  static async getFileUrl(key: string) {
     try {
       const result = await downloadData({
         key,
@@ -182,7 +180,7 @@ export class StorageService {
    * Export user session data
    */
   static async exportUserSessions(userId: string, sessions: any[]) {
-    const timestamp = new Date().toISOString().split('T')[0]
+    const timestamp = new Date().toISOString().split('T')[0] || ''
     const key = `exports/${userId}/sessions_${timestamp}.json`
 
     const data = new Blob([JSON.stringify(sessions, null, 2)], {

@@ -68,7 +68,7 @@ const config: Config = {
         mono: ['JetBrains Mono', 'monospace'],
       },
       fontSize: {
-        'timer': ['4rem', { lineHeight: '1', letterSpacing: '-0.025em' }],
+        timer: ['4rem', { lineHeight: '1', letterSpacing: '-0.025em' }],
         'timer-sm': ['2.5rem', { lineHeight: '1', letterSpacing: '-0.025em' }],
       },
       animation: {
@@ -98,14 +98,14 @@ const config: Config = {
         '96': '24rem',
       },
       borderRadius: {
-        'xl': '0.75rem',
+        xl: '0.75rem',
         '2xl': '1rem',
         '3xl': '1.5rem',
       },
       boxShadow: {
-        'gentle': '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)',
-        'medium': '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
-        'strong': '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+        gentle: '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)',
+        medium: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+        strong: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
       },
     },
   },

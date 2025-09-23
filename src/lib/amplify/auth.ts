@@ -7,10 +7,6 @@ import {
   resendSignUpCode,
   resetPassword,
   confirmResetPassword,
-  type SignUpInput,
-  type SignInInput,
-  type ResetPasswordInput,
-  type ConfirmResetPasswordInput,
 } from 'aws-amplify/auth'
 
 // Types for authentication
@@ -177,7 +173,7 @@ export class AuthService {
       return {
         userId: user.userId,
         username: user.username,
-        email: user.signInDetails?.loginId,
+        email: user.signInDetails?.loginId || '',
         isGuest: false,
       }
     } catch (error) {

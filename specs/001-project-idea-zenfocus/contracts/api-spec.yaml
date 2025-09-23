@@ -14,7 +14,7 @@ servers:
 
 security:
   - BearerAuth: []
-  - {}  # Allow unauthenticated access for guest features
+  - {} # Allow unauthenticated access for guest features
 
 components:
   securitySchemes:
@@ -588,7 +588,7 @@ paths:
       tags: [Sessions]
       security:
         - BearerAuth: []
-        - {}  # Allow guest sessions
+        - {} # Allow guest sessions
       requestBody:
         required: true
         content:
@@ -630,7 +630,7 @@ paths:
       tags: [Sessions]
       security:
         - BearerAuth: []
-        - {}  # Allow guest sessions
+        - {} # Allow guest sessions
       parameters:
         - name: sessionId
           in: path
@@ -846,7 +846,7 @@ paths:
       tags: [Timer]
       security:
         - BearerAuth: []
-        - {}  # Allow guest access
+        - {} # Allow guest access
       responses:
         '200':
           description: Current timer state
@@ -866,7 +866,7 @@ paths:
       tags: [Timer]
       security:
         - BearerAuth: []
-        - {}  # Allow guest access
+        - {} # Allow guest access
       requestBody:
         required: true
         content:
@@ -886,7 +886,7 @@ paths:
       tags: [Timer]
       security:
         - BearerAuth: []
-        - {}  # Allow guest access
+        - {} # Allow guest access
       responses:
         '204':
           description: Timer state cleared

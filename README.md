@@ -10,19 +10,16 @@ ZenFocus helps you stay present and productive with customizable timers for stud
 ## ✨ Features
 
 - ⏳ **Countdown Timer**
-
   - Start, pause, reset with smooth animations
   - Visual progress ring / bar
 
 - 🎛 **Focus Modes**
-
   - 🎓 Study (Pomodoro 25/5)
   - 💻 Deep Work (50/10)
   - 🧘 Yoga (custom breathing/pose intervals)
   - 🌌 Zen (open timer with ambient background)
 
 - 📊 **History Tracking** _(optional)_
-
   - Save sessions and streaks with Amplify Data
   - Minimal dashboard showing total focus time
 
