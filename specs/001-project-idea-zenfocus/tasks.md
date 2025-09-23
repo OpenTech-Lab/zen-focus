@@ -35,7 +35,7 @@
 - [x] T001 Create Next.js 14+ project with TypeScript and App Router in repository root
 - [x] T002 [P] Install and configure Tailwind CSS with Next.js integration
 - [x] T003 [P] Install and configure shadcn/ui component library
-- [ ] T004 [P] Install and configure AWS Amplify CLI and dependencies
+- [x] T004 [P] Install and configure AWS Amplify CLI and dependencies
 - [ ] T005 [P] Configure ESLint, Prettier, and TypeScript strict mode
 - [ ] T006 [P] Set up Jest and React Testing Library for unit testing
 - [ ] T007 [P] Set up Playwright for end-to-end testing
