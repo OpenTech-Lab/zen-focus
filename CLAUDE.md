@@ -172,7 +172,7 @@ To ensure a clean, consistent, and professional Git history:
 
   - `feature/*`, `fix/*`, `refactor/*`, `chore/*`, `hotfix/*`, `release/*`
 
-- Always branch from `<default-branch>` (typically `main` or `master`)
+- Always branch from `<default-branch>` (typically `dev`)
 
 - Keep feature branches up to date using:
 
