@@ -1,7 +1,9 @@
 import { Amplify } from 'aws-amplify'
-import awsExports from '../aws-exports'
+import outputs from '../../amplify_outputs.json'
 
-// Configure Amplify
-Amplify.configure(awsExports)
+// Configure Amplify for Gen2
+Amplify.configure(outputs, {
+  ssr: true, // Enable server-side rendering support
+})
 
 export default Amplify

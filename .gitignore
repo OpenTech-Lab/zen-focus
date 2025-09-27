@@ -73,7 +73,7 @@ jspm_packages/
 .yarn/install-state.gz
 .pnp.*
 
-# AWS Amplify
+# AWS Amplify Gen1 (legacy)
 amplify/\#current-cloud-backend
 amplify/.config/local-*
 amplify/logs
@@ -81,9 +81,6 @@ amplify/mock-data
 amplify/mock-api-resources
 amplify/backend/amplify-meta.json
 amplify/backend/.temp
-build/
-dist/
-node_modules/
 aws-exports.js
 awsconfiguration.json
 amplifyconfiguration.json
@@ -93,6 +90,10 @@ amplify-gradle-config.json
 amplifytools.xcconfig
 .secret-*
 **.sample
+
+# AWS Amplify Gen2
+amplify_outputs.json
+.amplify/
 
 # TypeScript
 *.tsbuildinfo
