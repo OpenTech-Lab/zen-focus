@@ -14,13 +14,6 @@ export const auth = defineAuth({
     },
   },
   accountRecovery: 'EMAIL_ONLY',
-  passwordPolicy: {
-    minLength: 8,
-    requireLowercase: false,
-    requireUppercase: false,
-    requireNumbers: false,
-    requireSymbols: false,
-  },
   multifactor: {
     mode: 'OFF',
   },

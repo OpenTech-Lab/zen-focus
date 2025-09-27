@@ -1,19 +1,7 @@
-import {
-  uploadData,
-  downloadData,
-  remove,
-  list,
-  getUrl,
-} from 'aws-amplify/storage'
+import { uploadData, downloadData, remove, list, getUrl } from 'aws-amplify/storage'
 
 // Export storage functions for use throughout the app
-export {
-  uploadData,
-  downloadData,
-  remove,
-  list,
-  getUrl,
-}
+export { uploadData, downloadData, remove, list, getUrl }
 
 // Helper function to upload profile picture
 export async function uploadProfilePicture(file: File, userId: string) {

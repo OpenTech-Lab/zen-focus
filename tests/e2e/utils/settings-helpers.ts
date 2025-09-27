@@ -107,7 +107,9 @@ export class SettingsHelpers {
       if (expectedSettings.autoStartBreaks) {
         await expect(this.page.locator('[data-testid="auto-start-breaks-switch"]')).toBeChecked()
       } else {
-        await expect(this.page.locator('[data-testid="auto-start-breaks-switch"]')).not.toBeChecked()
+        await expect(
+          this.page.locator('[data-testid="auto-start-breaks-switch"]')
+        ).not.toBeChecked()
       }
     }
 
@@ -115,7 +117,9 @@ export class SettingsHelpers {
       if (expectedSettings.autoStartPomodoros) {
         await expect(this.page.locator('[data-testid="auto-start-pomodoros-switch"]')).toBeChecked()
       } else {
-        await expect(this.page.locator('[data-testid="auto-start-pomodoros-switch"]')).not.toBeChecked()
+        await expect(
+          this.page.locator('[data-testid="auto-start-pomodoros-switch"]')
+        ).not.toBeChecked()
       }
     }
 

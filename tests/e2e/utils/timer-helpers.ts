@@ -41,7 +41,7 @@ export class TimerHelpers {
   }
 
   async getTimeRemaining(): Promise<string> {
-    return await this.page.locator('[data-testid="timer-display"]').textContent() || '00:00'
+    return (await this.page.locator('[data-testid="timer-display"]').textContent()) || '00:00'
   }
 
   async waitForTimerCompletion() {
@@ -53,7 +53,9 @@ export class TimerHelpers {
     await this.page.click(`[data-testid="session-mode-${mode}"]`)
 
     // Verify mode is selected
-    await expect(this.page.locator(`[data-testid="session-mode-${mode}"]`)).toHaveClass(/active|selected/)
+    await expect(this.page.locator(`[data-testid="session-mode-${mode}"]`)).toHaveClass(
+      /active|selected/
+    )
   }
 
   async setCustomDuration(minutes: number) {

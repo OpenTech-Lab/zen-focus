@@ -37,24 +37,13 @@ export const timerSettings = {
 }
 
 // Ambient sounds
-export const ambientSounds = [
-  'none',
-  'rain',
-  'forest',
-  'ocean',
-  'cafe',
-] as const
+export const ambientSounds = ['none', 'rain', 'forest', 'ocean', 'cafe'] as const
 
 // Theme options
 export const themes = ['light', 'dark', 'system'] as const
 
 // Session modes
-export const sessionModes = [
-  'pomodoro',
-  'short-break',
-  'long-break',
-  'custom',
-] as const
+export const sessionModes = ['pomodoro', 'short-break', 'long-break', 'custom'] as const
 
 // Custom intervals test data
 export const customIntervals = {

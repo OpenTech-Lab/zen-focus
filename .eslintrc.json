@@ -4,7 +4,7 @@
   "rules": {
     "prettier/prettier": "error",
     "no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
-    "no-console": "warn",
+    "no-console": ["warn", { "allow": ["error"] }],
     "prefer-const": "error",
     "react/react-in-jsx-scope": "off",
     "react/prop-types": "off"
