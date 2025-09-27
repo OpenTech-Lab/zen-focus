@@ -16,7 +16,7 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
-    "declaration": true,
+    "declaration": false,
     "outDir": "./dist",
     "types": []
   },
