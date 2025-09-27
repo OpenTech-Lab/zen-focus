@@ -40,7 +40,7 @@
 - [x] T003 [P] Install and configure shadcn/ui component library
 - [x] T004 [P] Install and configure AWS Amplify CLI and dependencies
 - [x] T005 [P] Configure ESLint, Prettier, and TypeScript strict mode
-- [ ] T006 [P] Set up Jest and React Testing Library for unit testing
+- [x] T006 [P] Set up Jest and React Testing Library for unit testing
 - [ ] T007 [P] Set up Playwright for end-to-end testing
 - [ ] T008 Configure Amplify project structure (auth, datastore, hosting)
 
