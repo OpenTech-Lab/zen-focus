@@ -1,0 +1,25 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-zenfocus-dev-authRole",
+      "UnauthRoleArn": "arn:aws:iam::ACCOUNT:role/amplify-zenfocus-dev-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::ACCOUNT:role/amplify-zenfocus-dev-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-zenfocus-dev-deployment",
+      "UnauthRoleName": "amplify-zenfocus-dev-unauthRole",
+      "StackName": "amplify-zenfocus-dev",
+      "StackId": "arn:aws:cloudformation:us-east-1:ACCOUNT:stack/amplify-zenfocus-dev/STACK-ID"
+    },
+    "categories": {
+      "auth": {
+        "zenfocusauth": {}
+      },
+      "hosting": {
+        "amplifyhosting": {
+          "appId": "APP-ID",
+          "type": "cicd"
+        }
+      }
+    }
+  }
+}

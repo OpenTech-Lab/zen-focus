@@ -1,0 +1,11 @@
+{
+  "version": "1",
+  "type": "cicd",
+  "framework": "Next.js - SSG",
+  "config": {
+    "SourceDir": "",
+    "DistributionDir": ".next",
+    "BuildCommand": "npm run build",
+    "StartCommand": "npm run start"
+  }
+}

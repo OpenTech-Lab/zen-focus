@@ -1,0 +1,132 @@
+# GraphQL schema for ZenFocus app
+# Based on the data models mentioned in tasks.md: User, UserPreferences, Session, SessionMode, CustomInterval, TimerState
+
+type User @model @auth(rules: [{ allow: owner }]) {
+  id: ID!
+  email: String! @index(name: "byEmail", queryField: "userByEmail")
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+
+  # Relationships
+  preferences: UserPreferences @hasOne
+  sessions: [Session] @hasMany
+  customIntervals: [CustomInterval] @hasMany
+  timerState: TimerState @hasOne
+}
+
+type UserPreferences @model @auth(rules: [{ allow: owner }]) {
+  id: ID!
+  userId: ID! @index(name: "byUser")
+
+  # Theme settings
+  theme: String! # "light" | "dark" | "system"
+
+  # Audio settings
+  ambientSound: String! # "none" | "rain" | "forest" | "ocean" | "cafe"
+
+  # Timer settings
+  pomodoroMinutes: Int! # default: 25
+  shortBreakMinutes: Int! # default: 5
+  longBreakMinutes: Int! # default: 15
+  longBreakInterval: Int! # default: 4 (pomodoros before long break)
+
+  # Auto-start settings
+  autoStartBreaks: Boolean! # default: false
+  autoStartPomodoros: Boolean! # default: false
+
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+
+  # Relationships
+  user: User @belongsTo(fields: ["userId"])
+}
+
+type Session @model @auth(rules: [{ allow: owner }]) {
+  id: ID!
+  userId: ID! @index(name: "byUser")
+
+  # Session details
+  mode: String! # "pomodoro" | "short-break" | "long-break" | "custom"
+  duration: Int! # Duration in seconds
+  startTime: AWSDateTime!
+  endTime: AWSDateTime
+  completed: Boolean! # Whether session was completed or interrupted
+
+  # Custom interval reference (if mode is "custom")
+  customIntervalId: ID
+
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+
+  # Relationships
+  user: User @belongsTo(fields: ["userId"])
+  customInterval: CustomInterval @belongsTo(fields: ["customIntervalId"])
+}
+
+type SessionMode @model @auth(rules: [{ allow: public, operations: [read] }]) {
+  id: ID!
+  name: String! # "Pomodoro", "Short Break", "Long Break"
+  type: String! # "pomodoro" | "short-break" | "long-break"
+  defaultDuration: Int! # Duration in minutes
+  description: String
+  color: String # Hex color code for UI
+
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+}
+
+type CustomInterval @model @auth(rules: [{ allow: owner }]) {
+  id: ID!
+  userId: ID! @index(name: "byUser")
+
+  # Interval details
+  name: String! # User-defined name
+  workMinutes: Int! # Work duration in minutes
+  breakMinutes: Int! # Break duration in minutes
+
+  # Usage tracking
+  isActive: Boolean! # Whether this interval is currently available
+  usageCount: Int! # How many times it's been used
+
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+
+  # Relationships
+  user: User @belongsTo(fields: ["userId"])
+  sessions: [Session] @hasMany
+}
+
+type TimerState @model @auth(rules: [{ allow: owner }]) {
+  id: ID!
+  userId: ID! @index(name: "byUser")
+
+  # Current timer state
+  isRunning: Boolean! # Whether timer is currently running
+  isPaused: Boolean! # Whether timer is paused
+  currentMode: String! # Current session mode
+  timeRemaining: Int! # Remaining time in seconds
+  sessionStartTime: AWSDateTime # When current session started
+
+  # Session tracking
+  completedPomodoros: Int! # Pomodoros completed in current cycle
+  currentCycle: Int! # Current pomodoro cycle (resets after long break)
+
+  # Settings snapshot (cached from UserPreferences for performance)
+  pomodoroMinutes: Int!
+  shortBreakMinutes: Int!
+  longBreakMinutes: Int!
+  longBreakInterval: Int!
+
+  createdAt: AWSDateTime!
+  updatedAt: AWSDateTime!
+
+  # Relationships
+  user: User @belongsTo(fields: ["userId"])
+}
+
+# Subscription for real-time timer updates
+type Subscription {
+  onTimerStateUpdated(userId: ID!): TimerState
+    @aws_subscribe(mutations: ["updateTimerState"])
+    @auth(rules: [{ allow: owner }])
+}
