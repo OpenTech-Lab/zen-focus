@@ -74,7 +74,7 @@
 
 ### TypeScript Models and Validation
 
-- [ ] T025 [P] User data model with validation in lib/models/user.ts
+- [x] T025 [P] User data model with validation in lib/models/user.ts
 - [ ] T026 [P] UserPreferences data model with validation in lib/models/user-preferences.ts
 - [ ] T027 [P] Session data model with validation in lib/models/session.ts
 - [ ] T028 [P] SessionMode data model with validation in lib/models/session-mode.ts
