@@ -52,7 +52,7 @@
 
 - [x] T009 [P] Contract test POST /api/auth/login in tests/contract/auth-login.test.ts
 - [x] T010 [P] Contract test POST /api/auth/register in tests/contract/auth-register.test.ts
-- [ ] T011 [P] Contract test GET /api/users/me in tests/contract/users-me.test.ts
+- [x] T011 [P] Contract test GET /api/users/me in tests/contract/users-me.test.ts
 - [ ] T012 [P] Contract test GET/PUT /api/users/me/preferences in tests/contract/user-preferences.test.ts
 - [ ] T013 [P] Contract test GET /api/session-modes in tests/contract/session-modes.test.ts
 - [ ] T014 [P] Contract test GET/POST /api/sessions in tests/contract/sessions.test.ts
