@@ -87,7 +87,7 @@
 - [x] T032 [P] Audio manager service for ambient sounds in lib/services/audio-service.ts
 - [x] T033 [P] State persistence service (localStorage/Amplify) in lib/services/persistence-service.ts
 - [x] T034 [P] Session tracking service in lib/services/session-service.ts
-- [ ] T035 [P] User preferences service in lib/services/preferences-service.ts
+- [x] T035 [P] User preferences service in lib/services/preferences-service.ts
 
 ### React Components
 
