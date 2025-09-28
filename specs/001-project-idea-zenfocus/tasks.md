@@ -64,7 +64,7 @@
 
 ### Integration Tests
 
-- [ ] T020 [P] Integration test guest timer session flow in tests/integration/guest-timer.test.ts
+- [x] T020 [P] Integration test guest timer session flow in tests/integration/guest-timer.test.ts
 - [ ] T021 [P] Integration test theme and ambient sound switching in tests/integration/customization.test.ts
 - [ ] T022 [P] Integration test session mode comparison in tests/integration/session-modes.test.ts
 - [ ] T023 [P] Integration test user registration and data persistence in tests/integration/auth-flow.test.ts
