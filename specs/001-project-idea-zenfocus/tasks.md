@@ -60,7 +60,7 @@
 - [x] T016 [P] Contract test GET /api/sessions/stats in tests/contract/session-stats.test.ts
 - [x] T017 [P] Contract test GET/POST /api/custom-intervals in tests/contract/custom-intervals.test.ts
 - [x] T018 [P] Contract test PUT/DELETE /api/custom-intervals/{id} in tests/contract/custom-interval-crud.test.ts
-- [ ] T019 [P] Contract test GET/POST/DELETE /api/timer/state in tests/contract/timer-state.test.ts
+- [x] T019 [P] Contract test GET/POST/DELETE /api/timer/state in tests/contract/timer-state.test.ts
 
 ### Integration Tests
 
