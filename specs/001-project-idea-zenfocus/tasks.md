@@ -84,7 +84,7 @@
 ### Core Services
 
 - [x] T031 [P] Timer engine service with precision handling in lib/services/timer-service.ts
-- [ ] T032 [P] Audio manager service for ambient sounds in lib/services/audio-service.ts
+- [x] T032 [P] Audio manager service for ambient sounds in lib/services/audio-service.ts
 - [ ] T033 [P] State persistence service (localStorage/Amplify) in lib/services/persistence-service.ts
 - [ ] T034 [P] Session tracking service in lib/services/session-service.ts
 - [ ] T035 [P] User preferences service in lib/services/preferences-service.ts
