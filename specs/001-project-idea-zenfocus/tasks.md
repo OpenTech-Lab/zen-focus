@@ -55,7 +55,7 @@
 - [x] T011 [P] Contract test GET /api/users/me in tests/contract/users-me.test.ts
 - [x] T012 [P] Contract test GET/PUT /api/users/me/preferences in tests/contract/user-preferences.test.ts
 - [x] T013 [P] Contract test GET /api/session-modes in tests/contract/session-modes.test.ts
-- [ ] T014 [P] Contract test GET/POST /api/sessions in tests/contract/sessions.test.ts
+- [x] T014 [P] Contract test GET/POST /api/sessions in tests/contract/sessions.test.ts
 - [ ] T015 [P] Contract test PUT /api/sessions/{id} in tests/contract/session-update.test.ts
 - [ ] T016 [P] Contract test GET /api/sessions/stats in tests/contract/session-stats.test.ts
 - [ ] T017 [P] Contract test GET/POST /api/custom-intervals in tests/contract/custom-intervals.test.ts
