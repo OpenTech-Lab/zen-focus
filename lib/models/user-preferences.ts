@@ -1,19 +1,19 @@
-import { z } from 'zod';
+import { z } from 'zod'
 
 /**
  * Theme type for user interface appearance
  */
-export type Theme = 'light' | 'dark' | 'system';
+export type Theme = 'light' | 'dark' | 'system'
 
 /**
  * Session mode type for default session mode
  */
-export type SessionMode = 'study' | 'deepwork' | 'yoga' | 'zen';
+export type SessionMode = 'study' | 'deepwork' | 'yoga' | 'zen'
 
 /**
  * Ambient sound type for background audio
  */
-export type AmbientSound = 'rain' | 'forest' | 'ocean' | 'silence';
+export type AmbientSound = 'rain' | 'forest' | 'ocean' | 'silence'
 
 /**
  * User preferences interface based on OpenAPI specification
@@ -21,17 +21,17 @@ export type AmbientSound = 'rain' | 'forest' | 'ocean' | 'silence';
  */
 export interface UserPreferences {
   /** User interface theme preference (light, dark, or system) */
-  theme: Theme;
+  theme: Theme
   /** Default session mode for new timer sessions */
-  defaultSessionMode: SessionMode;
+  defaultSessionMode: SessionMode
   /** Default ambient sound for focus sessions */
-  ambientSound: AmbientSound;
+  ambientSound: AmbientSound
   /** Ambient sound volume (0-100) */
-  ambientVolume: number;
+  ambientVolume: number
   /** Whether to show notifications */
-  notifications: boolean;
+  notifications: boolean
   /** Whether to automatically start break sessions */
-  autoStartBreaks: boolean;
+  autoStartBreaks: boolean
 }
 
 /**
@@ -40,30 +40,33 @@ export interface UserPreferences {
  */
 export const UserPreferencesSchema = z.object({
   theme: z.enum(['light', 'dark', 'system'], {
-    errorMap: () => ({ message: 'Theme must be one of: light, dark, system' })
+    errorMap: () => ({ message: 'Theme must be one of: light, dark, system' }),
   }),
   defaultSessionMode: z.enum(['study', 'deepwork', 'yoga', 'zen'], {
-    errorMap: () => ({ message: 'Default session mode must be one of: study, deepwork, yoga, zen' })
+    errorMap: () => ({
+      message: 'Default session mode must be one of: study, deepwork, yoga, zen',
+    }),
   }),
   ambientSound: z.enum(['rain', 'forest', 'ocean', 'silence'], {
-    errorMap: () => ({ message: 'Ambient sound must be one of: rain, forest, ocean, silence' })
+    errorMap: () => ({ message: 'Ambient sound must be one of: rain, forest, ocean, silence' }),
   }),
-  ambientVolume: z.number()
+  ambientVolume: z
+    .number()
     .int('Ambient volume must be an integer')
     .min(0, 'Ambient volume must be between 0 and 100')
     .max(100, 'Ambient volume must be between 0 and 100'),
   notifications: z.boolean({
-    errorMap: () => ({ message: 'Notifications must be a boolean value' })
+    errorMap: () => ({ message: 'Notifications must be a boolean value' }),
   }),
   autoStartBreaks: z.boolean({
-    errorMap: () => ({ message: 'Auto start breaks must be a boolean value' })
+    errorMap: () => ({ message: 'Auto start breaks must be a boolean value' }),
   }),
-});
+})
 
 /**
  * Type derived from Zod schema for compile-time type checking
  */
-export type UserPreferencesType = z.infer<typeof UserPreferencesSchema>;
+export type UserPreferencesType = z.infer<typeof UserPreferencesSchema>
 
 /**
  * Helper function to create default user preferences
@@ -78,7 +81,7 @@ export function createDefaultUserPreferences(): UserPreferences {
     ambientVolume: 50,
     notifications: true,
     autoStartBreaks: true,
-  };
+  }
 }
 
 /**
@@ -86,14 +89,16 @@ export function createDefaultUserPreferences(): UserPreferences {
  * @param preferencesData - Object to validate as UserPreferences
  * @returns Validation result with parsed data or error details
  */
-export function validateUserPreferences(preferencesData: unknown): z.SafeParseReturnType<unknown, UserPreferences> {
-  return UserPreferencesSchema.safeParse(preferencesData);
+export function validateUserPreferences(
+  preferencesData: unknown
+): z.SafeParseReturnType<unknown, UserPreferences> {
+  return UserPreferencesSchema.safeParse(preferencesData)
 }
 
 /**
  * Partial UserPreferences type for preference updates
  */
-export type PartialUserPreferences = Partial<UserPreferences>;
+export type PartialUserPreferences = Partial<UserPreferences>
 
 /**
  * Helper function to merge partial user preferences with defaults
@@ -102,24 +107,24 @@ export type PartialUserPreferences = Partial<UserPreferences>;
  * @returns Complete UserPreferences object
  */
 export function mergeUserPreferences(partialPreferences: PartialUserPreferences): UserPreferences {
-  const defaults = createDefaultUserPreferences();
+  const defaults = createDefaultUserPreferences()
 
   return {
     ...defaults,
     ...partialPreferences,
-  };
+  }
 }
 
 /**
  * API response type for user preferences data (snake_case fields)
  */
 interface ApiUserPreferencesResponse {
-  theme: Theme;
-  default_session_mode: SessionMode;
-  ambient_sound: AmbientSound;
-  ambient_volume: number;
-  notifications: boolean;
-  auto_start_breaks: boolean;
+  theme: Theme
+  default_session_mode: SessionMode
+  ambient_sound: AmbientSound
+  ambient_volume: number
+  notifications: boolean
+  auto_start_breaks: boolean
 }
 
 /**
@@ -128,7 +133,9 @@ interface ApiUserPreferencesResponse {
  * @param apiData - API response data in snake_case format
  * @returns UserPreferences object with camelCase fields
  */
-export function transformUserPreferencesFromApi(apiData: ApiUserPreferencesResponse): UserPreferences {
+export function transformUserPreferencesFromApi(
+  apiData: ApiUserPreferencesResponse
+): UserPreferences {
   return {
     theme: apiData.theme,
     defaultSessionMode: apiData.default_session_mode,
@@ -136,7 +143,7 @@ export function transformUserPreferencesFromApi(apiData: ApiUserPreferencesRespo
     ambientVolume: apiData.ambient_volume,
     notifications: apiData.notifications,
     autoStartBreaks: apiData.auto_start_breaks,
-  };
+  }
 }
 
 /**
@@ -145,7 +152,9 @@ export function transformUserPreferencesFromApi(apiData: ApiUserPreferencesRespo
  * @param preferences - UserPreferences object with camelCase fields
  * @returns API data with snake_case fields
  */
-export function transformUserPreferencesToApi(preferences: UserPreferences): ApiUserPreferencesResponse {
+export function transformUserPreferencesToApi(
+  preferences: UserPreferences
+): ApiUserPreferencesResponse {
   return {
     theme: preferences.theme,
     default_session_mode: preferences.defaultSessionMode,
@@ -153,7 +162,7 @@ export function transformUserPreferencesToApi(preferences: UserPreferences): Api
     ambient_volume: preferences.ambientVolume,
     notifications: preferences.notifications,
     auto_start_breaks: preferences.autoStartBreaks,
-  };
+  }
 }
 
 /**
@@ -162,16 +171,19 @@ export function transformUserPreferencesToApi(preferences: UserPreferences): Api
  * @param systemTheme - Current system theme ('light' | 'dark')
  * @returns Whether dark mode should be active
  */
-export function isDarkModeActive(preferences: UserPreferences, systemTheme: 'light' | 'dark' = 'light'): boolean {
+export function isDarkModeActive(
+  preferences: UserPreferences,
+  systemTheme: 'light' | 'dark' = 'light'
+): boolean {
   switch (preferences.theme) {
     case 'dark':
-      return true;
+      return true
     case 'light':
-      return false;
+      return false
     case 'system':
-      return systemTheme === 'dark';
+      return systemTheme === 'dark'
     default:
-      return false;
+      return false
   }
 }
 
@@ -196,7 +208,7 @@ export const PreferenceLabels = {
     ocean: 'Ocean',
     silence: 'Silence',
   },
-} as const;
+} as const
 
 /**
  * Helper function to validate individual preference fields
@@ -204,9 +216,10 @@ export const PreferenceLabels = {
  */
 export const FieldValidators = {
   theme: (value: unknown) => z.enum(['light', 'dark', 'system']).safeParse(value),
-  defaultSessionMode: (value: unknown) => z.enum(['study', 'deepwork', 'yoga', 'zen']).safeParse(value),
+  defaultSessionMode: (value: unknown) =>
+    z.enum(['study', 'deepwork', 'yoga', 'zen']).safeParse(value),
   ambientSound: (value: unknown) => z.enum(['rain', 'forest', 'ocean', 'silence']).safeParse(value),
   ambientVolume: (value: unknown) => z.number().int().min(0).max(100).safeParse(value),
   notifications: (value: unknown) => z.boolean().safeParse(value),
   autoStartBreaks: (value: unknown) => z.boolean().safeParse(value),
-} as const;
+} as const

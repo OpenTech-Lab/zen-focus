@@ -1,9 +1,9 @@
-import { z } from 'zod';
+import { z } from 'zod'
 
 /**
  * Session mode type for custom intervals
  */
-export type SessionMode = 'study' | 'deepwork' | 'yoga' | 'zen';
+export type SessionMode = 'study' | 'deepwork' | 'yoga' | 'zen'
 
 /**
  * CustomInterval data model interface based on OpenAPI specification
@@ -11,21 +11,21 @@ export type SessionMode = 'study' | 'deepwork' | 'yoga' | 'zen';
  */
 export interface CustomInterval {
   /** Custom interval unique identifier (UUID format) */
-  id: string;
+  id: string
   /** Owner user ID (UUID format) */
-  userId: string;
+  userId: string
   /** User-defined name (max 50 characters) */
-  name: string;
+  name: string
   /** Work duration in minutes (1-180) */
-  workDuration: number;
+  workDuration: number
   /** Break duration in minutes (0-60) */
-  breakDuration: number;
+  breakDuration: number
   /** Associated session mode */
-  sessionMode: SessionMode;
+  sessionMode: SessionMode
   /** Creation timestamp (ISO datetime) */
-  createdAt: string;
+  createdAt: string
   /** Whether interval is active */
-  isActive: boolean;
+  isActive: boolean
 }
 
 /**
@@ -35,49 +35,49 @@ export interface CustomInterval {
 export const CustomIntervalSchema = z.object({
   id: z.string().uuid('Invalid UUID format for custom interval ID'),
   userId: z.string().uuid('Invalid UUID format for user ID'),
-  name: z.string()
-    .min(1, 'Name cannot be empty')
-    .max(50, 'Name must be 50 characters or less'),
-  workDuration: z.number()
+  name: z.string().min(1, 'Name cannot be empty').max(50, 'Name must be 50 characters or less'),
+  workDuration: z
+    .number()
     .int('Work duration must be an integer')
     .min(1, 'Work duration must be at least 1 minute')
     .max(180, 'Work duration must be at most 180 minutes'),
-  breakDuration: z.number()
+  breakDuration: z
+    .number()
     .int('Break duration must be an integer')
     .min(0, 'Break duration must be non-negative')
     .max(60, 'Break duration must be at most 60 minutes'),
   sessionMode: z.enum(['study', 'deepwork', 'yoga', 'zen'], {
-    errorMap: () => ({ message: 'Session mode must be one of: study, deepwork, yoga, zen' })
+    errorMap: () => ({ message: 'Session mode must be one of: study, deepwork, yoga, zen' }),
   }),
   createdAt: z.string().datetime('Invalid ISO datetime format for createdAt'),
   isActive: z.boolean({
-    errorMap: () => ({ message: 'isActive must be a boolean value' })
+    errorMap: () => ({ message: 'isActive must be a boolean value' }),
   }),
-});
+})
 
 /**
  * Type derived from Zod schema for compile-time type checking
  */
-export type CustomIntervalType = z.infer<typeof CustomIntervalSchema>;
+export type CustomIntervalType = z.infer<typeof CustomIntervalSchema>
 
 /**
  * Input data for creating a new custom interval
  */
 export interface CreateCustomIntervalData {
-  name: string;
-  workDuration: number;
-  breakDuration: number;
-  sessionMode: SessionMode;
+  name: string
+  workDuration: number
+  breakDuration: number
+  sessionMode: SessionMode
 }
 
 /**
  * Input data for updating a custom interval
  */
 export interface UpdateCustomIntervalData {
-  name?: string;
-  workDuration?: number;
-  breakDuration?: number;
-  isActive?: boolean;
+  name?: string
+  workDuration?: number
+  breakDuration?: number
+  isActive?: boolean
 }
 
 /**
@@ -86,7 +86,10 @@ export interface UpdateCustomIntervalData {
  * @param userId - User ID who owns this interval
  * @returns New CustomInterval object with generated UUID and default values
  */
-export function createCustomInterval(intervalData: CreateCustomIntervalData, userId: string): CustomInterval {
+export function createCustomInterval(
+  intervalData: CreateCustomIntervalData,
+  userId: string
+): CustomInterval {
   return {
     id: crypto.randomUUID(),
     userId,
@@ -96,7 +99,7 @@ export function createCustomInterval(intervalData: CreateCustomIntervalData, use
     sessionMode: intervalData.sessionMode,
     createdAt: new Date().toISOString(),
     isActive: true, // New intervals are active by default
-  };
+  }
 }
 
 /**
@@ -104,8 +107,10 @@ export function createCustomInterval(intervalData: CreateCustomIntervalData, use
  * @param intervalData - Object to validate as CustomInterval
  * @returns Validation result with parsed data or error details
  */
-export function validateCustomInterval(intervalData: unknown): z.SafeParseReturnType<unknown, CustomInterval> {
-  return CustomIntervalSchema.safeParse(intervalData);
+export function validateCustomInterval(
+  intervalData: unknown
+): z.SafeParseReturnType<unknown, CustomInterval> {
+  return CustomIntervalSchema.safeParse(intervalData)
 }
 
 /**
@@ -117,7 +122,7 @@ export function toggleCustomIntervalActive(customInterval: CustomInterval): Cust
   return {
     ...customInterval,
     isActive: !customInterval.isActive,
-  };
+  }
 }
 
 /**
@@ -126,7 +131,7 @@ export function toggleCustomIntervalActive(customInterval: CustomInterval): Cust
  * @returns Total duration in minutes
  */
 export function calculateTotalDuration(customInterval: CustomInterval): number {
-  return customInterval.workDuration + customInterval.breakDuration;
+  return customInterval.workDuration + customInterval.breakDuration
 }
 
 /**
@@ -142,21 +147,21 @@ export function updateCustomInterval(
   return {
     ...customInterval,
     ...updates,
-  };
+  }
 }
 
 /**
  * API response type for custom interval data (snake_case fields)
  */
 interface ApiCustomIntervalResponse {
-  id: string;
-  user_id: string;
-  name: string;
-  work_duration: number;
-  break_duration: number;
-  session_mode: SessionMode;
-  created_at: string;
-  is_active: boolean;
+  id: string
+  user_id: string
+  name: string
+  work_duration: number
+  break_duration: number
+  session_mode: SessionMode
+  created_at: string
+  is_active: boolean
 }
 
 /**
@@ -175,7 +180,7 @@ export function transformCustomIntervalFromApi(apiData: ApiCustomIntervalRespons
     sessionMode: apiData.session_mode,
     createdAt: apiData.created_at,
     isActive: apiData.is_active,
-  };
+  }
 }
 
 /**
@@ -184,7 +189,9 @@ export function transformCustomIntervalFromApi(apiData: ApiCustomIntervalRespons
  * @param customInterval - CustomInterval object with camelCase fields
  * @returns API data with snake_case fields
  */
-export function transformCustomIntervalToApi(customInterval: CustomInterval): ApiCustomIntervalResponse {
+export function transformCustomIntervalToApi(
+  customInterval: CustomInterval
+): ApiCustomIntervalResponse {
   return {
     id: customInterval.id,
     user_id: customInterval.userId,
@@ -194,7 +201,7 @@ export function transformCustomIntervalToApi(customInterval: CustomInterval): Ap
     session_mode: customInterval.sessionMode,
     created_at: customInterval.createdAt,
     is_active: customInterval.isActive,
-  };
+  }
 }
 
 /**
@@ -203,8 +210,11 @@ export function transformCustomIntervalToApi(customInterval: CustomInterval): Ap
  * @param targetMode - Target session mode to compare against
  * @returns True if the interval's session mode matches the target mode
  */
-export function isIntervalForMode(customInterval: CustomInterval, targetMode: SessionMode): boolean {
-  return customInterval.sessionMode === targetMode;
+export function isIntervalForMode(
+  customInterval: CustomInterval,
+  targetMode: SessionMode
+): boolean {
+  return customInterval.sessionMode === targetMode
 }
 
 /**
@@ -213,7 +223,7 @@ export function isIntervalForMode(customInterval: CustomInterval, targetMode: Se
  * @returns Array of active CustomInterval objects
  */
 export function getActiveIntervals(customIntervals: CustomInterval[]): CustomInterval[] {
-  return customIntervals.filter(interval => interval.isActive);
+  return customIntervals.filter((interval) => interval.isActive)
 }
 
 /**
@@ -222,8 +232,11 @@ export function getActiveIntervals(customIntervals: CustomInterval[]): CustomInt
  * @param sessionMode - Session mode to filter by
  * @returns Array of CustomInterval objects matching the session mode
  */
-export function getIntervalsByMode(customIntervals: CustomInterval[], sessionMode: SessionMode): CustomInterval[] {
-  return customIntervals.filter(interval => interval.sessionMode === sessionMode);
+export function getIntervalsByMode(
+  customIntervals: CustomInterval[],
+  sessionMode: SessionMode
+): CustomInterval[] {
+  return customIntervals.filter((interval) => interval.sessionMode === sessionMode)
 }
 
 /**
@@ -232,9 +245,9 @@ export function getIntervalsByMode(customIntervals: CustomInterval[], sessionMod
  * @returns Sorted array of CustomInterval objects
  */
 export function sortIntervalsByCreated(customIntervals: CustomInterval[]): CustomInterval[] {
-  return [...customIntervals].sort((a, b) =>
-    new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-  );
+  return [...customIntervals].sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  )
 }
 
 /**
@@ -250,8 +263,8 @@ export function validateDurationsForMode(
   sessionMode: SessionMode
 ): boolean {
   // Basic validation - all modes have the same constraints per API spec
-  const isWorkValid = workDuration >= 1 && workDuration <= 180;
-  const isBreakValid = breakDuration >= 0 && breakDuration <= 60;
+  const isWorkValid = workDuration >= 1 && workDuration <= 180
+  const isBreakValid = breakDuration >= 0 && breakDuration <= 60
 
   // Additional mode-specific logic could be added here if needed
   switch (sessionMode) {
@@ -259,8 +272,8 @@ export function validateDurationsForMode(
     case 'deepwork':
     case 'yoga':
     case 'zen':
-      return isWorkValid && isBreakValid;
+      return isWorkValid && isBreakValid
     default:
-      return false;
+      return false
   }
 }

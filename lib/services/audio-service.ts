@@ -100,7 +100,8 @@ export class AudioService {
   private audioContext: AudioContext | null = null
   private gainNode: GainNode | null = null
   private audioCache: Map<AmbientSound, AudioCacheEntry> = new Map()
-  private eventHandlers: Map<keyof AudioEvents, Set<AudioEventHandler<keyof AudioEvents>>> = new Map()
+  private eventHandlers: Map<keyof AudioEvents, Set<AudioEventHandler<keyof AudioEvents>>> =
+    new Map()
   private activeSource: ActiveAudioSource | null = null
   private currentVolume: number = 50
   private currentSound: AmbientSound = 'silence'
@@ -123,7 +124,10 @@ export class AudioService {
    * Static method to check Web Audio API support
    */
   static isWebAudioSupported(): boolean {
-    return typeof AudioContext !== 'undefined' || typeof (window as any)?.webkitAudioContext !== 'undefined'
+    return (
+      typeof AudioContext !== 'undefined' ||
+      typeof (window as any)?.webkitAudioContext !== 'undefined'
+    )
   }
 
   /**
@@ -135,7 +139,10 @@ export class AudioService {
     }
 
     if (!AudioService.isWebAudioSupported()) {
-      throw new AudioServiceError('Web Audio API is not supported in this browser', 'UNSUPPORTED_BROWSER')
+      throw new AudioServiceError(
+        'Web Audio API is not supported in this browser',
+        'UNSUPPORTED_BROWSER'
+      )
     }
 
     try {
@@ -238,8 +245,8 @@ export class AudioService {
    * Preload all ambient sounds for better performance
    */
   async preloadAllSounds(): Promise<AudioLoadResult[]> {
-    const sounds: (Exclude<AmbientSound, 'silence'>)[] = ['rain', 'forest', 'ocean']
-    const loadPromises = sounds.map(sound => this.loadAmbientSound(sound))
+    const sounds: Exclude<AmbientSound, 'silence'>[] = ['rain', 'forest', 'ocean']
+    const loadPromises = sounds.map((sound) => this.loadAmbientSound(sound))
     return Promise.all(loadPromises)
   }
 
@@ -534,7 +541,7 @@ export class AudioService {
    */
   destroy(): void {
     // Clear fade timeouts
-    this.fadeTimeouts.forEach(timeout => clearTimeout(timeout))
+    this.fadeTimeouts.forEach((timeout) => clearTimeout(timeout))
     this.fadeTimeouts.clear()
 
     // Stop current audio
@@ -563,9 +570,9 @@ export class AudioService {
   private emit<K extends keyof AudioEvents>(event: K, payload: AudioEvents[K]): void {
     const handlers = this.eventHandlers.get(event)
     if (handlers) {
-      handlers.forEach(handler => {
+      handlers.forEach((handler) => {
         try {
-          (handler as AudioEventHandler<K>)(payload)
+          ;(handler as AudioEventHandler<K>)(payload)
         } catch (error) {
           console.error(`Error in audio event handler for ${event}:`, error)
         }

@@ -1,4 +1,4 @@
-import { describe, expect, test } from '@jest/globals';
+import { describe, expect, test } from '@jest/globals'
 import {
   Session,
   SessionSchema,
@@ -11,8 +11,8 @@ import {
   transformSessionToApi,
   calculateActualDuration,
   isGuestSession,
-  getSessionEfficiency
-} from '../session';
+  getSessionEfficiency,
+} from '../session'
 
 describe('Session Data Model', () => {
   describe('SessionSchema validation', () => {
@@ -30,14 +30,14 @@ describe('Session Data Model', () => {
         totalPauseTime: 5,
         ambientSound: 'rain' as AmbientSound,
         notes: 'Good focus session',
-      };
-
-      const result = SessionSchema.safeParse(validSession);
-      expect(result.success).toBe(true);
-      if (result.success) {
-        expect(result.data).toEqual(validSession);
       }
-    });
+
+      const result = SessionSchema.safeParse(validSession)
+      expect(result.success).toBe(true)
+      if (result.success) {
+        expect(result.data).toEqual(validSession)
+      }
+    })
 
     test('should validate session with null userId (guest session)', () => {
       const guestSession = {
@@ -52,14 +52,14 @@ describe('Session Data Model', () => {
         pauseCount: 0,
         totalPauseTime: 0,
         ambientSound: 'forest' as AmbientSound,
-      };
-
-      const result = SessionSchema.safeParse(guestSession);
-      expect(result.success).toBe(true);
-      if (result.success) {
-        expect(result.data).toEqual(guestSession);
       }
-    });
+
+      const result = SessionSchema.safeParse(guestSession)
+      expect(result.success).toBe(true)
+      if (result.success) {
+        expect(result.data).toEqual(guestSession)
+      }
+    })
 
     test('should validate session with null notes', () => {
       const sessionWithNullNotes = {
@@ -75,11 +75,11 @@ describe('Session Data Model', () => {
         totalPauseTime: 0,
         ambientSound: 'silence' as AmbientSound,
         notes: null,
-      };
+      }
 
-      const result = SessionSchema.safeParse(sessionWithNullNotes);
-      expect(result.success).toBe(true);
-    });
+      const result = SessionSchema.safeParse(sessionWithNullNotes)
+      expect(result.success).toBe(true)
+    })
 
     test('should reject invalid UUID for id', () => {
       const invalidSession = {
@@ -94,11 +94,11 @@ describe('Session Data Model', () => {
         pauseCount: 0,
         totalPauseTime: 0,
         ambientSound: 'rain' as AmbientSound,
-      };
+      }
 
-      const result = SessionSchema.safeParse(invalidSession);
-      expect(result.success).toBe(false);
-    });
+      const result = SessionSchema.safeParse(invalidSession)
+      expect(result.success).toBe(false)
+    })
 
     test('should reject invalid UUID for userId', () => {
       const invalidSession = {
@@ -113,11 +113,11 @@ describe('Session Data Model', () => {
         pauseCount: 0,
         totalPauseTime: 0,
         ambientSound: 'rain' as AmbientSound,
-      };
+      }
 
-      const result = SessionSchema.safeParse(invalidSession);
-      expect(result.success).toBe(false);
-    });
+      const result = SessionSchema.safeParse(invalidSession)
+      expect(result.success).toBe(false)
+    })
 
     test('should reject invalid session mode', () => {
       const invalidSession = {
@@ -132,11 +132,11 @@ describe('Session Data Model', () => {
         pauseCount: 0,
         totalPauseTime: 0,
         ambientSound: 'rain' as AmbientSound,
-      };
+      }
 
-      const result = SessionSchema.safeParse(invalidSession);
-      expect(result.success).toBe(false);
-    });
+      const result = SessionSchema.safeParse(invalidSession)
+      expect(result.success).toBe(false)
+    })
 
     test('should reject invalid ambient sound', () => {
       const invalidSession = {
@@ -151,11 +151,11 @@ describe('Session Data Model', () => {
         pauseCount: 0,
         totalPauseTime: 0,
         ambientSound: 'invalid-sound',
-      };
+      }
 
-      const result = SessionSchema.safeParse(invalidSession);
-      expect(result.success).toBe(false);
-    });
+      const result = SessionSchema.safeParse(invalidSession)
+      expect(result.success).toBe(false)
+    })
 
     test('should reject invalid ISO datetime for startTime', () => {
       const invalidSession = {
@@ -170,11 +170,11 @@ describe('Session Data Model', () => {
         pauseCount: 0,
         totalPauseTime: 0,
         ambientSound: 'rain' as AmbientSound,
-      };
+      }
 
-      const result = SessionSchema.safeParse(invalidSession);
-      expect(result.success).toBe(false);
-    });
+      const result = SessionSchema.safeParse(invalidSession)
+      expect(result.success).toBe(false)
+    })
 
     test('should reject invalid ISO datetime for endTime', () => {
       const invalidSession = {
@@ -189,11 +189,11 @@ describe('Session Data Model', () => {
         pauseCount: 0,
         totalPauseTime: 0,
         ambientSound: 'rain' as AmbientSound,
-      };
+      }
 
-      const result = SessionSchema.safeParse(invalidSession);
-      expect(result.success).toBe(false);
-    });
+      const result = SessionSchema.safeParse(invalidSession)
+      expect(result.success).toBe(false)
+    })
 
     test('should reject plannedDuration less than 1', () => {
       const invalidSession = {
@@ -208,11 +208,11 @@ describe('Session Data Model', () => {
         pauseCount: 0,
         totalPauseTime: 0,
         ambientSound: 'rain' as AmbientSound,
-      };
+      }
 
-      const result = SessionSchema.safeParse(invalidSession);
-      expect(result.success).toBe(false);
-    });
+      const result = SessionSchema.safeParse(invalidSession)
+      expect(result.success).toBe(false)
+    })
 
     test('should reject negative actualDuration', () => {
       const invalidSession = {
@@ -227,11 +227,11 @@ describe('Session Data Model', () => {
         pauseCount: 0,
         totalPauseTime: 0,
         ambientSound: 'rain' as AmbientSound,
-      };
+      }
 
-      const result = SessionSchema.safeParse(invalidSession);
-      expect(result.success).toBe(false);
-    });
+      const result = SessionSchema.safeParse(invalidSession)
+      expect(result.success).toBe(false)
+    })
 
     test('should reject negative pauseCount', () => {
       const invalidSession = {
@@ -246,11 +246,11 @@ describe('Session Data Model', () => {
         pauseCount: -1,
         totalPauseTime: 0,
         ambientSound: 'rain' as AmbientSound,
-      };
+      }
 
-      const result = SessionSchema.safeParse(invalidSession);
-      expect(result.success).toBe(false);
-    });
+      const result = SessionSchema.safeParse(invalidSession)
+      expect(result.success).toBe(false)
+    })
 
     test('should reject negative totalPauseTime', () => {
       const invalidSession = {
@@ -265,14 +265,14 @@ describe('Session Data Model', () => {
         pauseCount: 0,
         totalPauseTime: -5,
         ambientSound: 'rain' as AmbientSound,
-      };
+      }
 
-      const result = SessionSchema.safeParse(invalidSession);
-      expect(result.success).toBe(false);
-    });
+      const result = SessionSchema.safeParse(invalidSession)
+      expect(result.success).toBe(false)
+    })
 
     test('should reject notes longer than 500 characters', () => {
-      const longNotes = 'a'.repeat(501);
+      const longNotes = 'a'.repeat(501)
       const invalidSession = {
         id: '123e4567-e89b-12d3-a456-426614174000',
         userId: '456e7890-e89b-12d3-a456-426614174001',
@@ -286,14 +286,14 @@ describe('Session Data Model', () => {
         totalPauseTime: 0,
         ambientSound: 'rain' as AmbientSound,
         notes: longNotes,
-      };
+      }
 
-      const result = SessionSchema.safeParse(invalidSession);
-      expect(result.success).toBe(false);
-    });
+      const result = SessionSchema.safeParse(invalidSession)
+      expect(result.success).toBe(false)
+    })
 
     test('should accept notes with exactly 500 characters', () => {
-      const maxLengthNotes = 'a'.repeat(500);
+      const maxLengthNotes = 'a'.repeat(500)
       const validSession = {
         id: '123e4567-e89b-12d3-a456-426614174000',
         userId: '456e7890-e89b-12d3-a456-426614174001',
@@ -307,76 +307,78 @@ describe('Session Data Model', () => {
         totalPauseTime: 0,
         ambientSound: 'rain' as AmbientSound,
         notes: maxLengthNotes,
-      };
+      }
 
-      const result = SessionSchema.safeParse(validSession);
-      expect(result.success).toBe(true);
-    });
+      const result = SessionSchema.safeParse(validSession)
+      expect(result.success).toBe(true)
+    })
 
     test('should reject missing required fields', () => {
       const incompleteSession = {
         id: '123e4567-e89b-12d3-a456-426614174000',
         mode: 'study' as SessionMode,
         // Missing many required fields
-      };
+      }
 
-      const result = SessionSchema.safeParse(incompleteSession);
-      expect(result.success).toBe(false);
-    });
-  });
+      const result = SessionSchema.safeParse(incompleteSession)
+      expect(result.success).toBe(false)
+    })
+  })
 
   describe('createSession helper function', () => {
     test('should create a valid authenticated session', () => {
-      const userId = '456e7890-e89b-12d3-a456-426614174001';
+      const userId = '456e7890-e89b-12d3-a456-426614174001'
       const sessionData = {
         mode: 'study' as SessionMode,
         plannedDuration: 30,
         ambientSound: 'rain' as AmbientSound,
-      };
+      }
 
-      const session = createSession(sessionData, userId);
+      const session = createSession(sessionData, userId)
 
-      expect(session.userId).toBe(userId);
-      expect(session.mode).toBe('study');
-      expect(session.plannedDuration).toBe(30);
-      expect(session.ambientSound).toBe('rain');
-      expect(session.id).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i);
-      expect(new Date(session.startTime)).toBeInstanceOf(Date);
-      expect(session.actualDuration).toBe(0);
-      expect(session.completedFully).toBe(false);
-      expect(session.pauseCount).toBe(0);
-      expect(session.totalPauseTime).toBe(0);
-      expect(session.notes).toBeUndefined();
-    });
+      expect(session.userId).toBe(userId)
+      expect(session.mode).toBe('study')
+      expect(session.plannedDuration).toBe(30)
+      expect(session.ambientSound).toBe('rain')
+      expect(session.id).toMatch(
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+      )
+      expect(new Date(session.startTime)).toBeInstanceOf(Date)
+      expect(session.actualDuration).toBe(0)
+      expect(session.completedFully).toBe(false)
+      expect(session.pauseCount).toBe(0)
+      expect(session.totalPauseTime).toBe(0)
+      expect(session.notes).toBeUndefined()
+    })
 
     test('should create a valid guest session', () => {
       const sessionData = {
         mode: 'zen' as SessionMode,
         plannedDuration: 45,
         ambientSound: 'forest' as AmbientSound,
-      };
+      }
 
-      const session = createSession(sessionData);
+      const session = createSession(sessionData)
 
-      expect(session.userId).toBeNull();
-      expect(session.mode).toBe('zen');
-      expect(session.plannedDuration).toBe(45);
-      expect(session.ambientSound).toBe('forest');
-    });
+      expect(session.userId).toBeNull()
+      expect(session.mode).toBe('zen')
+      expect(session.plannedDuration).toBe(45)
+      expect(session.ambientSound).toBe('forest')
+    })
 
     test('should create different session IDs for different sessions', () => {
       const sessionData = {
         mode: 'study' as SessionMode,
         plannedDuration: 30,
         ambientSound: 'rain' as AmbientSound,
-      };
+      }
 
-      const session1 = createSession(sessionData);
-      const session2 = createSession(sessionData);
+      const session1 = createSession(sessionData)
+      const session2 = createSession(sessionData)
 
-      expect(session1.id).not.toBe(session2.id);
-    });
-  });
+      expect(session1.id).not.toBe(session2.id)
+    })
+  })
 
   describe('completeSession helper function', () => {
     test('should complete a session with all data', () => {
@@ -392,7 +394,7 @@ describe('Session Data Model', () => {
         pauseCount: 0, // Will be updated
         totalPauseTime: 0, // Will be updated
         ambientSound: 'rain' as AmbientSound,
-      };
+      }
 
       const completionData = {
         actualDuration: 25,
@@ -400,21 +402,21 @@ describe('Session Data Model', () => {
         pauseCount: 2,
         totalPauseTime: 5,
         notes: 'Good session with some interruptions',
-      };
+      }
 
-      const completedSession = completeSession(originalSession, completionData);
+      const completedSession = completeSession(originalSession, completionData)
 
-      expect(completedSession.actualDuration).toBe(25);
-      expect(completedSession.completedFully).toBe(false);
-      expect(completedSession.pauseCount).toBe(2);
-      expect(completedSession.totalPauseTime).toBe(5);
-      expect(completedSession.notes).toBe('Good session with some interruptions');
-      expect(new Date(completedSession.endTime)).toBeInstanceOf(Date);
+      expect(completedSession.actualDuration).toBe(25)
+      expect(completedSession.completedFully).toBe(false)
+      expect(completedSession.pauseCount).toBe(2)
+      expect(completedSession.totalPauseTime).toBe(5)
+      expect(completedSession.notes).toBe('Good session with some interruptions')
+      expect(new Date(completedSession.endTime)).toBeInstanceOf(Date)
       // Other fields should remain unchanged
-      expect(completedSession.id).toBe(originalSession.id);
-      expect(completedSession.mode).toBe(originalSession.mode);
-      expect(completedSession.plannedDuration).toBe(originalSession.plannedDuration);
-    });
+      expect(completedSession.id).toBe(originalSession.id)
+      expect(completedSession.mode).toBe(originalSession.mode)
+      expect(completedSession.plannedDuration).toBe(originalSession.plannedDuration)
+    })
 
     test('should complete a session without optional notes', () => {
       const originalSession = {
@@ -429,50 +431,50 @@ describe('Session Data Model', () => {
         pauseCount: 0,
         totalPauseTime: 0,
         ambientSound: 'forest' as AmbientSound,
-      };
+      }
 
       const completionData = {
         actualDuration: 30,
         completedFully: true,
         pauseCount: 0,
         totalPauseTime: 0,
-      };
+      }
 
-      const completedSession = completeSession(originalSession, completionData);
+      const completedSession = completeSession(originalSession, completionData)
 
-      expect(completedSession.actualDuration).toBe(30);
-      expect(completedSession.completedFully).toBe(true);
-      expect(completedSession.pauseCount).toBe(0);
-      expect(completedSession.totalPauseTime).toBe(0);
-      expect(completedSession.notes).toBeUndefined();
-    });
-  });
+      expect(completedSession.actualDuration).toBe(30)
+      expect(completedSession.completedFully).toBe(true)
+      expect(completedSession.pauseCount).toBe(0)
+      expect(completedSession.totalPauseTime).toBe(0)
+      expect(completedSession.notes).toBeUndefined()
+    })
+  })
 
   describe('calculateActualDuration helper function', () => {
     test('should calculate duration from start and end times', () => {
-      const startTime = '2023-09-28T10:30:00.000Z';
-      const endTime = '2023-09-28T11:00:00.000Z';
+      const startTime = '2023-09-28T10:30:00.000Z'
+      const endTime = '2023-09-28T11:00:00.000Z'
 
-      const duration = calculateActualDuration(startTime, endTime);
-      expect(duration).toBe(30); // 30 minutes
-    });
+      const duration = calculateActualDuration(startTime, endTime)
+      expect(duration).toBe(30) // 30 minutes
+    })
 
     test('should handle durations less than a minute', () => {
-      const startTime = '2023-09-28T10:30:00.000Z';
-      const endTime = '2023-09-28T10:30:30.000Z';
+      const startTime = '2023-09-28T10:30:00.000Z'
+      const endTime = '2023-09-28T10:30:30.000Z'
 
-      const duration = calculateActualDuration(startTime, endTime);
-      expect(duration).toBe(1); // Should round up to 1 minute
-    });
+      const duration = calculateActualDuration(startTime, endTime)
+      expect(duration).toBe(1) // Should round up to 1 minute
+    })
 
     test('should handle zero duration', () => {
-      const startTime = '2023-09-28T10:30:00.000Z';
-      const endTime = '2023-09-28T10:30:00.000Z';
+      const startTime = '2023-09-28T10:30:00.000Z'
+      const endTime = '2023-09-28T10:30:00.000Z'
 
-      const duration = calculateActualDuration(startTime, endTime);
-      expect(duration).toBe(0);
-    });
-  });
+      const duration = calculateActualDuration(startTime, endTime)
+      expect(duration).toBe(0)
+    })
+  })
 
   describe('isGuestSession helper function', () => {
     test('should return true for guest session', () => {
@@ -488,10 +490,10 @@ describe('Session Data Model', () => {
         pauseCount: 0,
         totalPauseTime: 0,
         ambientSound: 'rain' as AmbientSound,
-      };
+      }
 
-      expect(isGuestSession(guestSession)).toBe(true);
-    });
+      expect(isGuestSession(guestSession)).toBe(true)
+    })
 
     test('should return false for authenticated session', () => {
       const authSession = {
@@ -506,11 +508,11 @@ describe('Session Data Model', () => {
         pauseCount: 0,
         totalPauseTime: 0,
         ambientSound: 'rain' as AmbientSound,
-      };
+      }
 
-      expect(isGuestSession(authSession)).toBe(false);
-    });
-  });
+      expect(isGuestSession(authSession)).toBe(false)
+    })
+  })
 
   describe('getSessionEfficiency helper function', () => {
     test('should calculate efficiency for completed session', () => {
@@ -526,11 +528,11 @@ describe('Session Data Model', () => {
         pauseCount: 2,
         totalPauseTime: 5,
         ambientSound: 'rain' as AmbientSound,
-      };
+      }
 
-      const efficiency = getSessionEfficiency(session);
-      expect(efficiency).toBeCloseTo(83.33, 2); // (25/30) * 100
-    });
+      const efficiency = getSessionEfficiency(session)
+      expect(efficiency).toBeCloseTo(83.33, 2) // (25/30) * 100
+    })
 
     test('should return 100% efficiency for fully completed session', () => {
       const session = {
@@ -545,11 +547,11 @@ describe('Session Data Model', () => {
         pauseCount: 0,
         totalPauseTime: 0,
         ambientSound: 'rain' as AmbientSound,
-      };
+      }
 
-      const efficiency = getSessionEfficiency(session);
-      expect(efficiency).toBe(100);
-    });
+      const efficiency = getSessionEfficiency(session)
+      expect(efficiency).toBe(100)
+    })
 
     test('should handle sessions that exceeded planned duration', () => {
       const session = {
@@ -564,12 +566,12 @@ describe('Session Data Model', () => {
         pauseCount: 0,
         totalPauseTime: 0,
         ambientSound: 'rain' as AmbientSound,
-      };
+      }
 
-      const efficiency = getSessionEfficiency(session);
-      expect(efficiency).toBe(100); // Should cap at 100%
-    });
-  });
+      const efficiency = getSessionEfficiency(session)
+      expect(efficiency).toBe(100) // Should cap at 100%
+    })
+  })
 
   describe('validateSession helper function', () => {
     test('should return valid session when input is correct', () => {
@@ -585,14 +587,14 @@ describe('Session Data Model', () => {
         pauseCount: 0,
         totalPauseTime: 0,
         ambientSound: 'rain',
-      };
-
-      const result = validateSession(validInput);
-      expect(result.success).toBe(true);
-      if (result.success) {
-        expect(result.data).toEqual(validInput);
       }
-    });
+
+      const result = validateSession(validInput)
+      expect(result.success).toBe(true)
+      if (result.success) {
+        expect(result.data).toEqual(validInput)
+      }
+    })
 
     test('should return error details when input is invalid', () => {
       const invalidInput = {
@@ -607,15 +609,15 @@ describe('Session Data Model', () => {
         pauseCount: -1,
         totalPauseTime: -1,
         ambientSound: 'invalid-sound',
-      };
-
-      const result = validateSession(invalidInput);
-      expect(result.success).toBe(false);
-      if (!result.success) {
-        expect(result.error.issues.length).toBeGreaterThan(0);
       }
-    });
-  });
+
+      const result = validateSession(invalidInput)
+      expect(result.success).toBe(false)
+      if (!result.success) {
+        expect(result.error.issues.length).toBeGreaterThan(0)
+      }
+    })
+  })
 
   describe('transformSessionFromApi helper function', () => {
     test('should transform API response to Session model', () => {
@@ -632,9 +634,9 @@ describe('Session Data Model', () => {
         total_pause_time: 5,
         ambient_sound: 'rain',
         notes: 'Good session',
-      };
+      }
 
-      const result = transformSessionFromApi(apiResponse);
+      const result = transformSessionFromApi(apiResponse)
       expect(result).toEqual({
         id: '123e4567-e89b-12d3-a456-426614174000',
         userId: '456e7890-e89b-12d3-a456-426614174001',
@@ -648,8 +650,8 @@ describe('Session Data Model', () => {
         totalPauseTime: 5,
         ambientSound: 'rain',
         notes: 'Good session',
-      });
-    });
+      })
+    })
 
     test('should handle guest session from API', () => {
       const apiResponse = {
@@ -665,13 +667,13 @@ describe('Session Data Model', () => {
         total_pause_time: 0,
         ambient_sound: 'forest',
         notes: null,
-      };
+      }
 
-      const result = transformSessionFromApi(apiResponse);
-      expect(result.userId).toBeNull();
-      expect(result.notes).toBeNull();
-    });
-  });
+      const result = transformSessionFromApi(apiResponse)
+      expect(result.userId).toBeNull()
+      expect(result.notes).toBeNull()
+    })
+  })
 
   describe('transformSessionToApi helper function', () => {
     test('should transform Session model to API format', () => {
@@ -688,9 +690,9 @@ describe('Session Data Model', () => {
         totalPauseTime: 5,
         ambientSound: 'rain' as AmbientSound,
         notes: 'Good session',
-      };
+      }
 
-      const result = transformSessionToApi(session);
+      const result = transformSessionToApi(session)
       expect(result).toEqual({
         id: '123e4567-e89b-12d3-a456-426614174000',
         user_id: '456e7890-e89b-12d3-a456-426614174001',
@@ -704,8 +706,8 @@ describe('Session Data Model', () => {
         total_pause_time: 5,
         ambient_sound: 'rain',
         notes: 'Good session',
-      });
-    });
+      })
+    })
 
     test('should handle guest session transformation to API', () => {
       const session = {
@@ -720,13 +722,13 @@ describe('Session Data Model', () => {
         pauseCount: 0,
         totalPauseTime: 0,
         ambientSound: 'forest' as AmbientSound,
-      };
+      }
 
-      const result = transformSessionToApi(session);
-      expect(result.user_id).toBeNull();
-      expect(result.notes).toBeUndefined();
-    });
-  });
+      const result = transformSessionToApi(session)
+      expect(result.user_id).toBeNull()
+      expect(result.notes).toBeUndefined()
+    })
+  })
 
   describe('TypeScript interface', () => {
     test('should enforce proper typing at compile time', () => {
@@ -744,27 +746,27 @@ describe('Session Data Model', () => {
         totalPauseTime: 5,
         ambientSound: 'rain',
         notes: 'Good session',
-      };
+      }
 
       // These should compile without errors
-      expect(typeof session.id).toBe('string');
-      expect(typeof session.mode).toBe('string');
-      expect(typeof session.startTime).toBe('string');
-      expect(typeof session.endTime).toBe('string');
-      expect(typeof session.plannedDuration).toBe('number');
-      expect(typeof session.actualDuration).toBe('number');
-      expect(typeof session.completedFully).toBe('boolean');
-      expect(typeof session.pauseCount).toBe('number');
-      expect(typeof session.totalPauseTime).toBe('number');
-      expect(typeof session.ambientSound).toBe('string');
+      expect(typeof session.id).toBe('string')
+      expect(typeof session.mode).toBe('string')
+      expect(typeof session.startTime).toBe('string')
+      expect(typeof session.endTime).toBe('string')
+      expect(typeof session.plannedDuration).toBe('number')
+      expect(typeof session.actualDuration).toBe('number')
+      expect(typeof session.completedFully).toBe('boolean')
+      expect(typeof session.pauseCount).toBe('number')
+      expect(typeof session.totalPauseTime).toBe('number')
+      expect(typeof session.ambientSound).toBe('string')
 
       // Optional fields
       if (session.userId) {
-        expect(typeof session.userId).toBe('string');
+        expect(typeof session.userId).toBe('string')
       }
       if (session.notes) {
-        expect(typeof session.notes).toBe('string');
+        expect(typeof session.notes).toBe('string')
       }
-    });
-  });
-});
+    })
+  })
+})

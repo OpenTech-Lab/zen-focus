@@ -1,14 +1,14 @@
-import { z } from 'zod';
+import { z } from 'zod'
 
 /**
  * Session mode type for different focus session types
  */
-export type SessionMode = 'study' | 'deepwork' | 'yoga' | 'zen';
+export type SessionMode = 'study' | 'deepwork' | 'yoga' | 'zen'
 
 /**
  * Ambient sound type for background audio during sessions
  */
-export type AmbientSound = 'rain' | 'forest' | 'ocean' | 'silence';
+export type AmbientSound = 'rain' | 'forest' | 'ocean' | 'silence'
 
 /**
  * Session data model interface based on OpenAPI specification
@@ -16,29 +16,29 @@ export type AmbientSound = 'rain' | 'forest' | 'ocean' | 'silence';
  */
 export interface Session {
   /** Session unique identifier (UUID format) */
-  id: string;
+  id: string
   /** User ID (UUID format, null for guest sessions) */
-  userId: string | null;
+  userId: string | null
   /** Session mode used */
-  mode: SessionMode;
+  mode: SessionMode
   /** Session start timestamp (ISO datetime) */
-  startTime: string;
+  startTime: string
   /** Session end timestamp (ISO datetime) */
-  endTime: string;
+  endTime: string
   /** Planned duration in minutes (minimum 1) */
-  plannedDuration: number;
+  plannedDuration: number
   /** Actual duration in minutes (non-negative) */
-  actualDuration: number;
+  actualDuration: number
   /** Whether session completed fully */
-  completedFully: boolean;
+  completedFully: boolean
   /** Number of pauses (non-negative) */
-  pauseCount: number;
+  pauseCount: number
   /** Total pause time in minutes (non-negative) */
-  totalPauseTime: number;
+  totalPauseTime: number
   /** Ambient sound used */
-  ambientSound: AmbientSound;
+  ambientSound: AmbientSound
   /** Optional user notes (max 500 characters, nullable) */
-  notes?: string | null;
+  notes?: string | null
 }
 
 /**
@@ -49,57 +49,58 @@ export const SessionSchema = z.object({
   id: z.string().uuid('Invalid UUID format for session ID'),
   userId: z.string().uuid('Invalid UUID format for user ID').nullable(),
   mode: z.enum(['study', 'deepwork', 'yoga', 'zen'], {
-    errorMap: () => ({ message: 'Session mode must be one of: study, deepwork, yoga, zen' })
+    errorMap: () => ({ message: 'Session mode must be one of: study, deepwork, yoga, zen' }),
   }),
   startTime: z.string().datetime('Invalid ISO datetime format for startTime'),
   endTime: z.string().datetime('Invalid ISO datetime format for endTime'),
-  plannedDuration: z.number()
+  plannedDuration: z
+    .number()
     .int('Planned duration must be an integer')
     .min(1, 'Planned duration must be at least 1 minute'),
-  actualDuration: z.number()
+  actualDuration: z
+    .number()
     .int('Actual duration must be an integer')
     .min(0, 'Actual duration must be non-negative'),
   completedFully: z.boolean({
-    errorMap: () => ({ message: 'Completed fully must be a boolean value' })
+    errorMap: () => ({ message: 'Completed fully must be a boolean value' }),
   }),
-  pauseCount: z.number()
+  pauseCount: z
+    .number()
     .int('Pause count must be an integer')
     .min(0, 'Pause count must be non-negative'),
-  totalPauseTime: z.number()
+  totalPauseTime: z
+    .number()
     .int('Total pause time must be an integer')
     .min(0, 'Total pause time must be non-negative'),
   ambientSound: z.enum(['rain', 'forest', 'ocean', 'silence'], {
-    errorMap: () => ({ message: 'Ambient sound must be one of: rain, forest, ocean, silence' })
+    errorMap: () => ({ message: 'Ambient sound must be one of: rain, forest, ocean, silence' }),
   }),
-  notes: z.string()
-    .max(500, 'Notes must be 500 characters or less')
-    .nullable()
-    .optional(),
-});
+  notes: z.string().max(500, 'Notes must be 500 characters or less').nullable().optional(),
+})
 
 /**
  * Type derived from Zod schema for compile-time type checking
  */
-export type SessionType = z.infer<typeof SessionSchema>;
+export type SessionType = z.infer<typeof SessionSchema>
 
 /**
  * Input data for creating a new session
  */
 export interface CreateSessionData {
-  mode: SessionMode;
-  plannedDuration: number;
-  ambientSound: AmbientSound;
+  mode: SessionMode
+  plannedDuration: number
+  ambientSound: AmbientSound
 }
 
 /**
  * Input data for completing a session
  */
 export interface CompleteSessionData {
-  actualDuration: number;
-  completedFully: boolean;
-  pauseCount: number;
-  totalPauseTime: number;
-  notes?: string | null;
+  actualDuration: number
+  completedFully: boolean
+  pauseCount: number
+  totalPauseTime: number
+  notes?: string | null
 }
 
 /**
@@ -109,7 +110,7 @@ export interface CompleteSessionData {
  * @returns New Session object with generated UUID and default values
  */
 export function createSession(sessionData: CreateSessionData, userId?: string): Session {
-  const now = new Date().toISOString();
+  const now = new Date().toISOString()
 
   return {
     id: crypto.randomUUID(),
@@ -123,7 +124,7 @@ export function createSession(sessionData: CreateSessionData, userId?: string): 
     pauseCount: 0,
     totalPauseTime: 0,
     ambientSound: sessionData.ambientSound,
-  };
+  }
 }
 
 /**
@@ -141,7 +142,7 @@ export function completeSession(session: Session, completionData: CompleteSessio
     pauseCount: completionData.pauseCount,
     totalPauseTime: completionData.totalPauseTime,
     notes: completionData.notes,
-  };
+  }
 }
 
 /**
@@ -150,7 +151,7 @@ export function completeSession(session: Session, completionData: CompleteSessio
  * @returns Validation result with parsed data or error details
  */
 export function validateSession(sessionData: unknown): z.SafeParseReturnType<unknown, Session> {
-  return SessionSchema.safeParse(sessionData);
+  return SessionSchema.safeParse(sessionData)
 }
 
 /**
@@ -160,19 +161,19 @@ export function validateSession(sessionData: unknown): z.SafeParseReturnType<unk
  * @returns Duration in minutes (rounded up)
  */
 export function calculateActualDuration(startTime: string, endTime: string): number {
-  const start = new Date(startTime);
-  const end = new Date(endTime);
-  const durationMs = end.getTime() - start.getTime();
-  const durationMinutes = durationMs / (1000 * 60);
+  const start = new Date(startTime)
+  const end = new Date(endTime)
+  const durationMs = end.getTime() - start.getTime()
+  const durationMinutes = durationMs / (1000 * 60)
 
   // Handle edge cases: zero duration should return 0, small durations should round up to 1
   if (durationMinutes <= 0) {
-    return 0;
+    return 0
   } else if (durationMinutes < 1) {
-    return 1;
+    return 1
   }
 
-  return Math.ceil(durationMinutes);
+  return Math.ceil(durationMinutes)
 }
 
 /**
@@ -181,7 +182,7 @@ export function calculateActualDuration(startTime: string, endTime: string): num
  * @returns True if session is a guest session (userId is null)
  */
 export function isGuestSession(session: Session): boolean {
-  return session.userId === null;
+  return session.userId === null
 }
 
 /**
@@ -191,30 +192,30 @@ export function isGuestSession(session: Session): boolean {
  */
 export function getSessionEfficiency(session: Session): number {
   if (session.plannedDuration === 0) {
-    return 0;
+    return 0
   }
 
-  const efficiency = (session.actualDuration / session.plannedDuration) * 100;
+  const efficiency = (session.actualDuration / session.plannedDuration) * 100
   // Cap at 100% for sessions that exceeded planned duration
-  return Math.min(100, efficiency);
+  return Math.min(100, efficiency)
 }
 
 /**
  * API response type for session data (snake_case fields)
  */
 interface ApiSessionResponse {
-  id: string;
-  user_id: string | null;
-  mode: SessionMode;
-  start_time: string;
-  end_time: string;
-  planned_duration: number;
-  actual_duration: number;
-  completed_fully: boolean;
-  pause_count: number;
-  total_pause_time: number;
-  ambient_sound: AmbientSound;
-  notes?: string | null;
+  id: string
+  user_id: string | null
+  mode: SessionMode
+  start_time: string
+  end_time: string
+  planned_duration: number
+  actual_duration: number
+  completed_fully: boolean
+  pause_count: number
+  total_pause_time: number
+  ambient_sound: AmbientSound
+  notes?: string | null
 }
 
 /**
@@ -236,14 +237,14 @@ export function transformSessionFromApi(apiData: ApiSessionResponse): Session {
     pauseCount: apiData.pause_count,
     totalPauseTime: apiData.total_pause_time,
     ambientSound: apiData.ambient_sound,
-  };
+  }
 
   // Add optional notes if present
   if (apiData.notes !== undefined) {
-    session.notes = apiData.notes;
+    session.notes = apiData.notes
   }
 
-  return session;
+  return session
 }
 
 /**
@@ -265,12 +266,12 @@ export function transformSessionToApi(session: Session): ApiSessionResponse {
     pause_count: session.pauseCount,
     total_pause_time: session.totalPauseTime,
     ambient_sound: session.ambientSound,
-  };
+  }
 
   // Add optional notes if present
   if (session.notes !== undefined) {
-    apiData.notes = session.notes;
+    apiData.notes = session.notes
   }
 
-  return apiData;
+  return apiData
 }

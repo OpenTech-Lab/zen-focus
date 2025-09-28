@@ -22,7 +22,9 @@ jest.mock('./timer-service')
 
 const MockedPersistenceService = PersistenceService as jest.MockedClass<typeof PersistenceService>
 const mockedAudioService = audioService as jest.Mocked<typeof audioService>
-const mockedGetGlobalTimerService = getGlobalTimerService as jest.MockedFunction<typeof getGlobalTimerService>
+const mockedGetGlobalTimerService = getGlobalTimerService as jest.MockedFunction<
+  typeof getGlobalTimerService
+>
 
 describe('PreferencesService', () => {
   let preferencesService: PreferencesService
@@ -120,7 +122,9 @@ describe('PreferencesService', () => {
       const storageError = new Error('Storage unavailable')
       mockPersistenceService.getUserPreferences.mockRejectedValue(storageError)
 
-      await expect(preferencesService.initialize(testUserId)).rejects.toThrow(PreferencesServiceError)
+      await expect(preferencesService.initialize(testUserId)).rejects.toThrow(
+        PreferencesServiceError
+      )
     })
 
     it('should not initialize twice', async () => {
@@ -179,13 +183,13 @@ describe('PreferencesService', () => {
         preferencesService.updatePreference('theme', 'invalid-theme' as any)
       ).rejects.toThrow(PreferencesServiceError)
 
-      await expect(
-        preferencesService.updatePreference('ambientVolume', -10)
-      ).rejects.toThrow(PreferencesServiceError)
+      await expect(preferencesService.updatePreference('ambientVolume', -10)).rejects.toThrow(
+        PreferencesServiceError
+      )
 
-      await expect(
-        preferencesService.updatePreference('ambientVolume', 150)
-      ).rejects.toThrow(PreferencesServiceError)
+      await expect(preferencesService.updatePreference('ambientVolume', 150)).rejects.toThrow(
+        PreferencesServiceError
+      )
     })
 
     it('should reset preferences to defaults', async () => {
@@ -210,17 +214,17 @@ describe('PreferencesService', () => {
       const storageError = new Error('Storage quota exceeded')
       mockPersistenceService.saveUserPreferences.mockRejectedValue(storageError)
 
-      await expect(
-        preferencesService.updatePreference('theme', 'dark')
-      ).rejects.toThrow(PreferencesServiceError)
+      await expect(preferencesService.updatePreference('theme', 'dark')).rejects.toThrow(
+        PreferencesServiceError
+      )
     })
 
     it('should reject updates when not initialized', async () => {
       const uninitializedService = new PreferencesService()
 
-      await expect(
-        uninitializedService.updatePreference('theme', 'dark')
-      ).rejects.toThrow(PreferencesServiceError)
+      await expect(uninitializedService.updatePreference('theme', 'dark')).rejects.toThrow(
+        PreferencesServiceError
+      )
     })
   })
 
@@ -312,7 +316,10 @@ describe('PreferencesService', () => {
     })
 
     it('should emit events for preference validation errors', async () => {
-      preferencesService.on('preferenceValidationError', mockEventHandlers.preferenceValidationError)
+      preferencesService.on(
+        'preferenceValidationError',
+        mockEventHandlers.preferenceValidationError
+      )
 
       try {
         await preferencesService.updatePreference('theme', 'invalid' as any)
@@ -345,9 +352,7 @@ describe('PreferencesService', () => {
       preferencesService.on('preferenceChanged', errorHandler)
 
       // Should not throw even if handler throws
-      await expect(
-        preferencesService.updatePreference('theme', 'dark')
-      ).resolves.toBeUndefined()
+      await expect(preferencesService.updatePreference('theme', 'dark')).resolves.toBeUndefined()
     })
   })
 
@@ -435,7 +440,9 @@ describe('PreferencesService', () => {
 
       mockPersistenceService.getUserPreferences.mockResolvedValue(invalidMigratedPrefs as any)
 
-      await expect(preferencesService.initialize(testUserId)).rejects.toThrow(PreferencesServiceError)
+      await expect(preferencesService.initialize(testUserId)).rejects.toThrow(
+        PreferencesServiceError
+      )
     })
   })
 
@@ -517,7 +524,9 @@ describe('PreferencesService', () => {
 
       mockPersistenceService.getUserPreferences.mockResolvedValue(malformedPrefs as any)
 
-      await expect(preferencesService.initialize(testUserId)).rejects.toThrow(PreferencesServiceError)
+      await expect(preferencesService.initialize(testUserId)).rejects.toThrow(
+        PreferencesServiceError
+      )
     })
   })
 
@@ -534,9 +543,9 @@ describe('PreferencesService', () => {
       expect(preferencesService.isInitialized()).toBe(false)
 
       // Should not call handlers after destroy
-      await expect(
-        preferencesService.updatePreference('theme', 'dark')
-      ).rejects.toThrow(PreferencesServiceError)
+      await expect(preferencesService.updatePreference('theme', 'dark')).rejects.toThrow(
+        PreferencesServiceError
+      )
     })
 
     it('should handle destroy when not initialized', () => {
@@ -586,9 +595,9 @@ describe('PreferencesService', () => {
         exportedAt: 'invalid-date',
       }
 
-      await expect(
-        preferencesService.importPreferences(invalidImportData as any)
-      ).rejects.toThrow(PreferencesServiceError)
+      await expect(preferencesService.importPreferences(invalidImportData as any)).rejects.toThrow(
+        PreferencesServiceError
+      )
     })
   })
 })

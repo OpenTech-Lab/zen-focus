@@ -141,7 +141,10 @@ export class PreferencesService {
   private currentPreferences: UserPreferences
   private currentUserId: string | null = null
   private initialized = false
-  private eventHandlers: Map<keyof PreferencesEvents, Set<PreferencesEventHandler<keyof PreferencesEvents>>> = new Map()
+  private eventHandlers: Map<
+    keyof PreferencesEvents,
+    Set<PreferencesEventHandler<keyof PreferencesEvents>>
+  > = new Map()
 
   // Migration functions for handling schema changes
   private migrationMap: Map<string, PreferencesMigrationFunction> = new Map()
@@ -332,7 +335,10 @@ export class PreferencesService {
 
       // Emit change events for each updated preference
       for (const [key, newValue] of Object.entries(updates)) {
-        if (newValue !== undefined && newValue !== previousPreferences[key as keyof UserPreferences]) {
+        if (
+          newValue !== undefined &&
+          newValue !== previousPreferences[key as keyof UserPreferences]
+        ) {
           this.emit('preferenceChanged', {
             key: key as keyof UserPreferences,
             oldValue: previousPreferences[key as keyof UserPreferences],
@@ -483,9 +489,9 @@ export class PreferencesService {
   private emit<K extends keyof PreferencesEvents>(event: K, payload: PreferencesEvents[K]): void {
     const handlers = this.eventHandlers.get(event)
     if (handlers) {
-      handlers.forEach(handler => {
+      handlers.forEach((handler) => {
         try {
-          (handler as PreferencesEventHandler<K>)(payload)
+          ;(handler as PreferencesEventHandler<K>)(payload)
         } catch (error) {
           console.error(`Error in preferences event handler for ${event}:`, error)
         }
@@ -515,7 +521,9 @@ export class PreferencesService {
   /**
    * Private method to validate and migrate preferences if necessary
    */
-  private async validateAndMigratePreferences(preferences: UserPreferences): Promise<UserPreferences> {
+  private async validateAndMigratePreferences(
+    preferences: UserPreferences
+  ): Promise<UserPreferences> {
     // First try to validate as-is
     const validationResult = validateUserPreferences(preferences)
     if (validationResult.success) {
@@ -662,7 +670,8 @@ export class PreferencesService {
     }
 
     // Check if we have either camelCase or snake_case versions of required fields
-    const hasSessionMode = data.defaultSessionMode !== undefined || data.default_session_mode !== undefined
+    const hasSessionMode =
+      data.defaultSessionMode !== undefined || data.default_session_mode !== undefined
     if (!hasSessionMode) {
       return false
     }
@@ -674,7 +683,11 @@ export class PreferencesService {
     }
 
     const notifications = data.notifications
-    if (typeof notifications === 'string' && notifications !== 'true' && notifications !== 'false') {
+    if (
+      typeof notifications === 'string' &&
+      notifications !== 'true' &&
+      notifications !== 'false'
+    ) {
       return false
     }
 

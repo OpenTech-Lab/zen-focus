@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z } from 'zod'
 
 /**
  * SessionMode data model interface based on OpenAPI specification
@@ -6,25 +6,25 @@ import { z } from 'zod';
  */
 export interface SessionMode {
   /** Mode unique identifier */
-  id: string;
+  id: string
   /** Display name for the session mode */
-  name: string;
+  name: string
   /** Detailed description of the session mode */
-  description: string;
+  description: string
   /** Default work duration in minutes (non-negative integer) */
-  defaultWorkDuration: number;
+  defaultWorkDuration: number
   /** Default break duration in minutes (non-negative integer) */
-  defaultBreakDuration: number;
+  defaultBreakDuration: number
   /** Theme color in hex format (#RRGGBB) */
-  color: string;
+  color: string
   /** Icon identifier for the session mode */
-  icon: string;
+  icon: string
   /** Whether intervals can be customized by the user */
-  isCustomizable: boolean;
+  isCustomizable: boolean
   /** Maximum work duration allowed in minutes (optional, minimum 1) */
-  maxWorkDuration?: number;
+  maxWorkDuration?: number
   /** Maximum break duration allowed in minutes (optional, minimum 1) */
-  maxBreakDuration?: number;
+  maxBreakDuration?: number
 }
 
 /**
@@ -35,32 +35,35 @@ export const SessionModeSchema = z.object({
   id: z.string().min(1, 'Session mode ID cannot be empty'),
   name: z.string().min(1, 'Session mode name cannot be empty'),
   description: z.string().min(1, 'Session mode description cannot be empty'),
-  defaultWorkDuration: z.number()
+  defaultWorkDuration: z
+    .number()
     .int('Default work duration must be an integer')
     .min(0, 'Default work duration must be non-negative'),
-  defaultBreakDuration: z.number()
+  defaultBreakDuration: z
+    .number()
     .int('Default break duration must be an integer')
     .min(0, 'Default break duration must be non-negative'),
-  color: z.string()
-    .regex(/^#[0-9A-Fa-f]{6}$/, 'Color must be in hex format (#RRGGBB)'),
+  color: z.string().regex(/^#[0-9A-Fa-f]{6}$/, 'Color must be in hex format (#RRGGBB)'),
   icon: z.string().min(1, 'Session mode icon cannot be empty'),
   isCustomizable: z.boolean({
-    errorMap: () => ({ message: 'isCustomizable must be a boolean value' })
+    errorMap: () => ({ message: 'isCustomizable must be a boolean value' }),
   }),
-  maxWorkDuration: z.number()
+  maxWorkDuration: z
+    .number()
     .int('Max work duration must be an integer')
     .min(1, 'Max work duration must be at least 1 minute')
     .optional(),
-  maxBreakDuration: z.number()
+  maxBreakDuration: z
+    .number()
     .int('Max break duration must be an integer')
     .min(1, 'Max break duration must be at least 1 minute')
     .optional(),
-});
+})
 
 /**
  * Type derived from Zod schema for compile-time type checking
  */
-export type SessionModeType = z.infer<typeof SessionModeSchema>;
+export type SessionModeType = z.infer<typeof SessionModeSchema>
 
 /**
  * Helper function to create default session modes
@@ -113,7 +116,7 @@ export function createDefaultSessionModes(): SessionMode[] {
       icon: 'circle',
       isCustomizable: false,
     },
-  ];
+  ]
 }
 
 /**
@@ -121,8 +124,10 @@ export function createDefaultSessionModes(): SessionMode[] {
  * @param sessionModeData - Object to validate as SessionMode
  * @returns Validation result with parsed data or error details
  */
-export function validateSessionMode(sessionModeData: unknown): z.SafeParseReturnType<unknown, SessionMode> {
-  return SessionModeSchema.safeParse(sessionModeData);
+export function validateSessionMode(
+  sessionModeData: unknown
+): z.SafeParseReturnType<unknown, SessionMode> {
+  return SessionModeSchema.safeParse(sessionModeData)
 }
 
 /**
@@ -133,7 +138,7 @@ export function validateSessionMode(sessionModeData: unknown): z.SafeParseReturn
  * @returns Negative if mode1 < mode2, positive if mode1 > mode2, zero if equal
  */
 export function compareSessionModes(mode1: SessionMode, mode2: SessionMode): number {
-  return mode1.name.toLowerCase().localeCompare(mode2.name.toLowerCase());
+  return mode1.name.toLowerCase().localeCompare(mode2.name.toLowerCase())
 }
 
 /**
@@ -142,8 +147,11 @@ export function compareSessionModes(mode1: SessionMode, mode2: SessionMode): num
  * @param id - ID of the session mode to find
  * @returns SessionMode object if found, undefined otherwise
  */
-export function getSessionModeById(sessionModes: SessionMode[], id: string): SessionMode | undefined {
-  return sessionModes.find(mode => mode.id === id);
+export function getSessionModeById(
+  sessionModes: SessionMode[],
+  id: string
+): SessionMode | undefined {
+  return sessionModes.find((mode) => mode.id === id)
 }
 
 /**
@@ -153,7 +161,7 @@ export function getSessionModeById(sessionModes: SessionMode[], id: string): Ses
  */
 export function isHexColor(color: string): boolean {
   if (typeof color !== 'string') {
-    return false;
+    return false
   }
-  return /^#[0-9A-Fa-f]{6}$/.test(color);
+  return /^#[0-9A-Fa-f]{6}$/.test(color)
 }

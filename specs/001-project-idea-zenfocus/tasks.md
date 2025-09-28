@@ -91,7 +91,7 @@
 
 ### React Components
 
-- [ ] T036 [P] Timer display component with progress ring in components/timer/timer-display.tsx
+- [x] T036 [P] Timer display component with progress ring in components/timer/timer-display.tsx
 - [ ] T037 [P] Timer controls component (start/pause/reset) in components/timer/timer-controls.tsx
 - [ ] T038 [P] Session mode tabs component in components/timer/session-modes.tsx
 - [ ] T039 [P] Settings dialog component with preferences in components/settings/settings-dialog.tsx

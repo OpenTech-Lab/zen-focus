@@ -1,14 +1,14 @@
-import { z } from 'zod';
+import { z } from 'zod'
 
 /**
  * Session mode enum values from OpenAPI specification
  */
-export type SessionMode = 'study' | 'deepwork' | 'yoga' | 'zen';
+export type SessionMode = 'study' | 'deepwork' | 'yoga' | 'zen'
 
 /**
  * Timer phase enum values from OpenAPI specification
  */
-export type TimerPhase = 'work' | 'break';
+export type TimerPhase = 'work' | 'break'
 
 /**
  * TimerState data model interface based on OpenAPI specification
@@ -16,19 +16,19 @@ export type TimerPhase = 'work' | 'break';
  */
 export interface TimerState {
   /** Whether timer is currently running */
-  isActive: boolean;
+  isActive: boolean
   /** Whether timer is paused */
-  isPaused: boolean;
+  isPaused: boolean
   /** Current session mode */
-  mode: SessionMode;
+  mode: SessionMode
   /** Current timer phase (work or break) */
-  phase: TimerPhase;
+  phase: TimerPhase
   /** Seconds remaining in current phase (non-negative integer) */
-  timeRemaining: number;
+  timeRemaining: number
   /** Total elapsed seconds (non-negative integer) */
-  totalElapsed: number;
+  totalElapsed: number
   /** Current cycle number (minimum 1) */
-  currentCycle: number;
+  currentCycle: number
 }
 
 /**
@@ -47,12 +47,12 @@ export const TimerStateSchema = z.object({
   timeRemaining: z.number().int().min(0, 'timeRemaining must be a non-negative integer'),
   totalElapsed: z.number().int().min(0, 'totalElapsed must be a non-negative integer'),
   currentCycle: z.number().int().min(1, 'currentCycle must be at least 1'),
-});
+})
 
 /**
  * Type derived from Zod schema for compile-time type checking
  */
-export type TimerStateType = z.infer<typeof TimerStateSchema>;
+export type TimerStateType = z.infer<typeof TimerStateSchema>
 
 /**
  * Helper function to create a new timer state with default values
@@ -69,7 +69,7 @@ export function createTimerState(mode: SessionMode, timeRemaining: number): Time
     timeRemaining,
     totalElapsed: 0,
     currentCycle: 1,
-  };
+  }
 }
 
 /**
@@ -77,8 +77,10 @@ export function createTimerState(mode: SessionMode, timeRemaining: number): Time
  * @param timerStateData - Object to validate as TimerState
  * @returns Validation result with parsed data or error details
  */
-export function validateTimerState(timerStateData: unknown): z.SafeParseReturnType<unknown, TimerState> {
-  return TimerStateSchema.safeParse(timerStateData);
+export function validateTimerState(
+  timerStateData: unknown
+): z.SafeParseReturnType<unknown, TimerState> {
+  return TimerStateSchema.safeParse(timerStateData)
 }
 
 /**
@@ -89,14 +91,14 @@ export function validateTimerState(timerStateData: unknown): z.SafeParseReturnTy
 export function startTimer(timerState: TimerState): TimerState {
   if (timerState.isActive && !timerState.isPaused) {
     // Timer is already active and not paused, no change needed
-    return timerState;
+    return timerState
   }
 
   return {
     ...timerState,
     isActive: true,
     isPaused: false,
-  };
+  }
 }
 
 /**
@@ -107,14 +109,14 @@ export function startTimer(timerState: TimerState): TimerState {
 export function pauseTimer(timerState: TimerState): TimerState {
   if (!timerState.isActive) {
     // Timer is not active, no change needed
-    return timerState;
+    return timerState
   }
 
   return {
     ...timerState,
     isActive: false,
     isPaused: true,
-  };
+  }
 }
 
 /**
@@ -125,14 +127,14 @@ export function pauseTimer(timerState: TimerState): TimerState {
 export function resumeTimer(timerState: TimerState): TimerState {
   if (!timerState.isPaused) {
     // Timer is not paused, no change needed
-    return timerState;
+    return timerState
   }
 
   return {
     ...timerState,
     isActive: true,
     isPaused: false,
-  };
+  }
 }
 
 /**
@@ -150,7 +152,7 @@ export function resetTimer(timerState: TimerState, initialTime: number): TimerSt
     timeRemaining: initialTime,
     totalElapsed: 0,
     currentCycle: 1,
-  };
+  }
 }
 
 /**
@@ -160,7 +162,7 @@ export function resetTimer(timerState: TimerState, initialTime: number): TimerSt
  * @returns Updated timer state with switched phase
  */
 export function switchPhase(timerState: TimerState, newTimeRemaining: number): TimerState {
-  const newPhase: TimerPhase = timerState.phase === 'work' ? 'break' : 'work';
+  const newPhase: TimerPhase = timerState.phase === 'work' ? 'break' : 'work'
 
   return {
     ...timerState,
@@ -168,7 +170,7 @@ export function switchPhase(timerState: TimerState, newTimeRemaining: number): T
     timeRemaining: newTimeRemaining,
     isActive: false,
     isPaused: false,
-  };
+  }
 }
 
 /**
@@ -180,7 +182,7 @@ export function incrementCycle(timerState: TimerState): TimerState {
   return {
     ...timerState,
     currentCycle: timerState.currentCycle + 1,
-  };
+  }
 }
 
 /**
@@ -193,7 +195,7 @@ export function updateTimeRemaining(timerState: TimerState, newTimeRemaining: nu
   return {
     ...timerState,
     timeRemaining: Math.max(0, newTimeRemaining),
-  };
+  }
 }
 
 /**
@@ -202,7 +204,7 @@ export function updateTimeRemaining(timerState: TimerState, newTimeRemaining: nu
  * @returns True if timer can be started
  */
 export function canStart(timerState: TimerState): boolean {
-  return !timerState.isActive && timerState.timeRemaining > 0;
+  return !timerState.isActive && timerState.timeRemaining > 0
 }
 
 /**
@@ -211,7 +213,7 @@ export function canStart(timerState: TimerState): boolean {
  * @returns True if timer can be paused
  */
 export function canPause(timerState: TimerState): boolean {
-  return timerState.isActive;
+  return timerState.isActive
 }
 
 /**
@@ -220,7 +222,7 @@ export function canPause(timerState: TimerState): boolean {
  * @returns True if timer can be resumed
  */
 export function canResume(timerState: TimerState): boolean {
-  return timerState.isPaused;
+  return timerState.isPaused
 }
 
 /**
@@ -229,7 +231,7 @@ export function canResume(timerState: TimerState): boolean {
  * @returns True if timer is active and not paused
  */
 export function isActiveTimer(timerState: TimerState): boolean {
-  return timerState.isActive && !timerState.isPaused;
+  return timerState.isActive && !timerState.isPaused
 }
 
 /**
@@ -239,12 +241,12 @@ export function isActiveTimer(timerState: TimerState): boolean {
  * @returns Progress percentage (0-100)
  */
 export function getTimerProgress(timerState: TimerState, initialTime: number): number {
-  if (initialTime <= 0) return 100;
+  if (initialTime <= 0) return 100
 
-  const elapsed = initialTime - timerState.timeRemaining;
-  const progress = (elapsed / initialTime) * 100;
+  const elapsed = initialTime - timerState.timeRemaining
+  const progress = (elapsed / initialTime) * 100
 
-  return Math.min(100, Math.max(0, progress));
+  return Math.min(100, Math.max(0, progress))
 }
 
 /**
@@ -254,5 +256,5 @@ export function getTimerProgress(timerState: TimerState, initialTime: number): n
  * @returns Elapsed time in seconds for current phase
  */
 export function getElapsedInCurrentCycle(timerState: TimerState, initialTime: number): number {
-  return Math.max(0, initialTime - timerState.timeRemaining);
+  return Math.max(0, initialTime - timerState.timeRemaining)
 }

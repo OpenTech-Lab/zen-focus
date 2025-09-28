@@ -139,7 +139,7 @@ describe('AudioService', () => {
 
       expect(results).toHaveLength(3) // rain, forest, ocean (excluding silence)
       expect(mockFetch).toHaveBeenCalledTimes(3)
-      results.forEach(result => {
+      results.forEach((result) => {
         expect(result.success).toBe(true)
       })
     })
@@ -283,10 +283,7 @@ describe('AudioService', () => {
 
       const fadePromise = audioService.fadeOut(duration)
 
-      expect(mockGainNode.gain.linearRampToValueAtTime).toHaveBeenCalledWith(
-        0,
-        expect.any(Number)
-      )
+      expect(mockGainNode.gain.linearRampToValueAtTime).toHaveBeenCalledWith(0, expect.any(Number))
 
       await fadePromise
       expect(audioService.isPlaying()).toBe(false)
@@ -317,7 +314,7 @@ describe('AudioService', () => {
       expect(mockEventHandlers.audioLoaded).toHaveBeenCalledWith({
         sound: 'rain',
         duration: mockAudioBuffer.duration,
-        success: true
+        success: true,
       })
     })
 
@@ -337,7 +334,7 @@ describe('AudioService', () => {
 
       expect(mockEventHandlers.volumeChanged).toHaveBeenCalledWith({
         volume: 80,
-        muted: false
+        muted: false,
       })
     })
 
@@ -350,13 +347,13 @@ describe('AudioService', () => {
       await audioService.playAmbientSound('rain')
 
       expect(mockEventHandlers.audioStarted).toHaveBeenCalledWith({
-        sound: 'rain'
+        sound: 'rain',
       })
 
       audioService.stopAudio()
 
       expect(mockEventHandlers.audioStopped).toHaveBeenCalledWith({
-        sound: 'rain'
+        sound: 'rain',
       })
     })
   })
@@ -372,7 +369,9 @@ describe('AudioService', () => {
     })
 
     it('should handle unsupported audio formats', async () => {
-      mockAudioContext.decodeAudioData.mockRejectedValueOnce(new DOMException('Format not supported'))
+      mockAudioContext.decodeAudioData.mockRejectedValueOnce(
+        new DOMException('Format not supported')
+      )
 
       await audioService.initialize()
       const result = await audioService.loadAmbientSound('rain')
@@ -414,7 +413,7 @@ describe('AudioService', () => {
     it('should apply user preferences for ambient sound and volume', async () => {
       const preferences = {
         ambientSound: 'forest' as AmbientSound,
-        ambientVolume: 75
+        ambientVolume: 75,
       }
 
       await audioService.applyUserPreferences(preferences)
@@ -426,7 +425,7 @@ describe('AudioService', () => {
     it('should handle silence preference correctly', async () => {
       const preferences = {
         ambientSound: 'silence' as AmbientSound,
-        ambientVolume: 50
+        ambientVolume: 50,
       }
 
       await audioService.applyUserPreferences(preferences)
@@ -438,7 +437,7 @@ describe('AudioService', () => {
     it('should load audio before applying preferences if not cached', async () => {
       const preferences = {
         ambientSound: 'ocean' as AmbientSound,
-        ambientVolume: 60
+        ambientVolume: 60,
       }
 
       await audioService.applyUserPreferences(preferences)

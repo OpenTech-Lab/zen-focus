@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach } from '@jest/globals';
+import { describe, it, expect, beforeEach, afterEach } from '@jest/globals'
 
 /**
  * Integration test for guest timer session flow
@@ -24,9 +24,9 @@ import { describe, it, expect, beforeEach, afterEach } from '@jest/globals';
  */
 
 describe('Guest Timer Session Flow - Integration Test', () => {
-  const TIMER_STATE_ENDPOINT = '/api/timer/state';
-  const SESSION_MODES_ENDPOINT = '/api/session-modes';
-  const SESSIONS_ENDPOINT = '/api/sessions';
+  const TIMER_STATE_ENDPOINT = '/api/timer/state'
+  const SESSION_MODES_ENDPOINT = '/api/session-modes'
+  const SESSIONS_ENDPOINT = '/api/sessions'
 
   // Test timer state data for different scenarios
   const studyModeTimerState = {
@@ -36,8 +36,8 @@ describe('Guest Timer Session Flow - Integration Test', () => {
     phase: 'work',
     timeRemaining: 1500, // 25 minutes in seconds
     totalElapsed: 0,
-    currentCycle: 1
-  };
+    currentCycle: 1,
+  }
 
   const pausedStudyTimerState = {
     isActive: true,
@@ -46,8 +46,8 @@ describe('Guest Timer Session Flow - Integration Test', () => {
     phase: 'work',
     timeRemaining: 1470, // 24:30 remaining after 30 seconds
     totalElapsed: 30,
-    currentCycle: 1
-  };
+    currentCycle: 1,
+  }
 
   const completedWorkPhaseState = {
     isActive: true,
@@ -56,8 +56,8 @@ describe('Guest Timer Session Flow - Integration Test', () => {
     phase: 'break',
     timeRemaining: 300, // 5 minutes break
     totalElapsed: 1500, // 25 minutes work completed
-    currentCycle: 1
-  };
+    currentCycle: 1,
+  }
 
   const deepWorkModeTimerState = {
     isActive: true,
@@ -66,8 +66,8 @@ describe('Guest Timer Session Flow - Integration Test', () => {
     phase: 'work',
     timeRemaining: 3000, // 50 minutes in seconds
     totalElapsed: 0,
-    currentCycle: 1
-  };
+    currentCycle: 1,
+  }
 
   const zenModeTimerState = {
     isActive: true,
@@ -76,8 +76,8 @@ describe('Guest Timer Session Flow - Integration Test', () => {
     phase: 'work',
     timeRemaining: 0, // Open-ended timing
     totalElapsed: 0,
-    currentCycle: 1
-  };
+    currentCycle: 1,
+  }
 
   beforeEach(async () => {
     // Clear any existing timer state before each test
@@ -86,13 +86,13 @@ describe('Guest Timer Session Flow - Integration Test', () => {
       headers: {
         'Content-Type': 'application/json',
       },
-    });
+    })
 
     // Clear localStorage for clean guest state
     if (typeof window !== 'undefined') {
-      window.localStorage.clear();
+      window.localStorage.clear()
     }
-  });
+  })
 
   afterEach(async () => {
     // Clean up timer state after each test
@@ -101,8 +101,8 @@ describe('Guest Timer Session Flow - Integration Test', () => {
       headers: {
         'Content-Type': 'application/json',
       },
-    });
-  });
+    })
+  })
 
   describe('Complete Guest Timer Session Workflow', () => {
     it('should complete full guest timer session: start → pause → resume → complete', async () => {
@@ -112,8 +112,8 @@ describe('Guest Timer Session Flow - Integration Test', () => {
         headers: {
           'Content-Type': 'application/json',
         },
-      });
-      expect(initialStateResponse.status).toBe(404); // No active timer initially
+      })
+      expect(initialStateResponse.status).toBe(404) // No active timer initially
 
       // Step 2: Start Study Mode session (25:00 default Pomodoro)
       const startSessionResponse = await fetch(`http://localhost:3000${TIMER_STATE_ENDPOINT}`, {
@@ -122,10 +122,10 @@ describe('Guest Timer Session Flow - Integration Test', () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(studyModeTimerState),
-      });
-      expect(startSessionResponse.status).toBe(200);
+      })
+      expect(startSessionResponse.status).toBe(200)
 
-      const startedSession = await startSessionResponse.json();
+      const startedSession = await startSessionResponse.json()
       expect(startedSession).toMatchObject({
         isActive: true,
         isPaused: false,
@@ -134,7 +134,7 @@ describe('Guest Timer Session Flow - Integration Test', () => {
         timeRemaining: 1500,
         totalElapsed: 0,
         currentCycle: 1,
-      });
+      })
 
       // Step 3: Verify timer is running and retrievable
       const runningStateResponse = await fetch(`http://localhost:3000${TIMER_STATE_ENDPOINT}`, {
@@ -142,13 +142,13 @@ describe('Guest Timer Session Flow - Integration Test', () => {
         headers: {
           'Content-Type': 'application/json',
         },
-      });
-      expect(runningStateResponse.status).toBe(200);
+      })
+      expect(runningStateResponse.status).toBe(200)
 
-      const runningState = await runningStateResponse.json();
-      expect(runningState.isActive).toBe(true);
-      expect(runningState.isPaused).toBe(false);
-      expect(runningState.mode).toBe('study');
+      const runningState = await runningStateResponse.json()
+      expect(runningState.isActive).toBe(true)
+      expect(runningState.isPaused).toBe(false)
+      expect(runningState.mode).toBe('study')
 
       // Step 4: Pause timer after 30 seconds of running
       const pauseSessionResponse = await fetch(`http://localhost:3000${TIMER_STATE_ENDPOINT}`, {
@@ -157,10 +157,10 @@ describe('Guest Timer Session Flow - Integration Test', () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(pausedStudyTimerState),
-      });
-      expect(pauseSessionResponse.status).toBe(200);
+      })
+      expect(pauseSessionResponse.status).toBe(200)
 
-      const pausedSession = await pauseSessionResponse.json();
+      const pausedSession = await pauseSessionResponse.json()
       expect(pausedSession).toMatchObject({
         isActive: true,
         isPaused: true,
@@ -169,7 +169,7 @@ describe('Guest Timer Session Flow - Integration Test', () => {
         timeRemaining: 1470, // 30 seconds elapsed
         totalElapsed: 30,
         currentCycle: 1,
-      });
+      })
 
       // Step 5: Verify paused state is maintained
       const pausedStateResponse = await fetch(`http://localhost:3000${TIMER_STATE_ENDPOINT}`, {
@@ -177,12 +177,12 @@ describe('Guest Timer Session Flow - Integration Test', () => {
         headers: {
           'Content-Type': 'application/json',
         },
-      });
-      expect(pausedStateResponse.status).toBe(200);
+      })
+      expect(pausedStateResponse.status).toBe(200)
 
-      const pausedState = await pausedStateResponse.json();
-      expect(pausedState.isPaused).toBe(true);
-      expect(pausedState.timeRemaining).toBe(1470);
+      const pausedState = await pausedStateResponse.json()
+      expect(pausedState.isPaused).toBe(true)
+      expect(pausedState.timeRemaining).toBe(1470)
 
       // Step 6: Resume timer (unpause)
       const resumeSessionResponse = await fetch(`http://localhost:3000${TIMER_STATE_ENDPOINT}`, {
@@ -194,12 +194,12 @@ describe('Guest Timer Session Flow - Integration Test', () => {
           ...pausedStudyTimerState,
           isPaused: false, // Resume timer
         }),
-      });
-      expect(resumeSessionResponse.status).toBe(200);
+      })
+      expect(resumeSessionResponse.status).toBe(200)
 
-      const resumedSession = await resumeSessionResponse.json();
-      expect(resumedSession.isPaused).toBe(false);
-      expect(resumedSession.isActive).toBe(true);
+      const resumedSession = await resumeSessionResponse.json()
+      expect(resumedSession.isPaused).toBe(false)
+      expect(resumedSession.isActive).toBe(true)
 
       // Step 7: Complete work phase and transition to break
       const completeWorkResponse = await fetch(`http://localhost:3000${TIMER_STATE_ENDPOINT}`, {
@@ -208,10 +208,10 @@ describe('Guest Timer Session Flow - Integration Test', () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(completedWorkPhaseState),
-      });
-      expect(completeWorkResponse.status).toBe(200);
+      })
+      expect(completeWorkResponse.status).toBe(200)
 
-      const breakPhase = await completeWorkResponse.json();
+      const breakPhase = await completeWorkResponse.json()
       expect(breakPhase).toMatchObject({
         isActive: true,
         isPaused: false,
@@ -220,7 +220,7 @@ describe('Guest Timer Session Flow - Integration Test', () => {
         timeRemaining: 300, // 5 minutes break
         totalElapsed: 1500, // 25 minutes work completed
         currentCycle: 1,
-      });
+      })
 
       // Step 8: Verify break phase is active
       const breakStateResponse = await fetch(`http://localhost:3000${TIMER_STATE_ENDPOINT}`, {
@@ -228,13 +228,13 @@ describe('Guest Timer Session Flow - Integration Test', () => {
         headers: {
           'Content-Type': 'application/json',
         },
-      });
-      expect(breakStateResponse.status).toBe(200);
+      })
+      expect(breakStateResponse.status).toBe(200)
 
-      const breakState = await breakStateResponse.json();
-      expect(breakState.phase).toBe('break');
-      expect(breakState.timeRemaining).toBe(300);
-    });
+      const breakState = await breakStateResponse.json()
+      expect(breakState.phase).toBe('break')
+      expect(breakState.timeRemaining).toBe(300)
+    })
 
     it('should persist guest timer state through page refresh', async () => {
       // Step 1: Start a timer session
@@ -244,8 +244,8 @@ describe('Guest Timer Session Flow - Integration Test', () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(studyModeTimerState),
-      });
-      expect(startSessionResponse.status).toBe(200);
+      })
+      expect(startSessionResponse.status).toBe(200)
 
       // Step 2: Verify session is saved and retrievable
       const savedStateResponse = await fetch(`http://localhost:3000${TIMER_STATE_ENDPOINT}`, {
@@ -253,12 +253,12 @@ describe('Guest Timer Session Flow - Integration Test', () => {
         headers: {
           'Content-Type': 'application/json',
         },
-      });
-      expect(savedStateResponse.status).toBe(200);
+      })
+      expect(savedStateResponse.status).toBe(200)
 
-      const savedState = await savedStateResponse.json();
-      expect(savedState.mode).toBe('study');
-      expect(savedState.isActive).toBe(true);
+      const savedState = await savedStateResponse.json()
+      expect(savedState.mode).toBe('study')
+      expect(savedState.isActive).toBe(true)
 
       // Step 3: Simulate page refresh by getting state again (persistence test)
       const persistedStateResponse = await fetch(`http://localhost:3000${TIMER_STATE_ENDPOINT}`, {
@@ -266,10 +266,10 @@ describe('Guest Timer Session Flow - Integration Test', () => {
         headers: {
           'Content-Type': 'application/json',
         },
-      });
-      expect(persistedStateResponse.status).toBe(200);
+      })
+      expect(persistedStateResponse.status).toBe(200)
 
-      const persistedState = await persistedStateResponse.json();
+      const persistedState = await persistedStateResponse.json()
 
       // Verify state persistence across "page refresh"
       expect(persistedState).toMatchObject({
@@ -277,7 +277,7 @@ describe('Guest Timer Session Flow - Integration Test', () => {
         mode: 'study',
         phase: 'work',
         currentCycle: 1,
-      });
+      })
 
       // Step 4: Continue from persisted state (pause and verify consistency)
       const updatedTimerState = {
@@ -285,7 +285,7 @@ describe('Guest Timer Session Flow - Integration Test', () => {
         isPaused: true,
         timeRemaining: persistedState.timeRemaining - 60, // 1 minute elapsed
         totalElapsed: persistedState.totalElapsed + 60,
-      };
+      }
 
       const updateResponse = await fetch(`http://localhost:3000${TIMER_STATE_ENDPOINT}`, {
         method: 'POST',
@@ -293,14 +293,14 @@ describe('Guest Timer Session Flow - Integration Test', () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(updatedTimerState),
-      });
-      expect(updateResponse.status).toBe(200);
+      })
+      expect(updateResponse.status).toBe(200)
 
-      const updatedState = await updateResponse.json();
-      expect(updatedState.isPaused).toBe(true);
-      expect(updatedState.totalElapsed).toBe(60);
-    });
-  });
+      const updatedState = await updateResponse.json()
+      expect(updatedState.isPaused).toBe(true)
+      expect(updatedState.totalElapsed).toBe(60)
+    })
+  })
 
   describe('Session Mode Integration and Timer Behavior', () => {
     it('should handle Study Mode (Pomodoro) with correct intervals', async () => {
@@ -311,15 +311,15 @@ describe('Guest Timer Session Flow - Integration Test', () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(studyModeTimerState),
-      });
-      expect(studySessionResponse.status).toBe(200);
+      })
+      expect(studySessionResponse.status).toBe(200)
 
-      const studySession = await studySessionResponse.json();
+      const studySession = await studySessionResponse.json()
 
       // Study mode should default to 25:00 work / 5:00 break (Pomodoro)
-      expect(studySession.mode).toBe('study');
-      expect(studySession.timeRemaining).toBe(1500); // 25 minutes
-      expect(studySession.phase).toBe('work');
+      expect(studySession.mode).toBe('study')
+      expect(studySession.timeRemaining).toBe(1500) // 25 minutes
+      expect(studySession.phase).toBe('work')
 
       // Simulate work completion and break transition
       const breakTransitionResponse = await fetch(`http://localhost:3000${TIMER_STATE_ENDPOINT}`, {
@@ -328,13 +328,13 @@ describe('Guest Timer Session Flow - Integration Test', () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(completedWorkPhaseState),
-      });
-      expect(breakTransitionResponse.status).toBe(200);
+      })
+      expect(breakTransitionResponse.status).toBe(200)
 
-      const breakSession = await breakTransitionResponse.json();
-      expect(breakSession.phase).toBe('break');
-      expect(breakSession.timeRemaining).toBe(300); // 5 minutes break
-    });
+      const breakSession = await breakTransitionResponse.json()
+      expect(breakSession.phase).toBe('break')
+      expect(breakSession.timeRemaining).toBe(300) // 5 minutes break
+    })
 
     it('should handle Deep Work Mode with longer intervals', async () => {
       // Verify Deep Work Mode configuration
@@ -344,19 +344,19 @@ describe('Guest Timer Session Flow - Integration Test', () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(deepWorkModeTimerState),
-      });
-      expect(deepWorkResponse.status).toBe(200);
+      })
+      expect(deepWorkResponse.status).toBe(200)
 
-      const deepWorkSession = await deepWorkResponse.json();
+      const deepWorkSession = await deepWorkResponse.json()
 
       // Deep Work mode should default to 50:00 work intervals
-      expect(deepWorkSession.mode).toBe('deepwork');
-      expect(deepWorkSession.timeRemaining).toBe(3000); // 50 minutes
-      expect(deepWorkSession.phase).toBe('work');
+      expect(deepWorkSession.mode).toBe('deepwork')
+      expect(deepWorkSession.timeRemaining).toBe(3000) // 50 minutes
+      expect(deepWorkSession.phase).toBe('work')
 
       // Verify the longer interval is properly configured
-      expect(deepWorkSession.timeRemaining).toBeGreaterThan(studyModeTimerState.timeRemaining);
-    });
+      expect(deepWorkSession.timeRemaining).toBeGreaterThan(studyModeTimerState.timeRemaining)
+    })
 
     it('should handle Zen Mode with open-ended timing', async () => {
       // Verify Zen Mode configuration (open-ended)
@@ -366,15 +366,15 @@ describe('Guest Timer Session Flow - Integration Test', () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(zenModeTimerState),
-      });
-      expect(zenResponse.status).toBe(200);
+      })
+      expect(zenResponse.status).toBe(200)
 
-      const zenSession = await zenResponse.json();
+      const zenSession = await zenResponse.json()
 
       // Zen mode should allow open-ended timing
-      expect(zenSession.mode).toBe('zen');
-      expect(zenSession.timeRemaining).toBe(0); // Open-ended
-      expect(zenSession.phase).toBe('work');
+      expect(zenSession.mode).toBe('zen')
+      expect(zenSession.timeRemaining).toBe(0) // Open-ended
+      expect(zenSession.phase).toBe('work')
 
       // Simulate manual stop in Zen mode
       const stopZenResponse = await fetch(`http://localhost:3000${TIMER_STATE_ENDPOINT}`, {
@@ -387,13 +387,13 @@ describe('Guest Timer Session Flow - Integration Test', () => {
           isActive: false,
           totalElapsed: 1800, // 30 minutes of meditation
         }),
-      });
-      expect(stopZenResponse.status).toBe(200);
+      })
+      expect(stopZenResponse.status).toBe(200)
 
-      const stoppedZen = await stopZenResponse.json();
-      expect(stoppedZen.isActive).toBe(false);
-      expect(stoppedZen.totalElapsed).toBe(1800);
-    });
+      const stoppedZen = await stopZenResponse.json()
+      expect(stoppedZen.isActive).toBe(false)
+      expect(stoppedZen.totalElapsed).toBe(1800)
+    })
 
     it('should allow switching between session modes', async () => {
       // Start with Study Mode
@@ -403,8 +403,8 @@ describe('Guest Timer Session Flow - Integration Test', () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(studyModeTimerState),
-      });
-      expect(studyResponse.status).toBe(200);
+      })
+      expect(studyResponse.status).toBe(200)
 
       // Switch to Deep Work Mode
       const deepWorkResponse = await fetch(`http://localhost:3000${TIMER_STATE_ENDPOINT}`, {
@@ -413,12 +413,12 @@ describe('Guest Timer Session Flow - Integration Test', () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(deepWorkModeTimerState),
-      });
-      expect(deepWorkResponse.status).toBe(200);
+      })
+      expect(deepWorkResponse.status).toBe(200)
 
-      const deepWorkSession = await deepWorkResponse.json();
-      expect(deepWorkSession.mode).toBe('deepwork');
-      expect(deepWorkSession.timeRemaining).toBe(3000);
+      const deepWorkSession = await deepWorkResponse.json()
+      expect(deepWorkSession.mode).toBe('deepwork')
+      expect(deepWorkSession.timeRemaining).toBe(3000)
 
       // Switch to Zen Mode
       const zenResponse = await fetch(`http://localhost:3000${TIMER_STATE_ENDPOINT}`, {
@@ -427,14 +427,14 @@ describe('Guest Timer Session Flow - Integration Test', () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(zenModeTimerState),
-      });
-      expect(zenResponse.status).toBe(200);
+      })
+      expect(zenResponse.status).toBe(200)
 
-      const zenSession = await zenResponse.json();
-      expect(zenSession.mode).toBe('zen');
-      expect(zenSession.timeRemaining).toBe(0);
-    });
-  });
+      const zenSession = await zenResponse.json()
+      expect(zenSession.mode).toBe('zen')
+      expect(zenSession.timeRemaining).toBe(0)
+    })
+  })
 
   describe('Guest Session Scenarios and Edge Cases', () => {
     it('should handle session completion without authentication', async () => {
@@ -445,8 +445,8 @@ describe('Guest Timer Session Flow - Integration Test', () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(studyModeTimerState),
-      });
-      expect(startResponse.status).toBe(200);
+      })
+      expect(startResponse.status).toBe(200)
 
       // Complete the session
       const completeResponse = await fetch(`http://localhost:3000${TIMER_STATE_ENDPOINT}`, {
@@ -463,12 +463,12 @@ describe('Guest Timer Session Flow - Integration Test', () => {
           totalElapsed: 1500, // Completed 25 minutes
           currentCycle: 1,
         }),
-      });
-      expect(completeResponse.status).toBe(200);
+      })
+      expect(completeResponse.status).toBe(200)
 
-      const completedSession = await completeResponse.json();
-      expect(completedSession.isActive).toBe(false);
-      expect(completedSession.totalElapsed).toBe(1500);
+      const completedSession = await completeResponse.json()
+      expect(completedSession.isActive).toBe(false)
+      expect(completedSession.totalElapsed).toBe(1500)
 
       // Verify session can be cleared after completion
       const clearResponse = await fetch(`http://localhost:3000${TIMER_STATE_ENDPOINT}`, {
@@ -476,9 +476,9 @@ describe('Guest Timer Session Flow - Integration Test', () => {
         headers: {
           'Content-Type': 'application/json',
         },
-      });
-      expect(clearResponse.status).toBe(204);
-    });
+      })
+      expect(clearResponse.status).toBe(204)
+    })
 
     it('should handle interrupted guest sessions', async () => {
       // Start a session
@@ -488,8 +488,8 @@ describe('Guest Timer Session Flow - Integration Test', () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(studyModeTimerState),
-      });
-      expect(startResponse.status).toBe(200);
+      })
+      expect(startResponse.status).toBe(200)
 
       // Simulate interruption by clearing timer state
       const interruptResponse = await fetch(`http://localhost:3000${TIMER_STATE_ENDPOINT}`, {
@@ -497,8 +497,8 @@ describe('Guest Timer Session Flow - Integration Test', () => {
         headers: {
           'Content-Type': 'application/json',
         },
-      });
-      expect(interruptResponse.status).toBe(204);
+      })
+      expect(interruptResponse.status).toBe(204)
 
       // Verify no active session after interruption
       const checkStateResponse = await fetch(`http://localhost:3000${TIMER_STATE_ENDPOINT}`, {
@@ -506,8 +506,8 @@ describe('Guest Timer Session Flow - Integration Test', () => {
         headers: {
           'Content-Type': 'application/json',
         },
-      });
-      expect(checkStateResponse.status).toBe(404);
+      })
+      expect(checkStateResponse.status).toBe(404)
 
       // Should be able to start new session after interruption
       const newSessionResponse = await fetch(`http://localhost:3000${TIMER_STATE_ENDPOINT}`, {
@@ -516,12 +516,12 @@ describe('Guest Timer Session Flow - Integration Test', () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(deepWorkModeTimerState),
-      });
-      expect(newSessionResponse.status).toBe(200);
+      })
+      expect(newSessionResponse.status).toBe(200)
 
-      const newSession = await newSessionResponse.json();
-      expect(newSession.mode).toBe('deepwork');
-    });
+      const newSession = await newSessionResponse.json()
+      expect(newSession.mode).toBe('deepwork')
+    })
 
     it('should handle multiple cycle progression for guest users', async () => {
       // Start first cycle
@@ -531,8 +531,8 @@ describe('Guest Timer Session Flow - Integration Test', () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(studyModeTimerState),
-      });
-      expect(cycle1Response.status).toBe(200);
+      })
+      expect(cycle1Response.status).toBe(200)
 
       // Complete work phase and start break
       const breakResponse = await fetch(`http://localhost:3000${TIMER_STATE_ENDPOINT}`, {
@@ -541,8 +541,8 @@ describe('Guest Timer Session Flow - Integration Test', () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(completedWorkPhaseState),
-      });
-      expect(breakResponse.status).toBe(200);
+      })
+      expect(breakResponse.status).toBe(200)
 
       // Complete break and start second cycle
       const cycle2Response = await fetch(`http://localhost:3000${TIMER_STATE_ENDPOINT}`, {
@@ -559,15 +559,15 @@ describe('Guest Timer Session Flow - Integration Test', () => {
           totalElapsed: 0, // Reset for new cycle
           currentCycle: 2, // Second cycle
         }),
-      });
-      expect(cycle2Response.status).toBe(200);
+      })
+      expect(cycle2Response.status).toBe(200)
 
-      const cycle2Session = await cycle2Response.json();
-      expect(cycle2Session.currentCycle).toBe(2);
-      expect(cycle2Session.phase).toBe('work');
-      expect(cycle2Session.timeRemaining).toBe(1500);
-    });
-  });
+      const cycle2Session = await cycle2Response.json()
+      expect(cycle2Session.currentCycle).toBe(2)
+      expect(cycle2Session.phase).toBe('work')
+      expect(cycle2Session.timeRemaining).toBe(1500)
+    })
+  })
 
   describe('Timer State Validation and Data Integrity', () => {
     it('should validate timer state transitions maintain data integrity', async () => {
@@ -578,15 +578,15 @@ describe('Guest Timer Session Flow - Integration Test', () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(studyModeTimerState),
-      });
-      expect(startResponse.status).toBe(200);
+      })
+      expect(startResponse.status).toBe(200)
 
       // Ensure progressive time updates are consistent
       const progressUpdates = [
-        { timeRemaining: 1440, totalElapsed: 60 },   // 1 minute elapsed
-        { timeRemaining: 1380, totalElapsed: 120 },  // 2 minutes elapsed
-        { timeRemaining: 1320, totalElapsed: 180 },  // 3 minutes elapsed
-      ];
+        { timeRemaining: 1440, totalElapsed: 60 }, // 1 minute elapsed
+        { timeRemaining: 1380, totalElapsed: 120 }, // 2 minutes elapsed
+        { timeRemaining: 1320, totalElapsed: 180 }, // 3 minutes elapsed
+      ]
 
       for (const update of progressUpdates) {
         const updateResponse = await fetch(`http://localhost:3000${TIMER_STATE_ENDPOINT}`, {
@@ -599,17 +599,17 @@ describe('Guest Timer Session Flow - Integration Test', () => {
             timeRemaining: update.timeRemaining,
             totalElapsed: update.totalElapsed,
           }),
-        });
-        expect(updateResponse.status).toBe(200);
+        })
+        expect(updateResponse.status).toBe(200)
 
-        const updatedState = await updateResponse.json();
-        expect(updatedState.timeRemaining).toBe(update.timeRemaining);
-        expect(updatedState.totalElapsed).toBe(update.totalElapsed);
+        const updatedState = await updateResponse.json()
+        expect(updatedState.timeRemaining).toBe(update.timeRemaining)
+        expect(updatedState.totalElapsed).toBe(update.totalElapsed)
 
         // Verify time consistency: timeRemaining + totalElapsed should equal original duration
-        expect(updatedState.timeRemaining + updatedState.totalElapsed).toBe(1500);
+        expect(updatedState.timeRemaining + updatedState.totalElapsed).toBe(1500)
       }
-    });
+    })
 
     it('should reject invalid timer state data', async () => {
       // Test invalid mode
@@ -622,8 +622,8 @@ describe('Guest Timer Session Flow - Integration Test', () => {
           ...studyModeTimerState,
           mode: 'invalid-mode',
         }),
-      });
-      expect(invalidModeResponse.status).toBe(400);
+      })
+      expect(invalidModeResponse.status).toBe(400)
 
       // Test negative time values
       const negativeTimeResponse = await fetch(`http://localhost:3000${TIMER_STATE_ENDPOINT}`, {
@@ -635,8 +635,8 @@ describe('Guest Timer Session Flow - Integration Test', () => {
           ...studyModeTimerState,
           timeRemaining: -1,
         }),
-      });
-      expect(negativeTimeResponse.status).toBe(400);
+      })
+      expect(negativeTimeResponse.status).toBe(400)
 
       // Test invalid cycle number
       const invalidCycleResponse = await fetch(`http://localhost:3000${TIMER_STATE_ENDPOINT}`, {
@@ -648,10 +648,10 @@ describe('Guest Timer Session Flow - Integration Test', () => {
           ...studyModeTimerState,
           currentCycle: 0,
         }),
-      });
-      expect(invalidCycleResponse.status).toBe(400);
-    });
-  });
+      })
+      expect(invalidCycleResponse.status).toBe(400)
+    })
+  })
 
   describe('Guest Session Integration with Services', () => {
     it('should integrate timer state with session tracking for guests', async () => {
@@ -665,8 +665,8 @@ describe('Guest Timer Session Flow - Integration Test', () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(studyModeTimerState),
-      });
-      expect(timerResponse.status).toBe(200);
+      })
+      expect(timerResponse.status).toBe(200)
 
       // Verify timer state is accessible
       const stateResponse = await fetch(`http://localhost:3000${TIMER_STATE_ENDPOINT}`, {
@@ -674,17 +674,17 @@ describe('Guest Timer Session Flow - Integration Test', () => {
         headers: {
           'Content-Type': 'application/json',
         },
-      });
-      expect(stateResponse.status).toBe(200);
+      })
+      expect(stateResponse.status).toBe(200)
 
-      const timerState = await stateResponse.json();
+      const timerState = await stateResponse.json()
 
       // Integration point: Timer state should be compatible with session creation
       // (This would normally involve creating a session record, but for guests
       // it might only be stored temporarily)
-      expect(timerState.mode).toBe('study');
-      expect(timerState.isActive).toBe(true);
-      expect(timerState.currentCycle).toBeGreaterThanOrEqual(1);
+      expect(timerState.mode).toBe('study')
+      expect(timerState.isActive).toBe(true)
+      expect(timerState.currentCycle).toBeGreaterThanOrEqual(1)
 
       // Complete the session and verify state transition
       const completeResponse = await fetch(`http://localhost:3000${TIMER_STATE_ENDPOINT}`, {
@@ -698,12 +698,12 @@ describe('Guest Timer Session Flow - Integration Test', () => {
           timeRemaining: 0,
           totalElapsed: 1500,
         }),
-      });
-      expect(completeResponse.status).toBe(200);
+      })
+      expect(completeResponse.status).toBe(200)
 
-      const completedState = await completeResponse.json();
-      expect(completedState.isActive).toBe(false);
-      expect(completedState.totalElapsed).toBe(1500);
-    });
-  });
-});
+      const completedState = await completeResponse.json()
+      expect(completedState.isActive).toBe(false)
+      expect(completedState.totalElapsed).toBe(1500)
+    })
+  })
+})
