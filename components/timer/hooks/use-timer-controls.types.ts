@@ -3,7 +3,11 @@
  * Provides type-safe integration with TimerService
  */
 
-import { type TimerService, type TimerEvents, type TimerEventHandler } from '../../../lib/services/timer-service'
+import {
+  type TimerService,
+  type TimerEvents,
+  type TimerEventHandler,
+} from '../../../lib/services/timer-service'
 import { type TimerState } from '../../../lib/models/timer-state'
 import { type SessionMode } from '../../../lib/models/session-mode'
 import {
@@ -12,7 +16,7 @@ import {
   type TimerControlCallbacks,
   type TimerControlsConfig,
   type TimerButtonConfig,
-  type TimerControlError
+  type TimerControlError,
 } from '../timer-controls-types'
 
 /**
@@ -270,14 +274,19 @@ export type CreateTimerControlsHook = (
  */
 export namespace TimerControlsTypes {
   /** Extract action types that can be executed in current state */
-  export type AvailableActions<T extends TimerControlState> =
-    T['canStart'] extends true ? 'start' :
-    T['canPause'] extends true ? 'pause' :
-    T['canResume'] extends true ? 'resume' : never
+  export type AvailableActions<T extends TimerControlState> = T['canStart'] extends true
+    ? 'start'
+    : T['canPause'] extends true
+      ? 'pause'
+      : T['canResume'] extends true
+        ? 'resume'
+        : never
 
   /** Extract button configs for available actions */
-  export type AvailableButtons<T extends TimerControlAction[]> =
-    Pick<Record<TimerControlAction, TimerButtonConfig>, T[number]>
+  export type AvailableButtons<T extends TimerControlAction[]> = Pick<
+    Record<TimerControlAction, TimerButtonConfig>,
+    T[number]
+  >
 
   /** Type-safe event handler mapper */
   export type EventHandlerMap = {

@@ -8,7 +8,7 @@ import {
   type TimerControlState,
   type TimerButtonConfig,
   type TimerControlsConfig,
-  TimerControlError
+  TimerControlError,
 } from './timer-controls-types'
 import { type TimerState, type SessionMode as SessionModeId } from '../../lib/models/timer-state'
 import { type SessionMode } from '../../lib/models/session-mode'
@@ -34,8 +34,9 @@ export type AvailableActionsFromState<T extends TimerControlState> =
  * Type guard for timer control actions
  */
 export function isTimerControlAction(value: unknown): value is TimerControlAction {
-  return typeof value === 'string' &&
-    ['start', 'pause', 'resume', 'reset', 'complete'].includes(value)
+  return (
+    typeof value === 'string' && ['start', 'pause', 'resume', 'reset', 'complete'].includes(value)
+  )
 }
 
 /**
@@ -119,7 +120,7 @@ export function createActionValidator<T extends TimerControlState>(
     pause: state.canPause,
     resume: state.canResume,
     reset: state.canReset,
-    complete: state.canComplete
+    complete: state.canComplete,
   }
 }
 
@@ -141,17 +142,20 @@ export function getAvailableActions(state: TimerControlState): TimerControlActio
 /**
  * Utility function to check if action is available in current state
  */
-export function isActionAvailable(
-  action: TimerControlAction,
-  state: TimerControlState
-): boolean {
+export function isActionAvailable(action: TimerControlAction, state: TimerControlState): boolean {
   switch (action) {
-    case 'start': return state.canStart
-    case 'pause': return state.canPause
-    case 'resume': return state.canResume
-    case 'reset': return state.canReset
-    case 'complete': return state.canComplete
-    default: return false
+    case 'start':
+      return state.canStart
+    case 'pause':
+      return state.canPause
+    case 'resume':
+      return state.canResume
+    case 'reset':
+      return state.canReset
+    case 'complete':
+      return state.canComplete
+    default:
+      return false
   }
 }
 
@@ -173,7 +177,7 @@ export function timerStateToControlState(
     phase: timerState.phase,
     sessionMode: timerState.mode,
     timeRemaining: timerState.timeRemaining,
-    currentCycle: timerState.currentCycle
+    currentCycle: timerState.currentCycle,
   }
 }
 
@@ -190,7 +194,7 @@ export const ACTION_PRIORITIES: Record<TimerControlAction, ActionPriority> = {
   pause: 'primary',
   resume: 'primary',
   reset: 'secondary',
-  complete: 'tertiary'
+  complete: 'tertiary',
 }
 
 /**
@@ -202,10 +206,10 @@ export function getActionsByPriority(
   const result: Record<ActionPriority, TimerControlAction[]> = {
     primary: [],
     secondary: [],
-    tertiary: []
+    tertiary: [],
   }
 
-  actions.forEach(action => {
+  actions.forEach((action) => {
     const priority = ACTION_PRIORITIES[action]
     result[priority].push(action)
   })
@@ -228,7 +232,7 @@ export function createDefaultButtonConfig(
       variant: 'primary',
       ariaLabel: 'Start timer',
       emphasized: true,
-      shortcut: 'Space'
+      shortcut: 'Space',
     },
     pause: {
       id: 'pause',
@@ -237,7 +241,7 @@ export function createDefaultButtonConfig(
       variant: 'secondary',
       ariaLabel: 'Pause timer',
       emphasized: true,
-      shortcut: 'Space'
+      shortcut: 'Space',
     },
     resume: {
       id: 'resume',
@@ -246,7 +250,7 @@ export function createDefaultButtonConfig(
       variant: 'primary',
       ariaLabel: 'Resume timer',
       emphasized: true,
-      shortcut: 'Space'
+      shortcut: 'Space',
     },
     reset: {
       id: 'reset',
@@ -254,7 +258,7 @@ export function createDefaultButtonConfig(
       icon: 'refresh',
       variant: 'secondary',
       ariaLabel: 'Reset timer',
-      shortcut: 'R'
+      shortcut: 'R',
     },
     complete: {
       id: 'complete',
@@ -262,13 +266,13 @@ export function createDefaultButtonConfig(
       icon: 'check',
       variant: 'success',
       ariaLabel: 'Complete timer phase',
-      shortcut: 'Enter'
-    }
+      shortcut: 'Enter',
+    },
   }
 
   return {
     ...configs[action],
-    disabled
+    disabled,
   }
 }
 
@@ -281,11 +285,9 @@ export function createButtonConfigsForState(
 ): TimerButtonConfig[] {
   const availableActions = getAvailableActions(state)
   const hiddenActions = config?.hiddenActions || []
-  const visibleActions = availableActions.filter(
-    action => !hiddenActions.includes(action)
-  )
+  const visibleActions = availableActions.filter((action) => !hiddenActions.includes(action))
 
-  return visibleActions.map(action => {
+  return visibleActions.map((action) => {
     const defaultConfig = createDefaultButtonConfig(action, false)
     const customConfig = config?.customButtons?.[action]
 
@@ -370,23 +372,20 @@ export function parseShortcut(shortcut: string): ShortcutConfig | null {
   const key = parts.pop()
   if (!key) return null
 
-  const modifiers = parts.filter(part =>
+  const modifiers = parts.filter((part) =>
     ['ctrl', 'shift', 'alt', 'meta'].includes(part)
   ) as ShortcutConfig['modifiers']
 
   return {
     key: key === 'space' ? ' ' : key,
-    modifiers: modifiers.length > 0 ? modifiers : undefined
+    modifiers: modifiers.length > 0 ? modifiers : undefined,
   }
 }
 
 /**
  * Check if shortcut matches keyboard event
  */
-export function matchesShortcut(
-  event: KeyboardEvent,
-  config: ShortcutConfig
-): boolean {
+export function matchesShortcut(event: KeyboardEvent, config: ShortcutConfig): boolean {
   if (event.key.toLowerCase() !== config.key.toLowerCase()) {
     return false
   }

@@ -93,7 +93,7 @@
 
 - [x] T036 [P] Timer display component with progress ring in components/timer/timer-display.tsx
 - [x] T037 [P] Timer controls component (start/pause/reset) in components/timer/timer-controls.tsx
-- [ ] T038 [P] Session mode tabs component in components/timer/session-modes.tsx
+- [x] T038 [P] Session mode tabs component in components/timer/session-modes.tsx
 - [ ] T039 [P] Settings dialog component with preferences in components/settings/settings-dialog.tsx
 - [ ] T040 [P] Session history component in components/history/session-history.tsx
 

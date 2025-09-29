@@ -29,14 +29,14 @@ export type {
   canPause,
   canResume,
   isActiveTimer,
-  getTimerProgress
+  getTimerProgress,
 } from '../../lib/models/timer-state'
 
 export type {
   SessionMode,
   validateSessionMode,
   createDefaultSessionModes,
-  getSessionModeById
+  getSessionModeById,
 } from '../../lib/models/session-mode'
 
 // Re-export timer service types
@@ -48,7 +48,7 @@ export type {
   TimerServiceError,
   TimerStateExport,
   createTimerService,
-  getGlobalTimerService
+  getGlobalTimerService,
 } from '../../lib/services/timer-service'
 
 // Type aliases for convenience
@@ -82,9 +82,11 @@ export namespace TimerTypes {
  * Type utility for creating strongly-typed timer components
  */
 export interface StronglyTypedTimerComponent<TProps = {}> {
-  (props: TProps & {
-    timerService: TimerServiceInstance
-  }): React.ReactElement | null
+  (
+    props: TProps & {
+      timerService: TimerServiceInstance
+    }
+  ): React.ReactElement | null
 }
 
 /**
@@ -119,11 +121,14 @@ export namespace TimerTypeGuards {
  * Utility functions namespace
  */
 export namespace TimerUtils {
-  export const createDefaultButtonConfig = import('./timer-controls-utils.types').createDefaultButtonConfig
-  export const createButtonConfigsForState = import('./timer-controls-utils.types').createButtonConfigsForState
+  export const createDefaultButtonConfig = import('./timer-controls-utils.types')
+    .createDefaultButtonConfig
+  export const createButtonConfigsForState = import('./timer-controls-utils.types')
+    .createButtonConfigsForState
   export const getAvailableActions = import('./timer-controls-utils.types').getAvailableActions
   export const isActionAvailable = import('./timer-controls-utils.types').isActionAvailable
-  export const timerStateToControlState = import('./timer-controls-utils.types').timerStateToControlState
+  export const timerStateToControlState = import('./timer-controls-utils.types')
+    .timerStateToControlState
   export const parseShortcut = import('./timer-controls-utils.types').parseShortcut
   export const matchesShortcut = import('./timer-controls-utils.types').matchesShortcut
 }

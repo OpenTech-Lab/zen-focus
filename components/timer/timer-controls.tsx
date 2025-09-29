@@ -92,7 +92,7 @@ const TimerControls: React.FC<TimerControlsProps> = React.memo(
     className,
     size = 'default',
     orientation = 'horizontal',
-    showLabels = false
+    showLabels = false,
   }) => {
     const { timerState, isActive, isPaused } = useTimerControls(timerService)
     const [isProcessing, setIsProcessing] = useState(false)
@@ -190,7 +190,7 @@ const TimerControls: React.FC<TimerControlsProps> = React.memo(
     const buttonSize = size
 
     return (
-      <div role="group" aria-label="Timer controls" className={containerClasses}>
+      <div role='group' aria-label='Timer controls' className={containerClasses}>
         {/* Primary Action Button (Start/Pause/Resume) */}
         <Button
           variant={primaryButtonConfig.variant as any}
@@ -203,60 +203,40 @@ const TimerControls: React.FC<TimerControlsProps> = React.memo(
           aria-pressed={isActive && !isPaused}
         >
           <PrimaryIcon
-            className={cn(
-              'transition-transform duration-200',
-              {
-                'w-4 h-4': size === 'sm',
-                'w-5 h-5': size === 'default',
-                'w-6 h-6': size === 'lg',
-              }
-            )}
+            className={cn('transition-transform duration-200', {
+              'w-4 h-4': size === 'sm',
+              'w-5 h-5': size === 'default',
+              'w-6 h-6': size === 'lg',
+            })}
           />
-          {showLabels && (
-            <span className="ml-2 font-medium">
-              {primaryButtonConfig.label}
-            </span>
-          )}
+          {showLabels && <span className='ml-2 font-medium'>{primaryButtonConfig.label}</span>}
         </Button>
 
         {/* Reset Button */}
         <Button
-          variant="outline"
+          variant='outline'
           size={buttonSize}
           onClick={handleReset}
           onKeyDown={(e) => handleKeyDown(e, handleReset)}
           disabled={!canReset || isProcessing}
-          className={cn(
-            buttonClasses,
-            {
-              'opacity-50': !canReset,
-            }
-          )}
-          aria-label="Reset timer"
+          className={cn(buttonClasses, {
+            'opacity-50': !canReset,
+          })}
+          aria-label='Reset timer'
         >
           <RotateCcw
-            className={cn(
-              'transition-transform duration-200',
-              {
-                'w-4 h-4': size === 'sm',
-                'w-5 h-5': size === 'default',
-                'w-6 h-6': size === 'lg',
-                'rotate-180': isProcessing,
-              }
-            )}
+            className={cn('transition-transform duration-200', {
+              'w-4 h-4': size === 'sm',
+              'w-5 h-5': size === 'default',
+              'w-6 h-6': size === 'lg',
+              'rotate-180': isProcessing,
+            })}
           />
-          {showLabels && (
-            <span className="ml-2 font-medium">Reset</span>
-          )}
+          {showLabels && <span className='ml-2 font-medium'>Reset</span>}
         </Button>
 
         {/* Screen Reader Announcements */}
-        <div
-          role="status"
-          aria-live="polite"
-          aria-atomic="true"
-          className="sr-only"
-        >
+        <div role='status' aria-live='polite' aria-atomic='true' className='sr-only'>
           {announcement}
         </div>
       </div>
