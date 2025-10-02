@@ -1,0 +1,9 @@
+{
+  "/(focus)/meditation/page": "app/(focus)/meditation/page.js",
+  "/(focus)/study/page": "app/(focus)/study/page.js",
+  "/(focus)/work/page": "app/(focus)/work/page.js",
+  "/(focus)/yoga/page": "app/(focus)/yoga/page.js",
+  "/_not-found/page": "app/_not-found/page.js",
+  "/favicon.ico/route": "app/favicon.ico/route.js",
+  "/page": "app/page.js"
+}
