@@ -99,7 +99,7 @@
 
 ## Phase 3.4: API Integration and Authentication
 
-- [ ] T041 Authentication API routes (login/register) in app/api/auth/[...nextauth]/route.ts
+- [x] T041 Authentication API routes (login/register) in app/api/auth/[...nextauth]/route.ts
 - [ ] T042 User management API routes in app/api/users/route.ts and app/api/users/me/route.ts
 - [ ] T043 Sessions API routes in app/api/sessions/route.ts and app/api/sessions/[id]/route.ts
 - [ ] T044 Custom intervals API routes in app/api/custom-intervals/route.ts
