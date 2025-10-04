@@ -4,6 +4,15 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import FocusTabs from '../FocusTabs';
 
+// Mock framer-motion to disable animations in tests
+vi.mock('framer-motion', () => ({
+  motion: {
+    div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
+  },
+  AnimatePresence: ({ children }: any) => <>{children}</>,
+  useReducedMotion: () => false,
+}));
+
 // Mock the Timer component to avoid testing its internal logic
 vi.mock('../Timer', () => ({
   default: ({ duration, title }: { duration: number; title: string }) => (
