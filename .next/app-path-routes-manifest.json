@@ -1,9 +1,0 @@
-{
-  "/(focus)/meditation/page": "/meditation",
-  "/(focus)/study/page": "/study",
-  "/(focus)/work/page": "/work",
-  "/(focus)/yoga/page": "/yoga",
-  "/_not-found/page": "/_not-found",
-  "/favicon.ico/route": "/favicon.ico",
-  "/page": "/"
-}

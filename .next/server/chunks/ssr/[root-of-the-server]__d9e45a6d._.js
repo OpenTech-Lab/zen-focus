@@ -1,3 +1,0 @@
-module.exports=[93695,(a,b,c)=>{b.exports=a.x("next/dist/shared/lib/no-fallback-error.external.js",()=>require("next/dist/shared/lib/no-fallback-error.external.js"))},61901,a=>{a.n(a.i(86168))},35462,(a,b,c)=>{},40057,a=>{"use strict";a.s(["default",()=>c]);var b=a.i(46964);function c(){return(0,b.jsxs)("div",{className:"flex min-h-screen flex-col items-center justify-center p-24",children:[(0,b.jsx)("h1",{className:"text-4xl font-bold mb-8",children:"Meditation Timer"}),(0,b.jsx)("p",{className:"text-lg text-gray-600",children:"Calm timer for meditation practice"})]})}}];
-
-//# sourceMappingURL=%5Broot-of-the-server%5D__d9e45a6d._.js.map

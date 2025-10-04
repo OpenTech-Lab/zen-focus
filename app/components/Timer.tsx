@@ -1,11 +1,12 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTimer } from '@/lib/hooks/useTimer';
 import { useNotification } from '@/lib/hooks/useNotification';
 import { formatTime } from '@/lib/utils/formatTime';
 import { Button } from '@/components/ui/button';
-import { Play, Pause, RotateCcw } from 'lucide-react';
+import { Play, Pause, RotateCcw, Clock } from 'lucide-react';
+import DurationInput from './DurationInput';
 
 interface TimerProps {
   duration: number;
@@ -17,11 +18,16 @@ export default function Timer({ duration, title = 'Focus Session', onComplete }:
   const { timeLeft, isRunning, isComplete, start, pause, reset, setDuration } = useTimer(duration);
   const { notify } = useNotification();
   const prevCompleteRef = useRef(false);
+  const prevDurationRef = useRef(duration);
+  const [showCustomInput, setShowCustomInput] = useState(false);
 
-  // Update duration when prop changes
-  if (duration !== timeLeft && !isRunning && !isComplete) {
-    setDuration(duration);
-  }
+  // Update duration when prop changes (not when custom duration is set)
+  useEffect(() => {
+    if (duration !== prevDurationRef.current && !isRunning && !isComplete) {
+      setDuration(duration);
+      prevDurationRef.current = duration;
+    }
+  }, [duration, isRunning, isComplete, setDuration]);
 
   // Handle completion
   useEffect(() => {
@@ -39,8 +45,24 @@ export default function Timer({ duration, title = 'Focus Session', onComplete }:
 
   const progress = ((duration - timeLeft) / duration) * 100;
 
+  const handleCustomDuration = (newDuration: number) => {
+    setDuration(newDuration);
+    setShowCustomInput(false);
+  };
+
   return (
     <div className="flex flex-col items-center gap-8">
+      {/* Custom Duration Input */}
+      {showCustomInput && !isRunning && (
+        <div className="w-full max-w-md">
+          <DurationInput
+            onDurationSet={handleCustomDuration}
+            onCancel={() => setShowCustomInput(false)}
+            defaultValue={timeLeft}
+          />
+        </div>
+      )}
+
       {/* Timer Display */}
       <div className="relative">
         <svg className="w-64 h-64 transform -rotate-90">
@@ -74,37 +96,51 @@ export default function Timer({ duration, title = 'Focus Session', onComplete }:
       </div>
 
       {/* Controls */}
-      <div className="flex gap-4">
-        {!isRunning ? (
+      <div className="flex flex-col gap-4 items-center">
+        <div className="flex gap-4">
+          {!isRunning ? (
+            <Button
+              size="lg"
+              onClick={start}
+              disabled={timeLeft === 0}
+              className="w-32"
+            >
+              <Play className="mr-2 h-5 w-5" />
+              Start
+            </Button>
+          ) : (
+            <Button
+              size="lg"
+              onClick={pause}
+              variant="secondary"
+              className="w-32"
+            >
+              <Pause className="mr-2 h-5 w-5" />
+              Pause
+            </Button>
+          )}
           <Button
             size="lg"
-            onClick={start}
-            disabled={timeLeft === 0}
+            onClick={reset}
+            variant="outline"
             className="w-32"
           >
-            <Play className="mr-2 h-5 w-5" />
-            Start
+            <RotateCcw className="mr-2 h-5 w-5" />
+            Reset
           </Button>
-        ) : (
+        </div>
+
+        {/* Custom Duration Button */}
+        {!isRunning && !showCustomInput && (
           <Button
-            size="lg"
-            onClick={pause}
-            variant="secondary"
-            className="w-32"
+            variant="ghost"
+            onClick={() => setShowCustomInput(true)}
+            className="text-sm"
           >
-            <Pause className="mr-2 h-5 w-5" />
-            Pause
+            <Clock className="mr-2 h-4 w-4" />
+            Custom Duration
           </Button>
         )}
-        <Button
-          size="lg"
-          onClick={reset}
-          variant="outline"
-          className="w-32"
-        >
-          <RotateCcw className="mr-2 h-5 w-5" />
-          Reset
-        </Button>
       </div>
 
       {/* Status Message */}
