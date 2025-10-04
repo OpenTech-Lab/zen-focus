@@ -1,101 +1,164 @@
-# ZenFocus App
+# zenFocus
 
-A minimal, modern **focus & wellness web app** built with  
-**AWS Amplify + Next.js + Tailwind CSS + shadcn/ui**.
+> _Stay present, stay productive — with focus timers designed for deep work, study, yoga, and meditation._
 
-ZenFocus helps you stay present and productive with customizable timers for studying, deep work, yoga, and meditation — all wrapped in a clean, distraction-free UI.
+zenFocus is a **modern focus app** that provides customizable timers wrapped in a clean, distraction-free UI. Whether you’re studying, practicing yoga, meditating, or doing deep work, zenFocus helps you stay mindful and productive.
 
----
-
-## ✨ Features
-
-- ⏳ **Countdown Timer**
-
-  - Start, pause, reset with smooth animations
-  - Visual progress ring / bar
-
-- 🎛 **Focus Modes**
-
-  - 🎓 Study (Pomodoro 25/5)
-  - 💻 Deep Work (50/10)
-  - 🧘 Yoga (custom breathing/pose intervals)
-  - 🌌 Zen (open timer with ambient background)
-
-- 📊 **History Tracking** _(optional)_
-
-  - Save sessions and streaks with Amplify Data
-  - Minimal dashboard showing total focus time
-
-- 🎶 **Ambience & Themes**
-  - Light / Dark mode toggle
-  - Ambient sounds (rain, forest, ocean)
-  - Calming color palette: sage, beige, muted blue
+Built with **AWS Amplify Gen 2 + Next.js (App Router) + Tailwind CSS + shadcn/ui**, the project is designed for scalability, modularity, and developer efficiency.
 
 ---
 
-## 🛠️ Tech Stack
+## 🚀 Project Overview
 
-- [Next.js (App Router)](https://nextjs.org/) – React framework for UI + routing
-- [Tailwind CSS](https://tailwindcss.com/) – utility-first styling
-- [shadcn/ui](https://ui.shadcn.com/) – accessible, modern UI components
-- [AWS Amplify](https://aws.amazon.com/amplify/) – auth, data, hosting
-- [TypeScript](https://www.typescriptlang.org/) – type safety
+- **Purpose**: To provide a lightweight, modern web app that promotes focus and mindfulness through customizable timers.
+- **Problem**: Most timer apps are cluttered, overly complex, or lack the flexibility for different focus styles (study, deep work, yoga, meditation).
+- **Target Audience**:
+  - Students and professionals practicing **deep work**.
+  - People who want **guided focus sessions** for productivity.
+  - Yoga and meditation practitioners seeking **minimalist timers**.
 
 ---
 
-## 🚀 Getting Started
+## 🏛 Architecture & Design Principles
 
-### 1. Clone the repo
+### Tech Stack
+
+- **Frontend**: Next.js (App Router, React 18, Server & Client Components).
+- **Styling/UI**: Tailwind CSS + shadcn/ui components for consistency and accessibility.
+- **Backend/Hosting**: AWS Amplify Gen 2 (infrastructure-as-code, CI/CD, managed hosting).
+
+### Design Choices
+
+- **Scalability**: Modular architecture — Amplify provides cloud scalability, while Next.js ensures flexible rendering (SSR/SSG).
+- **Modularity**: Feature-driven folder structure for clear separation of concerns.
+- **Clean UI/UX**: Minimalist design with shadcn/ui for reusable, accessible components.
+- **Maintainability**: Clear conventions for folder structure, naming, and code style.
+
+---
+
+## ⚙️ Installation & Setup
+
+### Prerequisites
+
+- Node.js (>=18)
+- pnpm / npm / yarn
+- AWS CLI configured with access to an Amplify environment
+
+### Setup Steps
 
 ```bash
-git clone https://github.com/your-username/zenfocus.git
+# 1. Clone the repository
+git clone https://github.com/<your-org>/zenfocus.git
 cd zenfocus
+
+# 2. Install dependencies
+pnpm install
+# or: npm install / yarn install
+
+# 3. Configure Amplify
+amplify pull --appId <your-app-id> --envName dev
+
+# 4. Run local dev server
+pnpm dev
 ```
 
-### 2. Install dependencies
+App runs locally at **[http://localhost:3000](http://localhost:3000)**
 
-```bash
-npm install
-# or
-yarn install
+### Environment Variables
+
+Create a `.env.local` file in the project root:
+
+```env
+NEXT_PUBLIC_APP_NAME=zenFocus
+AMPLIFY_ENV=dev
+AMPLIFY_API_URL=<your-api-url>
 ```
-
-### 3. Configure Amplify
-
-```bash
-npx amplify init
-```
-
-Follow the prompts to set up your Amplify environment.
-
-### 4. Run the dev server
-
-```bash
-npm run dev
-```
-
-App runs on [http://localhost:3000](http://localhost:3000).
 
 ---
 
-## 🌱 Roadmap
+## ▶️ Usage Guidelines
 
-- [ ] MVP: Countdown timer with modes + clean UI
-- [ ] Add dark/light theme toggle
-- [ ] Add ambient sounds
-- [ ] Add session history with Amplify Data
-- [ ] Shareable focus rooms
-- [ ] SaaS features (export logs, premium themes, team focus)
+### Running Locally
+
+```bash
+pnpm dev
+```
+
+### Building for Production
+
+```bash
+pnpm build
+pnpm start
+```
+
+### Testing
+
+```bash
+pnpm test
+```
+
+### Deployment
+
+CI/CD is handled by **Amplify Hosting**. Each push to `main` triggers a build & deployment.
+Feature branches can be connected to Amplify **preview environments**.
 
 ---
 
-## 🤝 Contributing
+## 📂 Code & Folder Structure
 
-Pull requests are welcome!
-If you’d like to add a new focus mode, improve UI/UX, or enhance functionality, open an issue first to discuss your ideas.
+```
+zenfocus/
+├── app/               # Next.js App Router entry points
+│   └── layout.tsx     # Root layout
+├── components/        # Reusable UI components (shadcn/ui + custom)
+├── lib/               # Utility functions, API clients
+├── styles/            # Global Tailwind styles
+├── amplify/           # Amplify backend configs (Gen 2)
+├── tests/             # Unit & integration tests
+└── public/            # Static assets
+```
+
+**Conventions**:
+
+- **TypeScript first** — all code is written in `.ts` / `.tsx`.
+- **Component-driven** — reusable UI follows `shadcn/ui` conventions.
+- **Naming**: kebab-case for files, PascalCase for components.
 
 ---
 
-## 📜 License
+## 🤝 Contribution & Collaboration
 
-MIT License © 2025
+### Branching Model
+
+- `main` → production branch (protected).
+- `dev` → active development branch.
+- feature branches → `feature/<short-description>`
+
+### PR Standards
+
+- PRs must reference an issue.
+- Require at least 1 review before merge.
+- Squash commits for cleaner history.
+
+### Code Review Process
+
+- Linting and tests must pass before merging.
+- Reviews focus on readability, maintainability, and performance.
+
+### Reporting Issues / Requesting Features
+
+- Use [GitHub Issues](../../issues) with proper labels (`bug`, `enhancement`, `question`).
+- For urgent support, contact maintainers (below).
+
+---
+
+## 📜 Licensing & Contact Information
+
+- **License**: MIT License (see [LICENSE](./LICENSE))
+- **Maintainers**:
+  - Project Owner: [Your Name / Org]
+  - Contact: [[email@example.com](mailto:email@example.com)]
+
+---
+
+✨ _zenFocus is more than a timer — it’s a mindful productivity tool designed for simplicity, focus, and calm._
