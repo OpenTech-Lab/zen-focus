@@ -3,8 +3,11 @@
 import React from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import Timer from './Timer';
+import TimerHistory from './TimerHistory';
 import { motion, AnimatePresence, useReducedMotion, type Variants } from 'framer-motion';
 import { ThemeToggle } from './ThemeToggle';
+import { useTimerHistory } from '@/lib/hooks/useTimerHistory';
+import type { TimerSession } from '@/lib/types/timer-history';
 
 const tabsData = [
   {
@@ -63,6 +66,14 @@ const tabContentVariants: Variants = {
 export default function FocusTabs() {
   const [activeTab, setActiveTab] = React.useState('study');
   const shouldReduceMotion = useReducedMotion();
+  const { addSession } = useTimerHistory();
+
+  const handleSessionComplete = React.useCallback(
+    (focusMode: TimerSession['focusMode'], duration: number, completed: boolean) => {
+      addSession(focusMode, duration, completed);
+    },
+    [addSession]
+  );
 
   // Adjust animation variants based on reduced motion preference
   const animationVariants: Variants = shouldReduceMotion
@@ -84,14 +95,15 @@ export default function FocusTabs() {
       <Tabs
         value={activeTab}
         onValueChange={setActiveTab}
-        className="w-full max-w-2xl"
+        className="w-full max-w-4xl"
       >
-        <TabsList className="grid w-full grid-cols-4 mb-12" aria-label="Focus mode selection">
+        <TabsList className="grid w-full grid-cols-5 mb-12" aria-label="Focus mode selection">
           {tabsData.map((tab) => (
             <TabsTrigger key={tab.value} value={tab.value}>
               {tab.label}
             </TabsTrigger>
           ))}
+          <TabsTrigger value="history">History</TabsTrigger>
         </TabsList>
 
         <AnimatePresence mode="wait">
@@ -112,10 +124,31 @@ export default function FocusTabs() {
                 >
                   <h1 className="text-4xl font-bold mb-2">{tab.title}</h1>
                   <p id={`${tab.value}-description`} className="text-lg text-muted-foreground mb-8">{tab.description}</p>
-                  <Timer duration={tab.duration} title={tab.title} />
+                  <Timer
+                    duration={tab.duration}
+                    title={tab.title}
+                    focusMode={tab.value as 'study' | 'work' | 'yoga' | 'meditation'}
+                    onSessionComplete={handleSessionComplete}
+                  />
                 </motion.div>
               </TabsContent>
             )
+          )}
+          {activeTab === 'history' && (
+            <TabsContent
+              key="history"
+              value="history"
+              asChild
+            >
+              <motion.div
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+                variants={animationVariants}
+              >
+                <TimerHistory />
+              </motion.div>
+            </TabsContent>
           )}
         </AnimatePresence>
       </Tabs>

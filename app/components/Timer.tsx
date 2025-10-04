@@ -12,22 +12,48 @@ interface TimerProps {
   duration: number;
   title?: string;
   onComplete?: () => void;
+  focusMode?: 'study' | 'work' | 'yoga' | 'meditation';
+  onSessionComplete?: (focusMode: 'study' | 'work' | 'yoga' | 'meditation', duration: number, completed: boolean) => void;
 }
 
-export default function Timer({ duration, title = 'Focus Session', onComplete }: TimerProps) {
+export default function Timer({ duration, title = 'Focus Session', onComplete, focusMode = 'study', onSessionComplete }: TimerProps) {
   const { timeLeft, isRunning, isComplete, start, pause, reset, setDuration } = useTimer(duration);
   const { notify } = useNotification();
   const prevCompleteRef = useRef(false);
   const prevDurationRef = useRef(duration);
   const [showCustomInput, setShowCustomInput] = useState(false);
+  const startTimeRef = useRef<number | null>(null);
+  const initialDurationRef = useRef(duration);
 
   // Update duration when prop changes (not when custom duration is set)
   useEffect(() => {
     if (duration !== prevDurationRef.current && !isRunning && !isComplete) {
       setDuration(duration);
       prevDurationRef.current = duration;
+      initialDurationRef.current = duration;
     }
   }, [duration, isRunning, isComplete, setDuration]);
+
+  // Track when timer starts running
+  useEffect(() => {
+    if (isRunning && startTimeRef.current === null) {
+      startTimeRef.current = timeLeft;
+      initialDurationRef.current = timeLeft;
+    }
+  }, [isRunning, timeLeft]);
+
+  // Handle session tracking when timer stops (paused or completed)
+  useEffect(() => {
+    if (!isRunning && startTimeRef.current !== null && !isComplete) {
+      // Timer was paused - check if it ran for at least 1 second
+      const timeElapsed = startTimeRef.current - timeLeft;
+      if (timeElapsed >= 1 && onSessionComplete) {
+        const sessionDuration = startTimeRef.current - timeLeft;
+        onSessionComplete(focusMode, sessionDuration, false);
+      }
+      startTimeRef.current = null;
+    }
+  }, [isRunning, timeLeft, isComplete, focusMode, onSessionComplete]);
 
   // Handle completion
   useEffect(() => {
@@ -39,9 +65,17 @@ export default function Timer({ duration, title = 'Focus Session', onComplete }:
       if (onComplete) {
         onComplete();
       }
+      // Track completed session
+      if (startTimeRef.current !== null && onSessionComplete) {
+        const sessionDuration = startTimeRef.current - timeLeft;
+        if (sessionDuration >= 1) {
+          onSessionComplete(focusMode, sessionDuration, true);
+        }
+        startTimeRef.current = null;
+      }
     }
     prevCompleteRef.current = isComplete;
-  }, [isComplete, title, notify, onComplete]);
+  }, [isComplete, title, notify, onComplete, timeLeft, focusMode, onSessionComplete]);
 
   const progress = ((duration - timeLeft) / duration) * 100;
 
