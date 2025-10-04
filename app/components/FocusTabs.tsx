@@ -65,10 +65,13 @@ export default function FocusTabs() {
   const shouldReduceMotion = useReducedMotion();
 
   // Adjust animation variants based on reduced motion preference
-  const animationVariants = shouldReduceMotion
+  const animationVariants: Variants = shouldReduceMotion
     ? {
         hidden: { opacity: 0 },
-        visible: { opacity: 1 },
+        visible: {
+          opacity: 1,
+          transition: { duration: 0.2 }
+        },
         exit: { opacity: 0 }
       }
     : tabContentVariants;
