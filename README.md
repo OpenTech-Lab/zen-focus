@@ -13,7 +13,6 @@ Built with **AWS Amplify Gen 2 + Next.js (App Router) + Tailwind CSS + shadcn/ui
 - **Purpose**: To provide a lightweight, modern web app that promotes focus and mindfulness through customizable timers.
 - **Problem**: Most timer apps are cluttered, overly complex, or lack the flexibility for different focus styles (study, deep work, yoga, meditation).
 - **Target Audience**:
-
   - Students and professionals practicing **deep work**.
   - People who want **guided focus sessions** for productivity.
   - Yoga and meditation practitioners seeking **minimalist timers**.
@@ -27,7 +26,6 @@ Built with **AWS Amplify Gen 2 + Next.js (App Router) + Tailwind CSS + shadcn/ui
 - **Frontend**: Next.js (App Router, React 18, Server & Client Components).
 - **Styling/UI**: Tailwind CSS + shadcn/ui components for consistency and accessibility.
 - **Backend/Hosting**: AWS Amplify Gen 2 (infrastructure-as-code, CI/CD, managed hosting).
-- **Data Layer**: Amplify Data, scalable storage for user preferences and session history.
 
 ### Design Choices
 
@@ -111,7 +109,6 @@ Feature branches can be connected to Amplify **preview environments**.
 ```
 zenfocus/
 ├── app/               # Next.js App Router entry points
-│   ├── (focus)/       # Route groups for timers (study, work, yoga, meditation)
 │   └── layout.tsx     # Root layout
 ├── components/        # Reusable UI components (shadcn/ui + custom)
 ├── lib/               # Utility functions, API clients
@@ -159,7 +156,6 @@ zenfocus/
 
 - **License**: MIT License (see [LICENSE](./LICENSE))
 - **Maintainers**:
-
   - Project Owner: [Your Name / Org]
   - Contact: [[email@example.com](mailto:email@example.com)]
 
