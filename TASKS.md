@@ -17,7 +17,7 @@
 ## Testing
 - [x] Write unit tests for timer logic
 - [x] Write component tests for FocusTabs
-- [ ] Write integration tests for timer controls
+- [x] Write integration tests for timer controls
 
 ## Polish & Optimization
 - [ ] Add animations for tab transitions
