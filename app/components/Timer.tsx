@@ -146,7 +146,7 @@ export default function Timer({ duration, title = 'Focus Session', onComplete }:
       {/* Status Message */}
       {isComplete && (
         <p className="text-lg font-medium text-primary animate-pulse">
-          Time's up! Great work! 🎉
+          Time&apos;s up! Great work! 🎉
         </p>
       )}
     </div>
