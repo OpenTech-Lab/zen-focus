@@ -22,6 +22,11 @@ vi.mock('../Timer', () => ({
   ),
 }));
 
+// Mock the TimerHistory component
+vi.mock('../TimerHistory', () => ({
+  default: () => <div data-testid="timer-history">Timer History</div>,
+}));
+
 // Mock the hooks used by Timer to prevent side effects
 vi.mock('@/lib/hooks/useTimer', () => ({
   useTimer: () => ({
@@ -41,13 +46,29 @@ vi.mock('@/lib/hooks/useNotification', () => ({
   }),
 }));
 
+vi.mock('@/lib/hooks/useTimerHistory', () => ({
+  useTimerHistory: () => ({
+    sessions: [],
+    addSession: vi.fn(),
+    clearHistory: vi.fn(),
+    getStatistics: vi.fn(() => ({
+      totalSessions: 0,
+      completedSessions: 0,
+      totalTimeSpent: 0,
+      currentStreak: 0,
+      longestStreak: 0,
+      sessionsByMode: {},
+    })),
+  }),
+}));
+
 describe('FocusTabs', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
   describe('Tab Rendering', () => {
-    it('should render all 4 tabs correctly', () => {
+    it('should render all 5 tabs correctly', () => {
       render(<FocusTabs />);
 
       // Check that all tab triggers are rendered
@@ -55,6 +76,7 @@ describe('FocusTabs', () => {
       expect(screen.getByRole('tab', { name: /work/i })).toBeInTheDocument();
       expect(screen.getByRole('tab', { name: /yoga/i })).toBeInTheDocument();
       expect(screen.getByRole('tab', { name: /meditation/i })).toBeInTheDocument();
+      expect(screen.getByRole('tab', { name: /history/i })).toBeInTheDocument();
     });
 
     it('should render Study tab as default active tab', () => {
@@ -350,22 +372,23 @@ describe('FocusTabs', () => {
   });
 
   describe('Tabs Layout', () => {
-    it('should render tabs list with grid layout for 4 columns', () => {
+    it('should render tabs list with grid layout for 5 columns', () => {
       const { container } = render(<FocusTabs />);
 
       const tabsList = container.querySelector('[role="tablist"]');
-      expect(tabsList).toHaveClass('grid', 'w-full', 'grid-cols-4', 'mb-12');
+      expect(tabsList).toHaveClass('grid', 'w-full', 'grid-cols-5', 'mb-12');
     });
 
     it('should render all tabs in the correct order', () => {
       render(<FocusTabs />);
 
       const tabs = screen.getAllByRole('tab');
-      expect(tabs).toHaveLength(4);
+      expect(tabs).toHaveLength(5);
       expect(tabs[0]).toHaveTextContent('Study');
       expect(tabs[1]).toHaveTextContent('Work');
       expect(tabs[2]).toHaveTextContent('Yoga');
       expect(tabs[3]).toHaveTextContent('Meditation');
+      expect(tabs[4]).toHaveTextContent('History');
     });
 
     it('should render main container with correct layout classes', () => {

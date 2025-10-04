@@ -11,7 +11,7 @@
 - [x] Add sound notification on timer completion
 - [x] Add visual notification when timer completes
 - [x] Add custom duration input
-- [ ] Add timer history/statistics
+- [x] Add timer history/statistics
 - [x] Add dark/light mode toggle
 
 ## Testing

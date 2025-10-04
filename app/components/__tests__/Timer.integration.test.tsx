@@ -189,6 +189,91 @@ describe('Timer Integration Tests', () => {
 
       expect(onComplete).toHaveBeenCalled();
     });
+
+    it('should call onSessionComplete with completed=true when timer finishes', async () => {
+      const onSessionComplete = vi.fn();
+      render(<Timer duration={3} focusMode="study" onSessionComplete={onSessionComplete} />);
+
+      act(() => {
+        fireEvent.click(screen.getByRole('button', { name: /start/i }));
+      });
+
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(3000);
+      });
+
+      // Wait for useEffect to run
+      await act(async () => {
+        await vi.runAllTimersAsync();
+      });
+
+      expect(onSessionComplete).toHaveBeenCalledWith('study', 3, true);
+    });
+
+    it('should call onSessionComplete with completed=false when timer is paused', async () => {
+      const onSessionComplete = vi.fn();
+      render(<Timer duration={10} focusMode="work" onSessionComplete={onSessionComplete} />);
+
+      act(() => {
+        fireEvent.click(screen.getByRole('button', { name: /start/i }));
+      });
+
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(5000);
+      });
+
+      act(() => {
+        fireEvent.click(screen.getByRole('button', { name: /pause/i }));
+      });
+
+      await act(async () => {
+        await vi.runAllTimersAsync();
+      });
+
+      expect(onSessionComplete).toHaveBeenCalledWith('work', 5, false);
+    });
+
+    it('should not call onSessionComplete if timer runs for less than 1 second', async () => {
+      const onSessionComplete = vi.fn();
+      render(<Timer duration={10} focusMode="yoga" onSessionComplete={onSessionComplete} />);
+
+      act(() => {
+        fireEvent.click(screen.getByRole('button', { name: /start/i }));
+      });
+
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(500);
+      });
+
+      act(() => {
+        fireEvent.click(screen.getByRole('button', { name: /pause/i }));
+      });
+
+      await act(async () => {
+        await vi.runAllTimersAsync();
+      });
+
+      expect(onSessionComplete).not.toHaveBeenCalled();
+    });
+
+    it('should pass correct focus mode to onSessionComplete', async () => {
+      const onSessionComplete = vi.fn();
+      render(<Timer duration={2} focusMode="meditation" onSessionComplete={onSessionComplete} />);
+
+      act(() => {
+        fireEvent.click(screen.getByRole('button', { name: /start/i }));
+      });
+
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(2000);
+      });
+
+      await act(async () => {
+        await vi.runAllTimersAsync();
+      });
+
+      expect(onSessionComplete).toHaveBeenCalledWith('meditation', 2, true);
+    });
   });
 
   describe('Integration between Timer component and useTimer hook', () => {
