@@ -12,7 +12,7 @@
 - [x] Add visual notification when timer completes
 - [x] Add custom duration input
 - [ ] Add timer history/statistics
-- [ ] Add dark/light mode toggle
+- [x] Add dark/light mode toggle
 
 ## Testing
 - [x] Write unit tests for timer logic
@@ -20,7 +20,7 @@
 - [x] Write integration tests for timer controls
 
 ## Polish & Optimization
-- [ ] Add animations for tab transitions
+- [x] Add animations for tab transitions
 - [ ] Optimize performance with React.memo
 - [ ] Add accessibility features (ARIA labels, keyboard navigation)
 - [ ] Add PWA support for offline usage
