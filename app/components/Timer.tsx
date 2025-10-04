@@ -18,12 +18,16 @@ export default function Timer({ duration, title = 'Focus Session', onComplete }:
   const { timeLeft, isRunning, isComplete, start, pause, reset, setDuration } = useTimer(duration);
   const { notify } = useNotification();
   const prevCompleteRef = useRef(false);
+  const prevDurationRef = useRef(duration);
   const [showCustomInput, setShowCustomInput] = useState(false);
 
-  // Update duration when prop changes
-  if (duration !== timeLeft && !isRunning && !isComplete) {
-    setDuration(duration);
-  }
+  // Update duration when prop changes (not when custom duration is set)
+  useEffect(() => {
+    if (duration !== prevDurationRef.current && !isRunning && !isComplete) {
+      setDuration(duration);
+      prevDurationRef.current = duration;
+    }
+  }, [duration, isRunning, isComplete, setDuration]);
 
   // Handle completion
   useEffect(() => {
