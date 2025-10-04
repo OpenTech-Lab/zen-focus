@@ -10,13 +10,13 @@
 ## User Experience
 - [x] Add sound notification on timer completion
 - [x] Add visual notification when timer completes
-- [ ] Add custom duration input
+- [x] Add custom duration input
 - [ ] Add timer history/statistics
 - [ ] Add dark/light mode toggle
 
 ## Testing
 - [x] Write unit tests for timer logic
-- [ ] Write component tests for FocusTabs
+- [x] Write component tests for FocusTabs
 - [ ] Write integration tests for timer controls
 
 ## Polish & Optimization
