@@ -12,7 +12,7 @@
 - [x] Add visual notification when timer completes
 - [x] Add custom duration input
 - [ ] Add timer history/statistics
-- [ ] Add dark/light mode toggle
+- [x] Add dark/light mode toggle
 
 ## Testing
 - [x] Write unit tests for timer logic
