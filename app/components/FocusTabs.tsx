@@ -1,6 +1,7 @@
 'use client';
 
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import Timer from './Timer';
 
 const tabsData = [
   {
@@ -8,24 +9,28 @@ const tabsData = [
     label: 'Study',
     title: 'Study Timer',
     description: 'Focus timer for deep study sessions',
+    duration: 1500, // 25 minutes
   },
   {
     value: 'work',
     label: 'Work',
     title: 'Deep Work Timer',
     description: 'Focused timer for deep work sessions',
+    duration: 3600, // 60 minutes
   },
   {
     value: 'yoga',
     label: 'Yoga',
     title: 'Yoga Timer',
     description: 'Mindful timer for yoga practice',
+    duration: 1800, // 30 minutes
   },
   {
     value: 'meditation',
     label: 'Meditation',
     title: 'Meditation Timer',
     description: 'Calm timer for meditation practice',
+    duration: 600, // 10 minutes
   },
 ];
 
@@ -43,8 +48,9 @@ export default function FocusTabs() {
 
         {tabsData.map((tab) => (
           <TabsContent key={tab.value} value={tab.value} className="text-center">
-            <h1 className="text-4xl font-bold mb-4">{tab.title}</h1>
-            <p className="text-lg text-muted-foreground">{tab.description}</p>
+            <h1 className="text-4xl font-bold mb-2">{tab.title}</h1>
+            <p className="text-lg text-muted-foreground mb-8">{tab.description}</p>
+            <Timer duration={tab.duration} title={tab.title} />
           </TabsContent>
         ))}
       </Tabs>
