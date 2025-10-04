@@ -155,9 +155,6 @@ zenfocus/
 ## 📜 Licensing & Contact Information
 
 - **License**: MIT License (see [LICENSE](./LICENSE))
-- **Maintainers**:
-  - Project Owner: [Your Name / Org]
-  - Contact: [[email@example.com](mailto:email@example.com)]
 
 ---
 
