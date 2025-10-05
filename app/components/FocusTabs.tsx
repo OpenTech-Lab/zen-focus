@@ -4,7 +4,7 @@ import React from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import Timer from './Timer';
 import TimerHistory from './TimerHistory';
-import { motion, AnimatePresence, useReducedMotion, type Variants } from 'framer-motion';
+import { motion, useReducedMotion, type Variants } from 'framer-motion';
 import { ThemeToggle } from './ThemeToggle';
 import { useTimerHistory } from '@/lib/hooks/useTimerHistory';
 import type { TimerSession } from '@/lib/types/timer-history';
@@ -106,51 +106,41 @@ export default function FocusTabs() {
           <TabsTrigger value="history">History</TabsTrigger>
         </TabsList>
 
-        <AnimatePresence mode="wait">
-          {tabsData.map((tab) =>
-            activeTab === tab.value && (
-              <TabsContent
-                key={tab.value}
-                value={tab.value}
-                className="text-center"
-                asChild
-              >
-                <motion.div
-                  initial="hidden"
-                  animate="visible"
-                  exit="exit"
-                  variants={animationVariants}
-                  aria-describedby={`${tab.value}-description`}
-                >
-                  <h1 className="text-4xl font-bold mb-2">{tab.title}</h1>
-                  <p id={`${tab.value}-description`} className="text-lg text-muted-foreground mb-8">{tab.description}</p>
-                  <Timer
-                    duration={tab.duration}
-                    title={tab.title}
-                    focusMode={tab.value as 'study' | 'work' | 'yoga' | 'meditation'}
-                    onSessionComplete={handleSessionComplete}
-                  />
-                </motion.div>
-              </TabsContent>
-            )
-          )}
-          {activeTab === 'history' && (
-            <TabsContent
-              key="history"
-              value="history"
-              asChild
+        {tabsData.map((tab) => (
+          <TabsContent
+            key={tab.value}
+            value={tab.value}
+            className="text-center"
+          >
+            <motion.div
+              initial="hidden"
+              animate="visible"
+              variants={animationVariants}
+              aria-describedby={`${tab.value}-description`}
             >
-              <motion.div
-                initial="hidden"
-                animate="visible"
-                exit="exit"
-                variants={animationVariants}
-              >
-                <TimerHistory />
-              </motion.div>
-            </TabsContent>
-          )}
-        </AnimatePresence>
+              <h1 className="text-4xl font-bold mb-2">{tab.title}</h1>
+              <p id={`${tab.value}-description`} className="text-lg text-muted-foreground mb-8">{tab.description}</p>
+              <Timer
+                duration={tab.duration}
+                title={tab.title}
+                focusMode={tab.value as 'study' | 'work' | 'yoga' | 'meditation'}
+                onSessionComplete={handleSessionComplete}
+              />
+            </motion.div>
+          </TabsContent>
+        ))}
+        <TabsContent
+          key="history"
+          value="history"
+        >
+          <motion.div
+            initial="hidden"
+            animate="visible"
+            variants={animationVariants}
+          >
+            <TimerHistory />
+          </motion.div>
+        </TabsContent>
       </Tabs>
     </div>
   );
