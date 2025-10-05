@@ -2,14 +2,49 @@
 
 import { useEffect, useState } from "react";
 
+/**
+ * Offline indicator component that displays a notification when the user loses internet connectivity.
+ *
+ * This component monitors the browser's online/offline status using the Navigator API
+ * and window events. It displays a fixed notification banner at the bottom of the screen
+ * when the user goes offline.
+ *
+ * @component
+ *
+ * @remarks
+ * - Uses browser's Navigator.onLine API to detect connectivity status
+ * - Listens to 'online' and 'offline' window events for real-time updates
+ * - Only renders when offline (returns null when online)
+ * - Positioned fixed at bottom center of viewport
+ * - Important for PWA functionality to inform users of offline capability
+ *
+ * @example
+ * ```tsx
+ * // Add to root layout or main app component
+ * <OfflineIndicator />
+ * ```
+ *
+ * @returns {React.ReactElement | null} An offline notification banner or null if online
+ */
 export function OfflineIndicator() {
+  /**
+   * Tracks the online/offline status of the browser.
+   * @type {[boolean, React.Dispatch<React.SetStateAction<boolean>>]}
+   */
   const [isOnline, setIsOnline] = useState(true);
 
   useEffect(() => {
     // Set initial online status
     setIsOnline(navigator.onLine);
 
+    /**
+     * Event handler for when connection is restored.
+     */
     const handleOnline = () => setIsOnline(true);
+
+    /**
+     * Event handler for when connection is lost.
+     */
     const handleOffline = () => setIsOnline(false);
 
     window.addEventListener("online", handleOnline);

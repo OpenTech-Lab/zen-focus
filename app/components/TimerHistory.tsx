@@ -19,6 +19,18 @@ import { formatDuration } from '@/lib/utils/formatDuration';
 import { formatRelativeTime } from '@/lib/utils/formatRelativeTime';
 import { Trash2, TrendingUp, Calendar, Clock, Target, Flame } from 'lucide-react';
 
+/**
+ * Configuration for focus mode display properties.
+ * Maps each focus mode to its label and color styling.
+ *
+ * @constant
+ * @type {Object.<string, {label: string, color: string}>}
+ *
+ * @property {object} study - Study mode configuration with blue theme
+ * @property {object} work - Work mode configuration with purple theme
+ * @property {object} yoga - Yoga mode configuration with green theme
+ * @property {object} meditation - Meditation mode configuration with amber theme
+ */
 const focusModeConfig = {
   study: { label: 'Study', color: 'bg-blue-500/10 text-blue-600 dark:text-blue-400' },
   work: { label: 'Work', color: 'bg-purple-500/10 text-purple-600 dark:text-purple-400' },
@@ -26,13 +38,63 @@ const focusModeConfig = {
   meditation: { label: 'Meditation', color: 'bg-amber-500/10 text-amber-600 dark:text-amber-400' },
 } as const;
 
+/**
+ * Timer history and statistics display component.
+ *
+ * This component displays user's timer session history and productivity statistics.
+ * It shows an analytics dashboard with metrics like total sessions, completion rate,
+ * time spent, and streaks, along with the 10 most recent timer sessions.
+ *
+ * @component
+ *
+ * @remarks
+ * - Displays comprehensive statistics dashboard including:
+ *   - Total sessions count
+ *   - Completed sessions count
+ *   - Total time spent across all sessions
+ *   - Current and longest streaks
+ *   - Sessions breakdown by focus mode
+ * - Shows 10 most recent sessions with details
+ * - Includes confirmation dialog for clearing history
+ * - Uses memoization for performance optimization
+ * - Responsive design with grid layout
+ * - Empty state when no sessions exist
+ *
+ * @example
+ * ```tsx
+ * // Display in History tab
+ * <TimerHistory />
+ * ```
+ *
+ * @returns {React.ReactElement} Statistics dashboard and recent sessions list
+ */
 function TimerHistory() {
   const { sessions, clearHistory, getStatistics } = useTimerHistory();
+
+  /**
+   * Controls the visibility of the clear history confirmation dialog.
+   * @type {[boolean, React.Dispatch<React.SetStateAction<boolean>>]}
+   */
   const [dialogOpen, setDialogOpen] = useState(false);
+
+  /**
+   * Computed statistics from all timer sessions.
+   * @type {object}
+   */
   const statistics = getStatistics();
 
+  /**
+   * Memoized list of the 10 most recent sessions.
+   * Updates only when sessions array changes.
+   *
+   * @type {Array}
+   */
   const recentSessions = useMemo(() => sessions.slice(0, 10), [sessions]);
 
+  /**
+   * Handles clearing all timer history.
+   * Confirms deletion and closes the dialog.
+   */
   const handleClearHistory = () => {
     clearHistory();
     setDialogOpen(false);
