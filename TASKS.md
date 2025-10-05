@@ -28,5 +28,5 @@
 
 ## Documentation
 - [x] Add JSDoc comments to components
-- [ ] Create API documentation
+- [x] Create API documentation
 - [ ] Add contributing guidelines
