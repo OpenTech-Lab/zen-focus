@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useTimerHistory } from '@/lib/hooks/useTimerHistory';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -26,12 +26,12 @@ const focusModeConfig = {
   meditation: { label: 'Meditation', color: 'bg-amber-500/10 text-amber-600 dark:text-amber-400' },
 } as const;
 
-export default function TimerHistory() {
+function TimerHistory() {
   const { sessions, clearHistory, getStatistics } = useTimerHistory();
   const [dialogOpen, setDialogOpen] = useState(false);
   const statistics = getStatistics();
 
-  const recentSessions = sessions.slice(0, 10);
+  const recentSessions = useMemo(() => sessions.slice(0, 10), [sessions]);
 
   const handleClearHistory = () => {
     clearHistory();
@@ -202,3 +202,5 @@ export default function TimerHistory() {
     </div>
   );
 }
+
+export default TimerHistory;
