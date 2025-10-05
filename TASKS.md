@@ -27,6 +27,6 @@
 - [x] Add SEO metadata
 
 ## Documentation
-- [ ] Add JSDoc comments to components
+- [x] Add JSDoc comments to components
 - [ ] Create API documentation
 - [ ] Add contributing guidelines
