@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, memo } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Check, X } from 'lucide-react';
@@ -14,7 +14,7 @@ interface DurationInputProps {
   className?: string;
 }
 
-export default function DurationInput({
+const DurationInput = memo(function DurationInput({
   onDurationSet,
   onCancel,
   defaultValue,
@@ -97,4 +97,6 @@ export default function DurationInput({
       </p>
     </div>
   );
-}
+});
+
+export default DurationInput;

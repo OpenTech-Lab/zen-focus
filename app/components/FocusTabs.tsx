@@ -3,6 +3,11 @@
 import React from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import Timer from './Timer';
+import TimerHistory from './TimerHistory';
+import { motion, useReducedMotion, type Variants } from 'framer-motion';
+import { ThemeToggle } from './ThemeToggle';
+import { useTimerHistory } from '@/lib/hooks/useTimerHistory';
+import type { TimerSession } from '@/lib/types/timer-history';
 
 const tabsData = [
   {
@@ -35,25 +40,107 @@ const tabsData = [
   },
 ];
 
+// Animation variants for tab content transitions
+const tabContentVariants: Variants = {
+  hidden: {
+    opacity: 0,
+    y: 10,
+  },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.25,
+      ease: [0.4, 0, 0.2, 1], // Custom easing for smooth animation
+    },
+  },
+  exit: {
+    opacity: 0,
+    y: -10,
+    transition: {
+      duration: 0.2,
+    },
+  },
+};
+
 export default function FocusTabs() {
+  const [activeTab, setActiveTab] = React.useState('study');
+  const shouldReduceMotion = useReducedMotion();
+  const { addSession } = useTimerHistory();
+
+  const handleSessionComplete = React.useCallback(
+    (focusMode: TimerSession['focusMode'], duration: number, completed: boolean) => {
+      addSession(focusMode, duration, completed);
+    },
+    [addSession]
+  );
+
+  // Adjust animation variants based on reduced motion preference
+  const animationVariants: Variants = shouldReduceMotion
+    ? {
+        hidden: { opacity: 0 },
+        visible: {
+          opacity: 1,
+          transition: { duration: 0.2 }
+        },
+        exit: { opacity: 0 }
+      }
+    : tabContentVariants;
+
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center p-8 sm:p-24">
-      <Tabs defaultValue="study" className="w-full max-w-2xl">
-        <TabsList className="grid w-full grid-cols-4 mb-12">
+    <div className="relative flex min-h-screen flex-col items-center justify-center p-8 sm:p-24">
+      <div className="absolute top-4 right-4 sm:top-8 sm:right-8">
+        <ThemeToggle />
+      </div>
+      <Tabs
+        value={activeTab}
+        onValueChange={setActiveTab}
+        className="w-full max-w-4xl"
+      >
+        <TabsList className="grid w-full grid-cols-5 mb-12" aria-label="Focus mode selection">
           {tabsData.map((tab) => (
             <TabsTrigger key={tab.value} value={tab.value}>
               {tab.label}
             </TabsTrigger>
           ))}
+          <TabsTrigger value="history">History</TabsTrigger>
         </TabsList>
 
         {tabsData.map((tab) => (
-          <TabsContent key={tab.value} value={tab.value} className="text-center">
-            <h1 className="text-4xl font-bold mb-2">{tab.title}</h1>
-            <p className="text-lg text-muted-foreground mb-8">{tab.description}</p>
-            <Timer duration={tab.duration} title={tab.title} />
+          <TabsContent
+            key={tab.value}
+            value={tab.value}
+            className="text-center"
+          >
+            <motion.div
+              initial="hidden"
+              animate="visible"
+              variants={animationVariants}
+              aria-describedby={`${tab.value}-description`}
+            >
+              <h1 className="text-4xl font-bold mb-2">{tab.title}</h1>
+              <p id={`${tab.value}-description`} className="text-lg text-muted-foreground mb-8">{tab.description}</p>
+              <Timer
+                duration={tab.duration}
+                title={tab.title}
+                focusMode={tab.value as 'study' | 'work' | 'yoga' | 'meditation'}
+                onSessionComplete={handleSessionComplete}
+              />
+            </motion.div>
           </TabsContent>
         ))}
+        <TabsContent
+          key="history"
+          value="history"
+        >
+          <motion.div
+            initial="hidden"
+            animate="visible"
+            variants={animationVariants}
+          >
+            <TimerHistory />
+          </motion.div>
+        </TabsContent>
       </Tabs>
     </div>
   );
