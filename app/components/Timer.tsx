@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, memo, useCallback } from 'react';
 import { useTimer } from '@/lib/hooks/useTimer';
 import { useNotification } from '@/lib/hooks/useNotification';
 import { formatTime } from '@/lib/utils/formatTime';
@@ -16,7 +16,7 @@ interface TimerProps {
   onSessionComplete?: (focusMode: 'study' | 'work' | 'yoga' | 'meditation', duration: number, completed: boolean) => void;
 }
 
-export default function Timer({ duration, title = 'Focus Session', onComplete, focusMode = 'study', onSessionComplete }: TimerProps) {
+const Timer = memo(function Timer({ duration, title = 'Focus Session', onComplete, focusMode = 'study', onSessionComplete }: TimerProps) {
   const { timeLeft, isRunning, isComplete, start, pause, reset, setDuration } = useTimer(duration);
   const { notify } = useNotification();
   const prevCompleteRef = useRef(false);
@@ -79,10 +79,10 @@ export default function Timer({ duration, title = 'Focus Session', onComplete, f
 
   const progress = ((duration - timeLeft) / duration) * 100;
 
-  const handleCustomDuration = (newDuration: number) => {
+  const handleCustomDuration = useCallback((newDuration: number) => {
     setDuration(newDuration);
     setShowCustomInput(false);
-  };
+  }, [setDuration]);
 
   return (
     <div className="flex flex-col items-center gap-8">
@@ -185,4 +185,6 @@ export default function Timer({ duration, title = 'Focus Session', onComplete, f
       )}
     </div>
   );
-}
+});
+
+export default Timer;
