@@ -65,6 +65,7 @@ amplifyconfiguration.dart
 amplify-build-config.json
 amplify-gradle-config.json
 amplifytools.xcconfig
+amplify_outputs.json
 .secret-*
 **.sample
 
