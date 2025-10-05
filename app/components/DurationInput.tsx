@@ -7,6 +7,16 @@ import { Check, X } from 'lucide-react';
 import { parseDurationInput, validateDurationInput } from '@/lib/utils/durationInput';
 import { cn } from '@/lib/utils';
 
+/**
+ * Props for the DurationInput component.
+ *
+ * @interface DurationInputProps
+ *
+ * @property {(durationInSeconds: number) => void} onDurationSet - Callback invoked when a valid duration is set
+ * @property {() => void} onCancel - Callback invoked when the input is cancelled
+ * @property {number} [defaultValue] - Optional default duration value in seconds to pre-populate the input
+ * @property {string} [className] - Optional CSS class name for styling the component container
+ */
 interface DurationInputProps {
   onDurationSet: (durationInSeconds: number) => void;
   onCancel: () => void;
@@ -14,13 +24,52 @@ interface DurationInputProps {
   className?: string;
 }
 
+/**
+ * Duration input component for setting custom timer durations.
+ *
+ * This component provides a flexible input field for users to enter timer durations
+ * in various formats (minutes, MM:SS, or HH:MM:SS). It includes validation, error
+ * handling, and keyboard shortcuts for improved user experience.
+ *
+ * @component
+ *
+ * @remarks
+ * - Accepts multiple input formats: minutes (e.g., "25"), MM:SS (e.g., "25:30"), or HH:MM:SS
+ * - Validates input and displays error messages for invalid durations
+ * - Supports keyboard shortcuts: Enter to submit, Escape to cancel
+ * - Auto-focuses the input field when mounted
+ * - Converts defaultValue from seconds to user-friendly format
+ * - Memoized to prevent unnecessary re-renders
+ *
+ * @param {DurationInputProps} props - Component props
+ *
+ * @example
+ * ```tsx
+ * <DurationInput
+ *   onDurationSet={(seconds) => console.log('Duration set:', seconds)}
+ *   onCancel={() => console.log('Cancelled')}
+ *   defaultValue={1500} // 25 minutes
+ * />
+ * ```
+ *
+ * @returns {React.ReactElement} Duration input form with validation
+ */
 const DurationInput = memo(function DurationInput({
   onDurationSet,
   onCancel,
   defaultValue,
   className,
 }: DurationInputProps) {
+  /**
+   * Current value of the duration input field.
+   * @type {[string, React.Dispatch<React.SetStateAction<string>>]}
+   */
   const [inputValue, setInputValue] = useState('');
+
+  /**
+   * Validation error message, if any.
+   * @type {[string | undefined, React.Dispatch<React.SetStateAction<string | undefined>>]}
+   */
   const [error, setError] = useState<string | undefined>();
 
   useEffect(() => {
@@ -32,6 +81,11 @@ const DurationInput = memo(function DurationInput({
     }
   }, [defaultValue]);
 
+  /**
+   * Handles form submission.
+   * Parses and validates the input, then calls onDurationSet if valid.
+   * Displays error message if validation fails.
+   */
   const handleSubmit = () => {
     const durationInSeconds = parseDurationInput(inputValue);
     const validation = validateDurationInput(durationInSeconds);
@@ -45,6 +99,12 @@ const DurationInput = memo(function DurationInput({
     onDurationSet(durationInSeconds);
   };
 
+  /**
+   * Handles keyboard events on the input field.
+   * Enter key submits the form, Escape key cancels.
+   *
+   * @param {React.KeyboardEvent<HTMLInputElement>} e - Keyboard event
+   */
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       handleSubmit();
