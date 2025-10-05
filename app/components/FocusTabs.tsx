@@ -9,6 +9,13 @@ import { ThemeToggle } from './ThemeToggle';
 import { useTimerHistory } from '@/lib/hooks/useTimerHistory';
 import type { TimerSession } from '@/lib/types/timer-history';
 
+/**
+ * Tab configuration data for different focus modes.
+ * Defines the available timer types with their settings.
+ *
+ * @constant
+ * @type {Array<{value: string, label: string, title: string, description: string, duration: number}>}
+ */
 const tabsData = [
   {
     value: 'study',
@@ -40,7 +47,17 @@ const tabsData = [
   },
 ];
 
-// Animation variants for tab content transitions
+/**
+ * Framer Motion animation variants for tab content transitions.
+ * Provides smooth fade and slide animations when switching tabs.
+ *
+ * @constant
+ * @type {Variants}
+ *
+ * @property {object} hidden - Initial state before animation
+ * @property {object} visible - Animated-in state with easing
+ * @property {object} exit - Exit animation state
+ */
 const tabContentVariants: Variants = {
   hidden: {
     opacity: 0,
@@ -63,11 +80,61 @@ const tabContentVariants: Variants = {
   },
 };
 
+/**
+ * Main tabbed interface component for the focus timer application.
+ *
+ * This component provides a tabbed interface with different focus modes (Study, Work,
+ * Yoga, Meditation) and a history view. Each tab contains a timer configured for its
+ * specific purpose, with smooth animations between tab switches.
+ *
+ * @component
+ *
+ * @remarks
+ * - Includes 4 focus mode tabs and 1 history tab
+ * - Each focus mode has a pre-configured timer duration
+ * - Integrates with timer history tracking system
+ * - Respects user's reduced motion preferences (prefers-reduced-motion)
+ * - Displays theme toggle in top-right corner
+ * - Uses Framer Motion for smooth tab transitions
+ * - Fully accessible with ARIA labels
+ *
+ * @example
+ * ```tsx
+ * // Main app component
+ * export default function App() {
+ *   return <FocusTabs />;
+ * }
+ * ```
+ *
+ * @returns {React.ReactElement} Tabbed interface with timers and history view
+ */
 export default function FocusTabs() {
+  /**
+   * Currently active tab value.
+   * @type {[string, React.Dispatch<React.SetStateAction<string>>]}
+   */
   const [activeTab, setActiveTab] = React.useState('study');
+
+  /**
+   * User's motion preference from browser settings.
+   * @type {boolean | null}
+   */
   const shouldReduceMotion = useReducedMotion();
+
+  /**
+   * Hook to add timer sessions to history.
+   * @type {{ addSession: (focusMode: TimerSession['focusMode'], duration: number, completed: boolean) => void }}
+   */
   const { addSession } = useTimerHistory();
 
+  /**
+   * Handles completion of a timer session.
+   * Adds the session to history with focus mode, duration, and completion status.
+   *
+   * @param {TimerSession['focusMode']} focusMode - Type of focus session
+   * @param {number} duration - Session duration in seconds
+   * @param {boolean} completed - Whether session was completed or paused
+   */
   const handleSessionComplete = React.useCallback(
     (focusMode: TimerSession['focusMode'], duration: number, completed: boolean) => {
       addSession(focusMode, duration, completed);
@@ -75,7 +142,12 @@ export default function FocusTabs() {
     [addSession]
   );
 
-  // Adjust animation variants based on reduced motion preference
+  /**
+   * Animation variants adjusted for user's reduced motion preference.
+   * Uses simple opacity-only transitions if reduced motion is preferred.
+   *
+   * @type {Variants}
+   */
   const animationVariants: Variants = shouldReduceMotion
     ? {
         hidden: { opacity: 0 },
