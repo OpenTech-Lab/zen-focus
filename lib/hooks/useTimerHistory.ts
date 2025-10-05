@@ -35,7 +35,7 @@ export function useTimerHistory() {
     completed: boolean
   ) => {
     const newSession: TimerSession = {
-      id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      id: `${Date.now()}-${Math.random().toString(36).slice(2, 11)}`,
       focusMode,
       duration,
       completedAt: new Date().toISOString(),
