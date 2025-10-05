@@ -23,7 +23,7 @@
 - [x] Add animations for tab transitions
 - [x] Optimize performance with React.memo
 - [x] Add accessibility features (ARIA labels, keyboard navigation)
-- [ ] Add PWA support for offline usage
+- [x] Add PWA support for offline usage
 - [ ] Add SEO metadata
 
 ## Documentation
