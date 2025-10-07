@@ -29,4 +29,4 @@
 ## Documentation
 - [x] Add JSDoc comments to components
 - [x] Create API documentation
-- [ ] Add contributing guidelines
+- [x] Add contributing guidelines
