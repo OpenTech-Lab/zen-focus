@@ -7,6 +7,7 @@ import { formatTime } from '@/lib/utils/formatTime';
 import { Button } from '@/components/ui/button';
 import { Play, Pause, RotateCcw, Clock } from 'lucide-react';
 import DurationInput from './DurationInput';
+import type { FocusMode } from '@/lib/constants/focus-modes';
 
 /**
  * Props for the Timer component.
@@ -16,15 +17,15 @@ import DurationInput from './DurationInput';
  * @property {number} duration - Initial timer duration in seconds
  * @property {string} [title='Focus Session'] - Title displayed in completion notification
  * @property {() => void} [onComplete] - Optional callback invoked when timer completes
- * @property {'study' | 'work' | 'yoga' | 'meditation'} [focusMode='study'] - Type of focus session
- * @property {(focusMode: 'study' | 'work' | 'yoga' | 'meditation', duration: number, completed: boolean) => void} [onSessionComplete] - Callback for tracking session completion with mode, duration, and completion status
+ * @property {FocusMode} [focusMode='study'] - Type of focus session
+ * @property {(focusMode: FocusMode, duration: number, completed: boolean) => void} [onSessionComplete] - Callback for tracking session completion with mode, duration, and completion status
  */
 interface TimerProps {
   duration: number;
   title?: string;
   onComplete?: () => void;
-  focusMode?: 'study' | 'work' | 'yoga' | 'meditation';
-  onSessionComplete?: (focusMode: 'study' | 'work' | 'yoga' | 'meditation', duration: number, completed: boolean) => void;
+  focusMode?: FocusMode;
+  onSessionComplete?: (focusMode: FocusMode, duration: number, completed: boolean) => void;
 }
 
 /**

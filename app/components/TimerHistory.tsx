@@ -18,25 +18,8 @@ import { formatTime } from '@/lib/utils/formatTime';
 import { formatDuration } from '@/lib/utils/formatDuration';
 import { formatRelativeTime } from '@/lib/utils/formatRelativeTime';
 import { Trash2, TrendingUp, Calendar, Clock, Target, Flame } from 'lucide-react';
+import { FOCUS_MODE_CONFIG, type FocusMode } from '@/lib/constants/focus-modes';
 
-/**
- * Configuration for focus mode display properties.
- * Maps each focus mode to its label and color styling.
- *
- * @constant
- * @type {Object.<string, {label: string, color: string}>}
- *
- * @property {object} study - Study mode configuration with blue theme
- * @property {object} work - Work mode configuration with purple theme
- * @property {object} yoga - Yoga mode configuration with green theme
- * @property {object} meditation - Meditation mode configuration with amber theme
- */
-const focusModeConfig = {
-  study: { label: 'Study', color: 'bg-blue-500/10 text-blue-600 dark:text-blue-400' },
-  work: { label: 'Work', color: 'bg-purple-500/10 text-purple-600 dark:text-purple-400' },
-  yoga: { label: 'Yoga', color: 'bg-green-500/10 text-green-600 dark:text-green-400' },
-  meditation: { label: 'Meditation', color: 'bg-amber-500/10 text-amber-600 dark:text-amber-400' },
-} as const;
 
 /**
  * Timer history and statistics display component.
@@ -168,9 +151,9 @@ function TimerHistory() {
                   <Badge
                     key={mode}
                     variant="secondary"
-                    className={focusModeConfig[mode as keyof typeof focusModeConfig]?.color}
+                    className={FOCUS_MODE_CONFIG[mode as FocusMode]?.color}
                   >
-                    {focusModeConfig[mode as keyof typeof focusModeConfig]?.label || mode}: {count}
+                    {FOCUS_MODE_CONFIG[mode as FocusMode]?.label || mode}: {count}
                   </Badge>
                 ))}
               </div>
@@ -236,9 +219,9 @@ function TimerHistory() {
                   <div className="flex items-center gap-3 flex-1">
                     <Badge
                       variant="secondary"
-                      className={focusModeConfig[session.focusMode]?.color}
+                      className={FOCUS_MODE_CONFIG[session.focusMode]?.color}
                     >
-                      {focusModeConfig[session.focusMode]?.label}
+                      {FOCUS_MODE_CONFIG[session.focusMode]?.label}
                     </Badge>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
