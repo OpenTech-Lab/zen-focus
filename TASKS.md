@@ -41,3 +41,4 @@
 ## R1
 
 [x] combine study, work, yoga, mediation into 1 feature.
+[x] add a new feature with new tab. User can enter time and number of times, to that it will work as like many timers.

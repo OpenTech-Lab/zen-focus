@@ -4,6 +4,7 @@ import React from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import Timer from './Timer';
 import TimerHistory from './TimerHistory';
+import RepeatTimer from './RepeatTimer';
 import FocusModeSelector from './FocusModeSelector';
 import { motion, useReducedMotion, type Variants } from 'framer-motion';
 import { ThemeToggle } from './ThemeToggle';
@@ -145,8 +146,9 @@ export default function FocusTabs() {
         onValueChange={setActiveTab}
         className="w-full max-w-4xl"
       >
-        <TabsList className="grid w-full grid-cols-2 mb-12" aria-label="Focus mode selection">
+        <TabsList className="grid w-full grid-cols-3 mb-12" aria-label="Focus mode selection">
           <TabsTrigger value="focus">Focus</TabsTrigger>
+          <TabsTrigger value="intervals">Intervals</TabsTrigger>
           <TabsTrigger value="history">History</TabsTrigger>
         </TabsList>
 
@@ -174,6 +176,16 @@ export default function FocusTabs() {
               focusMode={selectedMode}
               onSessionComplete={handleSessionComplete}
             />
+          </motion.div>
+        </TabsContent>
+
+        <TabsContent value="intervals" className="text-center">
+          <motion.div
+            initial="hidden"
+            animate="visible"
+            variants={animationVariants}
+          >
+            <RepeatTimer onSessionComplete={handleSessionComplete} />
           </motion.div>
         </TabsContent>
 
