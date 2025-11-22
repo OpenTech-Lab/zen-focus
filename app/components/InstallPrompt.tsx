@@ -2,17 +2,69 @@
 
 import { useEffect, useState } from "react";
 
+/**
+ * Custom event interface for the browser's beforeinstallprompt event.
+ *
+ * This extends the standard Event interface to include PWA installation
+ * methods that are part of the Web App Install API.
+ *
+ * @interface BeforeInstallPromptEvent
+ * @extends {Event}
+ *
+ * @property {() => Promise<void>} prompt - Shows the browser's install prompt
+ * @property {Promise<{outcome: "accepted" | "dismissed"}>} userChoice - Resolves with user's installation choice
+ */
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
   userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
 }
 
+/**
+ * PWA installation prompt component that displays when the app can be installed.
+ *
+ * This component listens for the browser's beforeinstallprompt event and displays
+ * a custom installation prompt UI when the PWA installation criteria are met.
+ * It provides a user-friendly interface to install the app to the device.
+ *
+ * @component
+ *
+ * @remarks
+ * - Only displays when PWA installation is available (beforeinstallprompt event fires)
+ * - Automatically prevents the browser's default mini-infobar on mobile
+ * - Shows a fixed banner at the bottom of the viewport
+ * - Allows users to install or dismiss the prompt
+ * - The prompt can only be used once per page load
+ * - Works with Chrome, Edge, and other Chromium-based browsers
+ *
+ * @example
+ * ```tsx
+ * // Add to root layout for PWA install functionality
+ * <InstallPrompt />
+ * ```
+ *
+ * @returns {React.ReactElement | null} Installation prompt UI or null if not available
+ */
 export function InstallPrompt() {
+  /**
+   * Stores the deferred beforeinstallprompt event for later use.
+   * @type {[BeforeInstallPromptEvent | null, React.Dispatch<React.SetStateAction<BeforeInstallPromptEvent | null>>]}
+   */
   const [deferredPrompt, setDeferredPrompt] =
     useState<BeforeInstallPromptEvent | null>(null);
+
+  /**
+   * Controls the visibility of the installation prompt UI.
+   * @type {[boolean, React.Dispatch<React.SetStateAction<boolean>>]}
+   */
   const [showInstallPrompt, setShowInstallPrompt] = useState(false);
 
   useEffect(() => {
+    /**
+     * Handles the beforeinstallprompt event from the browser.
+     * Prevents default behavior, stores the event, and shows custom prompt.
+     *
+     * @param {Event} e - The beforeinstallprompt event
+     */
     const handleBeforeInstallPrompt = (e: Event) => {
       // Prevent the mini-infobar from appearing on mobile
       e.preventDefault();
@@ -32,6 +84,18 @@ export function InstallPrompt() {
     };
   }, []);
 
+  /**
+   * Handles the install button click.
+   * Triggers the browser's installation prompt and waits for user response.
+   *
+   * @async
+   * @returns {Promise<void>}
+   *
+   * @remarks
+   * - Does nothing if deferredPrompt is not available
+   * - Clears the prompt after use (can only be used once)
+   * - Hides the custom UI regardless of user choice
+   */
   const handleInstallClick = async () => {
     if (!deferredPrompt) {
       return;
@@ -49,6 +113,10 @@ export function InstallPrompt() {
     setShowInstallPrompt(false);
   };
 
+  /**
+   * Handles dismissing the installation prompt.
+   * Hides the custom UI but keeps the deferred prompt for potential later use.
+   */
   const handleDismiss = () => {
     setShowInstallPrompt(false);
   };

@@ -18,21 +18,66 @@ import { formatTime } from '@/lib/utils/formatTime';
 import { formatDuration } from '@/lib/utils/formatDuration';
 import { formatRelativeTime } from '@/lib/utils/formatRelativeTime';
 import { Trash2, TrendingUp, Calendar, Clock, Target, Flame } from 'lucide-react';
+import { FOCUS_MODE_CONFIG, type FocusMode } from '@/lib/constants/focus-modes';
 
-const focusModeConfig = {
-  study: { label: 'Study', color: 'bg-blue-500/10 text-blue-600 dark:text-blue-400' },
-  work: { label: 'Work', color: 'bg-purple-500/10 text-purple-600 dark:text-purple-400' },
-  yoga: { label: 'Yoga', color: 'bg-green-500/10 text-green-600 dark:text-green-400' },
-  meditation: { label: 'Meditation', color: 'bg-amber-500/10 text-amber-600 dark:text-amber-400' },
-} as const;
 
+/**
+ * Timer history and statistics display component.
+ *
+ * This component displays user's timer session history and productivity statistics.
+ * It shows an analytics dashboard with metrics like total sessions, completion rate,
+ * time spent, and streaks, along with the 10 most recent timer sessions.
+ *
+ * @component
+ *
+ * @remarks
+ * - Displays comprehensive statistics dashboard including:
+ *   - Total sessions count
+ *   - Completed sessions count
+ *   - Total time spent across all sessions
+ *   - Current and longest streaks
+ *   - Sessions breakdown by focus mode
+ * - Shows 10 most recent sessions with details
+ * - Includes confirmation dialog for clearing history
+ * - Uses memoization for performance optimization
+ * - Responsive design with grid layout
+ * - Empty state when no sessions exist
+ *
+ * @example
+ * ```tsx
+ * // Display in History tab
+ * <TimerHistory />
+ * ```
+ *
+ * @returns {React.ReactElement} Statistics dashboard and recent sessions list
+ */
 function TimerHistory() {
   const { sessions, clearHistory, getStatistics } = useTimerHistory();
+
+  /**
+   * Controls the visibility of the clear history confirmation dialog.
+   * @type {[boolean, React.Dispatch<React.SetStateAction<boolean>>]}
+   */
   const [dialogOpen, setDialogOpen] = useState(false);
+
+  /**
+   * Computed statistics from all timer sessions.
+   * @type {object}
+   */
   const statistics = getStatistics();
 
+  /**
+   * Memoized list of the 10 most recent sessions.
+   * Updates only when sessions array changes.
+   *
+   * @type {Array}
+   */
   const recentSessions = useMemo(() => sessions.slice(0, 10), [sessions]);
 
+  /**
+   * Handles clearing all timer history.
+   * Confirms deletion and closes the dialog.
+   */
   const handleClearHistory = () => {
     clearHistory();
     setDialogOpen(false);
@@ -106,9 +151,9 @@ function TimerHistory() {
                   <Badge
                     key={mode}
                     variant="secondary"
-                    className={focusModeConfig[mode as keyof typeof focusModeConfig]?.color}
+                    className={FOCUS_MODE_CONFIG[mode as FocusMode]?.color}
                   >
-                    {focusModeConfig[mode as keyof typeof focusModeConfig]?.label || mode}: {count}
+                    {FOCUS_MODE_CONFIG[mode as FocusMode]?.label || mode}: {count}
                   </Badge>
                 ))}
               </div>
@@ -174,9 +219,9 @@ function TimerHistory() {
                   <div className="flex items-center gap-3 flex-1">
                     <Badge
                       variant="secondary"
-                      className={focusModeConfig[session.focusMode]?.color}
+                      className={FOCUS_MODE_CONFIG[session.focusMode]?.color}
                     >
-                      {focusModeConfig[session.focusMode]?.label}
+                      {FOCUS_MODE_CONFIG[session.focusMode]?.label}
                     </Badge>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">

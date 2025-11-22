@@ -7,22 +7,94 @@ import { formatTime } from '@/lib/utils/formatTime';
 import { Button } from '@/components/ui/button';
 import { Play, Pause, RotateCcw, Clock } from 'lucide-react';
 import DurationInput from './DurationInput';
+import type { FocusMode } from '@/lib/constants/focus-modes';
 
+/**
+ * Props for the Timer component.
+ *
+ * @interface TimerProps
+ *
+ * @property {number} duration - Initial timer duration in seconds
+ * @property {string} [title='Focus Session'] - Title displayed in completion notification
+ * @property {() => void} [onComplete] - Optional callback invoked when timer completes
+ * @property {FocusMode} [focusMode='study'] - Type of focus session
+ * @property {(focusMode: FocusMode, duration: number, completed: boolean) => void} [onSessionComplete] - Callback for tracking session completion with mode, duration, and completion status
+ */
 interface TimerProps {
   duration: number;
   title?: string;
   onComplete?: () => void;
-  focusMode?: 'study' | 'work' | 'yoga' | 'meditation';
-  onSessionComplete?: (focusMode: 'study' | 'work' | 'yoga' | 'meditation', duration: number, completed: boolean) => void;
+  focusMode?: FocusMode;
+  onSessionComplete?: (focusMode: FocusMode, duration: number, completed: boolean) => void;
 }
 
+/**
+ * Countdown timer component with customizable duration and focus modes.
+ *
+ * This component provides a visual countdown timer with start/pause/reset controls,
+ * progress visualization, and session tracking. It supports custom durations and
+ * tracks both completed and incomplete sessions.
+ *
+ * @component
+ *
+ * @remarks
+ * - Displays circular progress indicator with remaining time
+ * - Supports custom duration input during idle state
+ * - Tracks session start and completion for analytics
+ * - Sends browser notifications on completion
+ * - Records incomplete sessions when paused after running for at least 1 second
+ * - Memoized to prevent unnecessary re-renders
+ * - Automatically resets when duration prop changes (only when timer is idle)
+ *
+ * @param {TimerProps} props - Component props
+ *
+ * @example
+ * ```tsx
+ * <Timer
+ *   duration={1500} // 25 minutes in seconds
+ *   title="Study Session"
+ *   focusMode="study"
+ *   onComplete={() => console.log('Timer complete!')}
+ *   onSessionComplete={(mode, duration, completed) => {
+ *     console.log(`${mode} session: ${duration}s, completed: ${completed}`);
+ *   }}
+ * />
+ * ```
+ *
+ * @returns {React.ReactElement} Timer component with controls and progress display
+ */
 const Timer = memo(function Timer({ duration, title = 'Focus Session', onComplete, focusMode = 'study', onSessionComplete }: TimerProps) {
   const { timeLeft, isRunning, isComplete, start, pause, reset, setDuration } = useTimer(duration);
   const { notify } = useNotification();
+
+  /**
+   * Tracks previous completion state to detect state changes.
+   * @type {React.MutableRefObject<boolean>}
+   */
   const prevCompleteRef = useRef(false);
+
+  /**
+   * Tracks previous duration prop to detect external duration changes.
+   * @type {React.MutableRefObject<number>}
+   */
   const prevDurationRef = useRef(duration);
+
+  /**
+   * Controls visibility of custom duration input.
+   * @type {[boolean, React.Dispatch<React.SetStateAction<boolean>>]}
+   */
   const [showCustomInput, setShowCustomInput] = useState(false);
+
+  /**
+   * Stores the time remaining when timer starts, used to calculate session duration.
+   * @type {React.MutableRefObject<number | null>}
+   */
   const startTimeRef = useRef<number | null>(null);
+
+  /**
+   * Stores the initial duration for the current session.
+   * @type {React.MutableRefObject<number>}
+   */
   const initialDurationRef = useRef(duration);
 
   // Update duration when prop changes (not when custom duration is set)
@@ -77,8 +149,18 @@ const Timer = memo(function Timer({ duration, title = 'Focus Session', onComplet
     prevCompleteRef.current = isComplete;
   }, [isComplete, title, notify, onComplete, timeLeft, focusMode, onSessionComplete]);
 
+  /**
+   * Calculates the progress percentage for the circular progress indicator.
+   * @type {number}
+   */
   const progress = ((duration - timeLeft) / duration) * 100;
 
+  /**
+   * Handles setting a custom duration from the DurationInput component.
+   * Updates the timer duration and hides the custom input.
+   *
+   * @param {number} newDuration - New duration in seconds to set for the timer
+   */
   const handleCustomDuration = useCallback((newDuration: number) => {
     setDuration(newDuration);
     setShowCustomInput(false);
