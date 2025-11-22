@@ -36,6 +36,25 @@ export default function RepeatTimer({ onSessionComplete }: RepeatTimerProps) {
   // Validate inputs
   const isValidConfig = durationMinutes > 0 && totalRepetitions > 0;
 
+  // Calculate and format total time
+  const totalMinutes = durationMinutes * totalRepetitions;
+  const formatTotalTime = () => {
+    if (totalMinutes === 0) return null;
+
+    if (totalMinutes < 60) {
+      return `Total: ${totalMinutes} ${totalMinutes === 1 ? 'minute' : 'minutes'}`;
+    } else {
+      const hours = Math.floor(totalMinutes / 60);
+      const mins = totalMinutes % 60;
+
+      if (mins === 0) {
+        return `Total: ${hours} ${hours === 1 ? 'hour' : 'hours'}`;
+      } else {
+        return `Total: ${hours} ${hours === 1 ? 'hour' : 'hours'} ${mins} ${mins === 1 ? 'minute' : 'minutes'}`;
+      }
+    }
+  };
+
   /**
    * Handle start button click - begin interval timer
    */
@@ -148,6 +167,15 @@ export default function RepeatTimer({ onSessionComplete }: RepeatTimerProps) {
                 placeholder="Number of rounds"
               />
             </div>
+
+            {/* Total Time Display */}
+            {formatTotalTime() && (
+              <div className="text-center p-3 bg-muted rounded-md">
+                <p className="text-sm font-medium text-muted-foreground">
+                  {formatTotalTime()}
+                </p>
+              </div>
+            )}
 
             {/* Start Button */}
             <Button
