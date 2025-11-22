@@ -8,44 +8,16 @@ import { motion, useReducedMotion, type Variants } from 'framer-motion';
 import { ThemeToggle } from './ThemeToggle';
 import { useTimerHistory } from '@/lib/hooks/useTimerHistory';
 import type { TimerSession } from '@/lib/types/timer-history';
+import { getFocusModeList } from '@/lib/constants/focus-modes';
 
 /**
  * Tab configuration data for different focus modes.
- * Defines the available timer types with their settings.
+ * Imported from centralized focus modes configuration.
  *
  * @constant
- * @type {Array<{value: string, label: string, title: string, description: string, duration: number}>}
+ * @type {Array<FocusModeConfig>}
  */
-const tabsData = [
-  {
-    value: 'study',
-    label: 'Study',
-    title: 'Study Timer',
-    description: 'Focus timer for deep study sessions',
-    duration: 1500, // 25 minutes
-  },
-  {
-    value: 'work',
-    label: 'Work',
-    title: 'Deep Work Timer',
-    description: 'Focused timer for deep work sessions',
-    duration: 3600, // 60 minutes
-  },
-  {
-    value: 'yoga',
-    label: 'Yoga',
-    title: 'Yoga Timer',
-    description: 'Mindful timer for yoga practice',
-    duration: 1800, // 30 minutes
-  },
-  {
-    value: 'meditation',
-    label: 'Meditation',
-    title: 'Meditation Timer',
-    description: 'Calm timer for meditation practice',
-    duration: 600, // 10 minutes
-  },
-];
+const tabsData = getFocusModeList();
 
 /**
  * Framer Motion animation variants for tab content transitions.
@@ -195,7 +167,7 @@ export default function FocusTabs() {
               <Timer
                 duration={tab.duration}
                 title={tab.title}
-                focusMode={tab.value as 'study' | 'work' | 'yoga' | 'meditation'}
+                focusMode={tab.value}
                 onSessionComplete={handleSessionComplete}
               />
             </motion.div>

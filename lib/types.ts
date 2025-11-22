@@ -1,3 +1,9 @@
+// Re-export FocusMode from centralized configuration
+export type { FocusMode } from './constants/focus-modes';
+
+/**
+ * @deprecated Use FocusMode instead. TimerMode is kept for backwards compatibility.
+ */
 export type TimerMode = 'study' | 'work' | 'yoga' | 'meditation';
 
 export interface TimerSession {
