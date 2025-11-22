@@ -30,7 +30,7 @@ TypeScript/JavaScript with Next.js 14+ (App Router): Follow standard conventions
 
 # AI Agent Guidelines
 
-Always follow the instructions in TASKS.md. When I say "go", find the next unmarked test in TASKS.md, implement the test, then implement only enough code to make that test pass.
+Always follow the instructions in TASKS.md. When I say "go", find the next unmarked test in TASKS.md, work with subagnents, then implement the test, then implement only enough code to make that test pass.
 
 # ROLE AND EXPERTISE
 
