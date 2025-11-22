@@ -83,12 +83,12 @@ describe('RepeatTimer', () => {
       const repsInput = screen.getByLabelText(/repetitions/i);
 
       await user.clear(durationInput);
-      await user.type(durationInput, '5');
+      await user.type(durationInput, '90');
       await user.clear(repsInput);
       await user.type(repsInput, '3');
 
-      // 5 minutes × 3 repetitions = 15 minutes total
-      expect(screen.getByText(/total.*15.*minutes?/i)).toBeInTheDocument();
+      // 90 seconds × 3 repetitions = 270 seconds (4 minutes 30 seconds)
+      expect(screen.getByText(/total.*4.*minutes.*30.*seconds/i)).toBeInTheDocument();
     });
 
     it('should update total time when inputs change', async () => {
@@ -98,21 +98,21 @@ describe('RepeatTimer', () => {
       const durationInput = screen.getByLabelText(/duration/i);
       const repsInput = screen.getByLabelText(/repetitions/i);
 
-      // Initial values: 10 minutes × 2 = 20 minutes
+      // Initial values: 120 seconds × 2 = 240 seconds (4 minutes)
       await user.clear(durationInput);
-      await user.type(durationInput, '10');
+      await user.type(durationInput, '120');
       await user.clear(repsInput);
       await user.type(repsInput, '2');
 
-      expect(screen.getByText(/total.*20.*minutes?/i)).toBeInTheDocument();
+      expect(screen.getByText(/total.*4.*minutes/i)).toBeInTheDocument();
 
-      // Change to: 15 minutes × 4 = 60 minutes (1 hour)
+      // Change to: 3600 seconds × 2 = 7200 seconds (2 hours)
       await user.clear(durationInput);
-      await user.type(durationInput, '15');
+      await user.type(durationInput, '3600');
       await user.clear(repsInput);
-      await user.type(repsInput, '4');
+      await user.type(repsInput, '2');
 
-      expect(screen.getByText(/total.*1.*hour/i)).toBeInTheDocument();
+      expect(screen.getByText(/total.*2.*hours/i)).toBeInTheDocument();
     });
 
     it('should not display total time when inputs are empty or zero', () => {
@@ -224,7 +224,7 @@ describe('RepeatTimer', () => {
       const repsInput = screen.getByLabelText(/repetitions/i);
 
       await user.clear(durationInput);
-      await user.type(durationInput, '1');
+      await user.type(durationInput, '60');
       await user.clear(repsInput);
       await user.type(repsInput, '3');
 
@@ -232,7 +232,7 @@ describe('RepeatTimer', () => {
 
       expect(screen.getByText(/round 1 of 3/i)).toBeInTheDocument();
 
-      // Advance timer to complete first round (1 minute = 60 seconds)
+      // Advance timer to complete first round (60 seconds)
       vi.advanceTimersByTime(60000);
 
       await waitFor(() => {
@@ -251,7 +251,7 @@ describe('RepeatTimer', () => {
       const repsInput = screen.getByLabelText(/repetitions/i);
 
       await user.clear(durationInput);
-      await user.type(durationInput, '1');
+      await user.type(durationInput, '60');
       await user.clear(repsInput);
       await user.type(repsInput, '2');
 
@@ -287,7 +287,7 @@ describe('RepeatTimer', () => {
       const repsInput = screen.getByLabelText(/repetitions/i);
 
       await user.clear(durationInput);
-      await user.type(durationInput, '1');
+      await user.type(durationInput, '60');
       await user.clear(repsInput);
       await user.type(repsInput, '2');
 
