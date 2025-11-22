@@ -22,37 +22,40 @@ interface RepeatTimerProps {
  * @component
  */
 export default function RepeatTimer({ onSessionComplete }: RepeatTimerProps) {
-  const [durationMinutes, setDurationMinutes] = useState<number>(0);
+  const [durationSeconds, setDurationSeconds] = useState<number>(0);
   const [totalRepetitions, setTotalRepetitions] = useState<number>(0);
   const [currentRound, setCurrentRound] = useState<number>(0);
   const [isConfiguring, setIsConfiguring] = useState<boolean>(true);
   const [allRoundsComplete, setAllRoundsComplete] = useState<boolean>(false);
   const processedRoundRef = useRef<number>(0);
 
-  const durationSeconds = durationMinutes * 60;
   const { timeLeft, isRunning, isComplete, start, pause, reset: resetTimer, setDuration } = useTimer(durationSeconds);
   const { notify } = useNotification();
 
   // Validate inputs
-  const isValidConfig = durationMinutes > 0 && totalRepetitions > 0;
+  const isValidConfig = durationSeconds > 0 && totalRepetitions > 0;
 
   // Calculate and format total time
-  const totalMinutes = durationMinutes * totalRepetitions;
+  const totalSeconds = durationSeconds * totalRepetitions;
   const formatTotalTime = () => {
-    if (totalMinutes === 0) return null;
+    if (totalSeconds === 0) return null;
 
-    if (totalMinutes < 60) {
-      return `Total: ${totalMinutes} ${totalMinutes === 1 ? 'minute' : 'minutes'}`;
-    } else {
-      const hours = Math.floor(totalMinutes / 60);
-      const mins = totalMinutes % 60;
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
 
-      if (mins === 0) {
-        return `Total: ${hours} ${hours === 1 ? 'hour' : 'hours'}`;
-      } else {
-        return `Total: ${hours} ${hours === 1 ? 'hour' : 'hours'} ${mins} ${mins === 1 ? 'minute' : 'minutes'}`;
-      }
+    const parts = [];
+    if (hours > 0) {
+      parts.push(`${hours} ${hours === 1 ? 'hour' : 'hours'}`);
     }
+    if (minutes > 0) {
+      parts.push(`${minutes} ${minutes === 1 ? 'minute' : 'minutes'}`);
+    }
+    if (seconds > 0 || parts.length === 0) {
+      parts.push(`${seconds} ${seconds === 1 ? 'second' : 'seconds'}`);
+    }
+
+    return `Total: ${parts.join(' ')}`;
   };
 
   /**
@@ -142,15 +145,15 @@ export default function RepeatTimer({ onSessionComplete }: RepeatTimerProps) {
           <div className="space-y-4">
             {/* Duration Input */}
             <div className="space-y-2">
-              <Label htmlFor="duration">Duration (minutes)</Label>
+              <Label htmlFor="duration">Duration (seconds)</Label>
               <Input
                 id="duration"
                 type="number"
                 min="1"
-                max="120"
-                value={durationMinutes || ''}
-                onChange={(e) => setDurationMinutes(parseInt(e.target.value) || 0)}
-                placeholder="Enter duration in minutes"
+                max="7200"
+                value={durationSeconds || ''}
+                onChange={(e) => setDurationSeconds(parseInt(e.target.value) || 0)}
+                placeholder="Enter duration in seconds"
               />
             </div>
 
@@ -209,7 +212,7 @@ export default function RepeatTimer({ onSessionComplete }: RepeatTimerProps) {
               </div>
               <h2 className="text-3xl font-bold">All Rounds Completed!</h2>
               <p className="text-lg text-muted-foreground">
-                Great work! You completed {totalRepetitions} rounds of {durationMinutes} {durationMinutes === 1 ? 'minute' : 'minutes'} each.
+                Great work! You completed {totalRepetitions} rounds of {formatTime(durationSeconds)} each.
               </p>
             </div>
           ) : (
