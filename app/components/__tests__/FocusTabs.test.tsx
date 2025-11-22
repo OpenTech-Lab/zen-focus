@@ -62,145 +62,206 @@ vi.mock('@/lib/hooks/useTimerHistory', () => ({
   }),
 }));
 
+// Mock FocusModeSelector component
+vi.mock('../FocusModeSelector', () => ({
+  default: ({ selectedMode, onModeChange }: { selectedMode: string; onModeChange: (mode: string) => void }) => (
+    <div data-testid="focus-mode-selector" data-selected-mode={selectedMode}>
+      <button onClick={() => onModeChange('study')}>Study</button>
+      <button onClick={() => onModeChange('work')}>Work</button>
+      <button onClick={() => onModeChange('yoga')}>Yoga</button>
+      <button onClick={() => onModeChange('meditation')}>Meditation</button>
+    </div>
+  ),
+}));
+
 describe('FocusTabs', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
   describe('Tab Rendering', () => {
-    it('should render all 5 tabs correctly', () => {
+    it('should render only 2 tabs: Focus and History', () => {
       render(<FocusTabs />);
 
-      // Check that all tab triggers are rendered
-      expect(screen.getByRole('tab', { name: /study/i })).toBeInTheDocument();
-      expect(screen.getByRole('tab', { name: /work/i })).toBeInTheDocument();
-      expect(screen.getByRole('tab', { name: /yoga/i })).toBeInTheDocument();
-      expect(screen.getByRole('tab', { name: /meditation/i })).toBeInTheDocument();
+      const tabs = screen.getAllByRole('tab');
+      expect(tabs).toHaveLength(2);
+      expect(screen.getByRole('tab', { name: /focus/i })).toBeInTheDocument();
       expect(screen.getByRole('tab', { name: /history/i })).toBeInTheDocument();
     });
 
-    it('should render Study tab as default active tab', () => {
+    it('should not render individual mode tabs', () => {
       render(<FocusTabs />);
 
-      const studyTab = screen.getByRole('tab', { name: /study/i });
-      expect(studyTab).toHaveAttribute('data-state', 'active');
+      expect(screen.queryByRole('tab', { name: /^study$/i })).not.toBeInTheDocument();
+      expect(screen.queryByRole('tab', { name: /^work$/i })).not.toBeInTheDocument();
+      expect(screen.queryByRole('tab', { name: /^yoga$/i })).not.toBeInTheDocument();
+      expect(screen.queryByRole('tab', { name: /^meditation$/i })).not.toBeInTheDocument();
     });
 
-    it('should display correct title for Study tab content', () => {
+    it('should render Focus tab as default active tab', () => {
+      render(<FocusTabs />);
+
+      const focusTab = screen.getByRole('tab', { name: /focus/i });
+      expect(focusTab).toHaveAttribute('data-state', 'active');
+    });
+
+    it('should display correct title for default Study mode', () => {
       render(<FocusTabs />);
 
       expect(screen.getByText('Study Timer')).toBeInTheDocument();
     });
 
-    it('should display correct description for Study tab content', () => {
+    it('should display correct description for default Study mode', () => {
       render(<FocusTabs />);
 
       expect(screen.getByText('Focus timer for deep study sessions')).toBeInTheDocument();
     });
+
+    it('should render FocusModeSelector within Focus tab', () => {
+      render(<FocusTabs />);
+
+      const selector = screen.getByTestId('focus-mode-selector');
+      expect(selector).toBeInTheDocument();
+    });
   });
 
   describe('Tab Switching Functionality', () => {
-    it('should switch to Work tab when clicked', async () => {
+    it('should switch to History tab when clicked', async () => {
       const user = userEvent.setup();
       render(<FocusTabs />);
 
-      const workTab = screen.getByRole('tab', { name: /work/i });
-      await user.click(workTab);
+      const historyTab = screen.getByRole('tab', { name: /history/i });
+      await user.click(historyTab);
 
       await waitFor(() => {
-        expect(workTab).toHaveAttribute('data-state', 'active');
+        expect(historyTab).toHaveAttribute('data-state', 'active');
+        expect(screen.getByTestId('timer-history')).toBeInTheDocument();
+      });
+    });
+
+    it('should deactivate Focus tab when switching to History', async () => {
+      const user = userEvent.setup();
+      render(<FocusTabs />);
+
+      const focusTab = screen.getByRole('tab', { name: /focus/i });
+      const historyTab = screen.getByRole('tab', { name: /history/i });
+
+      expect(focusTab).toHaveAttribute('data-state', 'active');
+
+      await user.click(historyTab);
+
+      await waitFor(() => {
+        expect(focusTab).toHaveAttribute('data-state', 'inactive');
+        expect(historyTab).toHaveAttribute('data-state', 'active');
+      });
+    });
+
+    it('should switch back to Focus tab from History', async () => {
+      const user = userEvent.setup();
+      render(<FocusTabs />);
+
+      const focusTab = screen.getByRole('tab', { name: /focus/i });
+      const historyTab = screen.getByRole('tab', { name: /history/i });
+
+      await user.click(historyTab);
+      await waitFor(() => {
+        expect(historyTab).toHaveAttribute('data-state', 'active');
+      });
+
+      await user.click(focusTab);
+      await waitFor(() => {
+        expect(focusTab).toHaveAttribute('data-state', 'active');
+        expect(historyTab).toHaveAttribute('data-state', 'inactive');
+      });
+    });
+  });
+
+  describe('Focus Mode Switching', () => {
+    it('should update title when switching to Work mode', async () => {
+      const user = userEvent.setup();
+      render(<FocusTabs />);
+
+      const workButton = screen.getByText('Work');
+      await user.click(workButton);
+
+      await waitFor(() => {
         expect(screen.getByText('Deep Work Timer')).toBeInTheDocument();
         expect(screen.getByText('Focused timer for deep work sessions')).toBeInTheDocument();
       });
     });
 
-    it('should switch to Yoga tab when clicked', async () => {
+    it('should update title when switching to Yoga mode', async () => {
       const user = userEvent.setup();
       render(<FocusTabs />);
 
-      const yogaTab = screen.getByRole('tab', { name: /yoga/i });
-      await user.click(yogaTab);
+      const yogaButton = screen.getByText('Yoga');
+      await user.click(yogaButton);
 
       await waitFor(() => {
-        expect(yogaTab).toHaveAttribute('data-state', 'active');
         expect(screen.getByText('Yoga Timer')).toBeInTheDocument();
         expect(screen.getByText('Mindful timer for yoga practice')).toBeInTheDocument();
       });
     });
 
-    it('should switch to Meditation tab when clicked', async () => {
+    it('should update title when switching to Meditation mode', async () => {
       const user = userEvent.setup();
       render(<FocusTabs />);
 
-      const meditationTab = screen.getByRole('tab', { name: /meditation/i });
-      await user.click(meditationTab);
+      const meditationButton = screen.getByText('Meditation');
+      await user.click(meditationButton);
 
       await waitFor(() => {
-        expect(meditationTab).toHaveAttribute('data-state', 'active');
         expect(screen.getByText('Meditation Timer')).toBeInTheDocument();
         expect(screen.getByText('Calm timer for meditation practice')).toBeInTheDocument();
       });
     });
 
-    it('should deactivate previous tab when switching tabs', async () => {
+    it('should handle multiple mode switches correctly', async () => {
       const user = userEvent.setup();
       render(<FocusTabs />);
 
-      const studyTab = screen.getByRole('tab', { name: /study/i });
-      const workTab = screen.getByRole('tab', { name: /work/i });
-
-      // Initially Study tab is active
-      expect(studyTab).toHaveAttribute('data-state', 'active');
-
-      // Click Work tab
-      await user.click(workTab);
-
+      // Switch to Work
+      await user.click(screen.getByText('Work'));
       await waitFor(() => {
-        expect(studyTab).toHaveAttribute('data-state', 'inactive');
-        expect(workTab).toHaveAttribute('data-state', 'active');
-      });
-    });
-
-    it('should handle multiple tab switches correctly', async () => {
-      const user = userEvent.setup();
-      render(<FocusTabs />);
-
-      const studyTab = screen.getByRole('tab', { name: /study/i });
-      const workTab = screen.getByRole('tab', { name: /work/i });
-      const yogaTab = screen.getByRole('tab', { name: /yoga/i });
-      const meditationTab = screen.getByRole('tab', { name: /meditation/i });
-
-      // Switch from Study to Work
-      await user.click(workTab);
-      await waitFor(() => {
-        expect(workTab).toHaveAttribute('data-state', 'active');
+        expect(screen.getByText('Deep Work Timer')).toBeInTheDocument();
       });
 
-      // Switch from Work to Yoga
-      await user.click(yogaTab);
+      // Switch to Yoga
+      await user.click(screen.getByText('Yoga'));
       await waitFor(() => {
-        expect(yogaTab).toHaveAttribute('data-state', 'active');
-        expect(workTab).toHaveAttribute('data-state', 'inactive');
+        expect(screen.getByText('Yoga Timer')).toBeInTheDocument();
       });
 
-      // Switch from Yoga to Meditation
-      await user.click(meditationTab);
+      // Switch to Meditation
+      await user.click(screen.getByText('Meditation'));
       await waitFor(() => {
-        expect(meditationTab).toHaveAttribute('data-state', 'active');
-        expect(yogaTab).toHaveAttribute('data-state', 'inactive');
+        expect(screen.getByText('Meditation Timer')).toBeInTheDocument();
       });
 
       // Switch back to Study
-      await user.click(studyTab);
+      await user.click(screen.getByText('Study'));
       await waitFor(() => {
-        expect(studyTab).toHaveAttribute('data-state', 'active');
-        expect(meditationTab).toHaveAttribute('data-state', 'inactive');
+        expect(screen.getByText('Study Timer')).toBeInTheDocument();
+      });
+    });
+
+    it('should pass selected mode to FocusModeSelector', async () => {
+      const user = userEvent.setup();
+      render(<FocusTabs />);
+
+      const selector = screen.getByTestId('focus-mode-selector');
+      expect(selector).toHaveAttribute('data-selected-mode', 'study');
+
+      await user.click(screen.getByText('Work'));
+
+      await waitFor(() => {
+        expect(selector).toHaveAttribute('data-selected-mode', 'work');
       });
     });
   });
 
   describe('Timer Duration Configuration', () => {
-    it('should render Timer with correct duration for Study tab (1500 seconds)', () => {
+    it('should render Timer with correct duration for default Study mode (1500 seconds)', () => {
       render(<FocusTabs />);
 
       const timer = screen.getByTestId('timer-component');
@@ -208,12 +269,11 @@ describe('FocusTabs', () => {
       expect(timer).toHaveAttribute('data-title', 'Study Timer');
     });
 
-    it('should render Timer with correct duration for Work tab (3600 seconds)', async () => {
+    it('should render Timer with correct duration for Work mode (3600 seconds)', async () => {
       const user = userEvent.setup();
       render(<FocusTabs />);
 
-      const workTab = screen.getByRole('tab', { name: /work/i });
-      await user.click(workTab);
+      await user.click(screen.getByText('Work'));
 
       await waitFor(() => {
         const timer = screen.getByTestId('timer-component');
@@ -222,12 +282,11 @@ describe('FocusTabs', () => {
       });
     });
 
-    it('should render Timer with correct duration for Yoga tab (1800 seconds)', async () => {
+    it('should render Timer with correct duration for Yoga mode (1800 seconds)', async () => {
       const user = userEvent.setup();
       render(<FocusTabs />);
 
-      const yogaTab = screen.getByRole('tab', { name: /yoga/i });
-      await user.click(yogaTab);
+      await user.click(screen.getByText('Yoga'));
 
       await waitFor(() => {
         const timer = screen.getByTestId('timer-component');
@@ -236,12 +295,11 @@ describe('FocusTabs', () => {
       });
     });
 
-    it('should render Timer with correct duration for Meditation tab (600 seconds)', async () => {
+    it('should render Timer with correct duration for Meditation mode (600 seconds)', async () => {
       const user = userEvent.setup();
       render(<FocusTabs />);
 
-      const meditationTab = screen.getByRole('tab', { name: /meditation/i });
-      await user.click(meditationTab);
+      await user.click(screen.getByText('Meditation'));
 
       await waitFor(() => {
         const timer = screen.getByTestId('timer-component');
@@ -250,26 +308,24 @@ describe('FocusTabs', () => {
       });
     });
 
-    it('should update timer duration when switching between tabs', async () => {
+    it('should update timer duration when switching between modes', async () => {
       const user = userEvent.setup();
       render(<FocusTabs />);
 
-      // Study tab - 1500 seconds
+      // Study mode - 1500 seconds
       let timer = screen.getByTestId('timer-component');
       expect(timer).toHaveAttribute('data-duration', '1500');
 
-      // Switch to Work tab - 3600 seconds
-      const workTab = screen.getByRole('tab', { name: /work/i });
-      await user.click(workTab);
+      // Switch to Work mode - 3600 seconds
+      await user.click(screen.getByText('Work'));
 
       await waitFor(() => {
         timer = screen.getByTestId('timer-component');
         expect(timer).toHaveAttribute('data-duration', '3600');
       });
 
-      // Switch to Meditation tab - 600 seconds
-      const meditationTab = screen.getByRole('tab', { name: /meditation/i });
-      await user.click(meditationTab);
+      // Switch to Meditation mode - 600 seconds
+      await user.click(screen.getByText('Meditation'));
 
       await waitFor(() => {
         timer = screen.getByTestId('timer-component');
@@ -279,7 +335,7 @@ describe('FocusTabs', () => {
   });
 
   describe('Timer Component Rendering', () => {
-    it('should render Timer component within Study tab', () => {
+    it('should render Timer component within Focus tab for Study mode', () => {
       render(<FocusTabs />);
 
       const timer = screen.getByTestId('timer-component');
@@ -287,12 +343,11 @@ describe('FocusTabs', () => {
       expect(timer).toHaveTextContent('Study Timer');
     });
 
-    it('should render Timer component within Work tab', async () => {
+    it('should render Timer component for Work mode', async () => {
       const user = userEvent.setup();
       render(<FocusTabs />);
 
-      const workTab = screen.getByRole('tab', { name: /work/i });
-      await user.click(workTab);
+      await user.click(screen.getByText('Work'));
 
       await waitFor(() => {
         const timer = screen.getByTestId('timer-component');
@@ -301,12 +356,11 @@ describe('FocusTabs', () => {
       });
     });
 
-    it('should render Timer component within Yoga tab', async () => {
+    it('should render Timer component for Yoga mode', async () => {
       const user = userEvent.setup();
       render(<FocusTabs />);
 
-      const yogaTab = screen.getByRole('tab', { name: /yoga/i });
-      await user.click(yogaTab);
+      await user.click(screen.getByText('Yoga'));
 
       await waitFor(() => {
         const timer = screen.getByTestId('timer-component');
@@ -315,12 +369,11 @@ describe('FocusTabs', () => {
       });
     });
 
-    it('should render Timer component within Meditation tab', async () => {
+    it('should render Timer component for Meditation mode', async () => {
       const user = userEvent.setup();
       render(<FocusTabs />);
 
-      const meditationTab = screen.getByRole('tab', { name: /meditation/i });
-      await user.click(meditationTab);
+      await user.click(screen.getByText('Meditation'));
 
       await waitFor(() => {
         const timer = screen.getByTestId('timer-component');
@@ -333,7 +386,6 @@ describe('FocusTabs', () => {
       render(<FocusTabs />);
 
       const timers = screen.getAllByTestId('timer-component');
-      // Only the active tab's timer should be visible
       expect(timers).toHaveLength(1);
     });
 
@@ -343,6 +395,18 @@ describe('FocusTabs', () => {
       const timer = screen.getByTestId('timer-component');
       expect(timer).toHaveAttribute('data-duration', '1500');
       expect(timer).toHaveAttribute('data-title', 'Study Timer');
+    });
+
+    it('should not render Timer in History tab', async () => {
+      const user = userEvent.setup();
+      render(<FocusTabs />);
+
+      await user.click(screen.getByRole('tab', { name: /history/i }));
+
+      await waitFor(() => {
+        expect(screen.queryByTestId('timer-component')).not.toBeInTheDocument();
+        expect(screen.getByTestId('timer-history')).toBeInTheDocument();
+      });
     });
   });
 
@@ -372,23 +436,20 @@ describe('FocusTabs', () => {
   });
 
   describe('Tabs Layout', () => {
-    it('should render tabs list with grid layout for 5 columns', () => {
+    it('should render tabs list with grid layout for 2 columns', () => {
       const { container } = render(<FocusTabs />);
 
       const tabsList = container.querySelector('[role="tablist"]');
-      expect(tabsList).toHaveClass('grid', 'w-full', 'grid-cols-5', 'mb-12');
+      expect(tabsList).toHaveClass('grid', 'w-full', 'grid-cols-2', 'mb-12');
     });
 
-    it('should render all tabs in the correct order', () => {
+    it('should render tabs in the correct order', () => {
       render(<FocusTabs />);
 
       const tabs = screen.getAllByRole('tab');
-      expect(tabs).toHaveLength(5);
-      expect(tabs[0]).toHaveTextContent('Study');
-      expect(tabs[1]).toHaveTextContent('Work');
-      expect(tabs[2]).toHaveTextContent('Yoga');
-      expect(tabs[3]).toHaveTextContent('Meditation');
-      expect(tabs[4]).toHaveTextContent('History');
+      expect(tabs).toHaveLength(2);
+      expect(tabs[0]).toHaveTextContent('Focus');
+      expect(tabs[1]).toHaveTextContent('History');
     });
 
     it('should render main container with correct layout classes', () => {
@@ -404,6 +465,34 @@ describe('FocusTabs', () => {
         'p-8',
         'sm:p-24'
       );
+    });
+  });
+
+  describe('Mode Persistence', () => {
+    it('should maintain selected mode when switching between Focus and History tabs', async () => {
+      const user = userEvent.setup();
+      render(<FocusTabs />);
+
+      // Switch to Work mode
+      await user.click(screen.getByText('Work'));
+      await waitFor(() => {
+        expect(screen.getByText('Deep Work Timer')).toBeInTheDocument();
+      });
+
+      // Switch to History tab
+      await user.click(screen.getByRole('tab', { name: /history/i }));
+      await waitFor(() => {
+        expect(screen.getByTestId('timer-history')).toBeInTheDocument();
+      });
+
+      // Switch back to Focus tab
+      await user.click(screen.getByRole('tab', { name: /focus/i }));
+      await waitFor(() => {
+        // Should still be on Work mode
+        expect(screen.getByText('Deep Work Timer')).toBeInTheDocument();
+        const selector = screen.getByTestId('focus-mode-selector');
+        expect(selector).toHaveAttribute('data-selected-mode', 'work');
+      });
     });
   });
 });
