@@ -4,20 +4,12 @@ import React from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import Timer from './Timer';
 import TimerHistory from './TimerHistory';
+import FocusModeSelector from './FocusModeSelector';
 import { motion, useReducedMotion, type Variants } from 'framer-motion';
 import { ThemeToggle } from './ThemeToggle';
 import { useTimerHistory } from '@/lib/hooks/useTimerHistory';
 import type { TimerSession } from '@/lib/types/timer-history';
-import { getFocusModeList } from '@/lib/constants/focus-modes';
-
-/**
- * Tab configuration data for different focus modes.
- * Imported from centralized focus modes configuration.
- *
- * @constant
- * @type {Array<FocusModeConfig>}
- */
-const tabsData = getFocusModeList();
+import { getFocusModeConfig, type FocusMode } from '@/lib/constants/focus-modes';
 
 /**
  * Framer Motion animation variants for tab content transitions.
@@ -55,19 +47,20 @@ const tabContentVariants: Variants = {
 /**
  * Main tabbed interface component for the focus timer application.
  *
- * This component provides a tabbed interface with different focus modes (Study, Work,
- * Yoga, Meditation) and a history view. Each tab contains a timer configured for its
- * specific purpose, with smooth animations between tab switches.
+ * This component provides a tabbed interface with a Focus tab and History view.
+ * The Focus tab includes a mode selector for switching between Study, Work, Yoga,
+ * and Meditation modes, each with its own timer configuration.
  *
  * @component
  *
  * @remarks
- * - Includes 4 focus mode tabs and 1 history tab
+ * - 2 main tabs: Focus and History
+ * - Focus tab includes a mode selector for 4 focus modes (Study, Work, Yoga, Meditation)
  * - Each focus mode has a pre-configured timer duration
  * - Integrates with timer history tracking system
  * - Respects user's reduced motion preferences (prefers-reduced-motion)
  * - Displays theme toggle in top-right corner
- * - Uses Framer Motion for smooth tab transitions
+ * - Uses Framer Motion for smooth transitions
  * - Fully accessible with ARIA labels
  *
  * @example
@@ -82,10 +75,16 @@ const tabContentVariants: Variants = {
  */
 export default function FocusTabs() {
   /**
-   * Currently active tab value.
+   * Currently active tab value (either 'focus' or 'history').
    * @type {[string, React.Dispatch<React.SetStateAction<string>>]}
    */
-  const [activeTab, setActiveTab] = React.useState('study');
+  const [activeTab, setActiveTab] = React.useState('focus');
+
+  /**
+   * Currently selected focus mode within the Focus tab.
+   * @type {[FocusMode, React.Dispatch<React.SetStateAction<FocusMode>>]}
+   */
+  const [selectedMode, setSelectedMode] = React.useState<FocusMode>('study');
 
   /**
    * User's motion preference from browser settings.
@@ -131,6 +130,11 @@ export default function FocusTabs() {
       }
     : tabContentVariants;
 
+  /**
+   * Get the configuration for the currently selected focus mode.
+   */
+  const currentModeConfig = getFocusModeConfig(selectedMode);
+
   return (
     <div className="relative flex min-h-screen flex-col items-center justify-center p-8 sm:p-24">
       <div className="absolute top-4 right-4 sm:top-8 sm:right-8">
@@ -141,42 +145,39 @@ export default function FocusTabs() {
         onValueChange={setActiveTab}
         className="w-full max-w-4xl"
       >
-        <TabsList className="grid w-full grid-cols-5 mb-12" aria-label="Focus mode selection">
-          {tabsData.map((tab) => (
-            <TabsTrigger key={tab.value} value={tab.value}>
-              {tab.label}
-            </TabsTrigger>
-          ))}
+        <TabsList className="grid w-full grid-cols-2 mb-12" aria-label="Focus mode selection">
+          <TabsTrigger value="focus">Focus</TabsTrigger>
           <TabsTrigger value="history">History</TabsTrigger>
         </TabsList>
 
-        {tabsData.map((tab) => (
-          <TabsContent
-            key={tab.value}
-            value={tab.value}
-            className="text-center"
-          >
-            <motion.div
-              initial="hidden"
-              animate="visible"
-              variants={animationVariants}
-              aria-describedby={`${tab.value}-description`}
-            >
-              <h1 className="text-4xl font-bold mb-2">{tab.title}</h1>
-              <p id={`${tab.value}-description`} className="text-lg text-muted-foreground mb-8">{tab.description}</p>
-              <Timer
-                duration={tab.duration}
-                title={tab.title}
-                focusMode={tab.value}
-                onSessionComplete={handleSessionComplete}
-              />
-            </motion.div>
-          </TabsContent>
-        ))}
         <TabsContent
-          key="history"
-          value="history"
+          value="focus"
+          className="text-center"
         >
+          <motion.div
+            initial="hidden"
+            animate="visible"
+            variants={animationVariants}
+            aria-describedby={`${selectedMode}-description`}
+          >
+            <h1 className="text-4xl font-bold mb-2">{currentModeConfig.title}</h1>
+            <p id={`${selectedMode}-description`} className="text-lg text-muted-foreground mb-8">
+              {currentModeConfig.description}
+            </p>
+            <FocusModeSelector
+              selectedMode={selectedMode}
+              onModeChange={setSelectedMode}
+            />
+            <Timer
+              duration={currentModeConfig.duration}
+              title={currentModeConfig.title}
+              focusMode={selectedMode}
+              onSessionComplete={handleSessionComplete}
+            />
+          </motion.div>
+        </TabsContent>
+
+        <TabsContent value="history">
           <motion.div
             initial="hidden"
             animate="visible"
