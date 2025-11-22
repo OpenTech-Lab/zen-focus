@@ -3,9 +3,15 @@
  * This is the single source of truth for all focus mode properties.
  */
 
-export const FOCUS_MODES = ['study', 'work', 'yoga', 'meditation', 'interval'] as const;
+export const FOCUS_MODES = [
+  "study",
+  "work",
+  "yoga",
+  "meditation",
+  "interval",
+] as const;
 
-export type FocusMode = typeof FOCUS_MODES[number];
+export type FocusMode = (typeof FOCUS_MODES)[number];
 
 export interface FocusModeConfig {
   value: FocusMode;
@@ -16,41 +22,44 @@ export interface FocusModeConfig {
   color: string;
 }
 
-export const FOCUS_MODE_CONFIG: Record<FocusMode, Omit<FocusModeConfig, 'value'>> = {
+export const FOCUS_MODE_CONFIG: Record<
+  FocusMode,
+  Omit<FocusModeConfig, "value">
+> = {
   study: {
-    label: 'Study',
-    title: 'Study Timer',
-    description: 'Focus timer for deep study sessions',
+    label: "Study",
+    title: "Study Timer",
+    description: "Focus timer for deep study sessions",
     duration: 1500, // 25 minutes
-    color: 'bg-blue-500/10 text-blue-600 dark:text-blue-400',
+    color: "bg-blue-500/10 text-blue-600 dark:text-blue-400",
   },
   work: {
-    label: 'Work',
-    title: 'Deep Work Timer',
-    description: 'Focused timer for deep work sessions',
+    label: "Work",
+    title: "Deep Work Timer",
+    description: "Focused timer for deep work sessions",
     duration: 3600, // 60 minutes
-    color: 'bg-purple-500/10 text-purple-600 dark:text-purple-400',
+    color: "bg-purple-500/10 text-purple-600 dark:text-purple-400",
   },
   yoga: {
-    label: 'Yoga',
-    title: 'Yoga Timer',
-    description: 'Mindful timer for yoga practice',
+    label: "Yoga",
+    title: "Yoga Timer",
+    description: "Mindful timer for yoga practice",
     duration: 1800, // 30 minutes
-    color: 'bg-green-500/10 text-green-600 dark:text-green-400',
+    color: "bg-green-500/10 text-green-600 dark:text-green-400",
   },
   meditation: {
-    label: 'Meditation',
-    title: 'Meditation Timer',
-    description: 'Calm timer for meditation practice',
+    label: "Meditation",
+    title: "Meditation Timer",
+    description: "Calm timer for meditation practice",
     duration: 600, // 10 minutes
-    color: 'bg-amber-500/10 text-amber-600 dark:text-amber-400',
+    color: "bg-amber-500/10 text-amber-600 dark:text-amber-400",
   },
   interval: {
-    label: 'Interval',
-    title: 'Interval Timer',
-    description: 'Repeat timer for interval training',
+    label: "Interval",
+    title: "Interval Timer",
+    description: "Repeat timer for interval training",
     duration: 0, // Custom duration
-    color: 'bg-orange-500/10 text-orange-600 dark:text-orange-400',
+    color: "bg-orange-500/10 text-orange-600 dark:text-orange-400",
   },
 };
 

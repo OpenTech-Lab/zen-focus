@@ -1,22 +1,22 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from 'react';
-import { useTimer } from '@/lib/hooks/useTimer';
-import { useNotification } from '@/lib/hooks/useNotification';
-import { formatTime } from '@/lib/utils/formatTime';
-import { TimerSession } from '@/lib/types/timer-history';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Play, Pause, RotateCcw } from 'lucide-react';
+import { useState, useEffect, useCallback, useRef } from "react";
+import { useTimer } from "@/lib/hooks/useTimer";
+import { useNotification } from "@/lib/hooks/useNotification";
+import { formatTime } from "@/lib/utils/formatTime";
+import { TimerSession } from "@/lib/types/timer-history";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Play, Pause, RotateCcw } from "lucide-react";
 
 /**
  * Props for the RepeatTimer component.
  */
 interface RepeatTimerProps {
   onSessionComplete?: (
-    focusMode: TimerSession['focusMode'],
+    focusMode: TimerSession["focusMode"],
     duration: number,
     completed: boolean
   ) => void;

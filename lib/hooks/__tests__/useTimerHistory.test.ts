@@ -346,13 +346,13 @@ describe("useTimerHistory", () => {
   });
 
   describe("Streak Calculations", () => {
-    it('should calculate current streak when sessions are from today', () => {
+    it("should calculate current streak when sessions are from today", () => {
       renderHook(() => useTimerHistory());
 
       act(() => {
         // Add a session to test streak calculation
         const { result } = renderHook(() => useTimerHistory());
-        result.current.addSession('study', 1500, true);
+        result.current.addSession("study", 1500, true);
       });
 
       const { result } = renderHook(() => useTimerHistory());
