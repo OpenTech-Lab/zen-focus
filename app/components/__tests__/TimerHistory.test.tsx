@@ -1,16 +1,16 @@
-import React from 'react';
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import TimerHistory from '../TimerHistory';
-import type { TimerSession, TimerStatistics } from '@/lib/types/timer-history';
+import React from "react";
+import { describe, it, expect, beforeEach, vi } from "vitest";
+import { render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import TimerHistory from "../TimerHistory";
+import type { TimerSession } from "@/lib/types/timer-history";
 
 // Mock the useTimerHistory hook
 const mockSessions: TimerSession[] = [];
 const mockClearHistory = vi.fn();
 const mockGetStatistics = vi.fn();
 
-vi.mock('@/lib/hooks/useTimerHistory', () => ({
+vi.mock("@/lib/hooks/useTimerHistory", () => ({
   useTimerHistory: () => ({
     sessions: mockSessions,
     clearHistory: mockClearHistory,
@@ -20,15 +20,15 @@ vi.mock('@/lib/hooks/useTimerHistory', () => ({
 }));
 
 // Mock utility functions
-vi.mock('@/lib/utils/formatTime', () => ({
+vi.mock("@/lib/utils/formatTime", () => ({
   formatTime: (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
-    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
   },
 }));
 
-vi.mock('@/lib/utils/formatDuration', () => ({
+vi.mock("@/lib/utils/formatDuration", () => ({
   formatDuration: (seconds: number) => {
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
@@ -38,7 +38,7 @@ vi.mock('@/lib/utils/formatDuration', () => ({
   },
 }));
 
-vi.mock('@/lib/utils/formatRelativeTime', () => ({
+vi.mock("@/lib/utils/formatRelativeTime", () => ({
   formatRelativeTime: (isoString: string) => {
     const date = new Date(isoString);
     const now = new Date();
@@ -49,14 +49,14 @@ vi.mock('@/lib/utils/formatRelativeTime', () => ({
   },
 }));
 
-describe('TimerHistory', () => {
+describe("TimerHistory", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockSessions.length = 0; // Clear array
   });
 
-  describe('Rendering Statistics', () => {
-    it('should render statistics section with title', () => {
+  describe("Rendering Statistics", () => {
+    it("should render statistics section with title", () => {
       mockGetStatistics.mockReturnValue({
         totalSessions: 0,
         completedSessions: 0,
@@ -68,11 +68,13 @@ describe('TimerHistory', () => {
 
       render(<TimerHistory />);
 
-      expect(screen.getByText('Statistics')).toBeInTheDocument();
-      expect(screen.getByText('Your focus session analytics')).toBeInTheDocument();
+      expect(screen.getByText("Statistics")).toBeInTheDocument();
+      expect(
+        screen.getByText("Your focus session analytics")
+      ).toBeInTheDocument();
     });
 
-    it('should display total sessions count', () => {
+    it("should display total sessions count", () => {
       mockGetStatistics.mockReturnValue({
         totalSessions: 15,
         completedSessions: 12,
@@ -84,11 +86,11 @@ describe('TimerHistory', () => {
 
       render(<TimerHistory />);
 
-      expect(screen.getByText('Total Sessions')).toBeInTheDocument();
-      expect(screen.getByText('15')).toBeInTheDocument();
+      expect(screen.getByText("Total Sessions")).toBeInTheDocument();
+      expect(screen.getByText("15")).toBeInTheDocument();
     });
 
-    it('should display completed sessions count', () => {
+    it("should display completed sessions count", () => {
       mockGetStatistics.mockReturnValue({
         totalSessions: 20,
         completedSessions: 16,
@@ -100,11 +102,11 @@ describe('TimerHistory', () => {
 
       render(<TimerHistory />);
 
-      expect(screen.getByText('Completed')).toBeInTheDocument();
-      expect(screen.getByText('16')).toBeInTheDocument();
+      expect(screen.getByText("Completed")).toBeInTheDocument();
+      expect(screen.getByText("16")).toBeInTheDocument();
     });
 
-    it('should display total time spent formatted correctly', () => {
+    it("should display total time spent formatted correctly", () => {
       mockGetStatistics.mockReturnValue({
         totalSessions: 10,
         completedSessions: 8,
@@ -116,11 +118,11 @@ describe('TimerHistory', () => {
 
       render(<TimerHistory />);
 
-      expect(screen.getByText('Total Time')).toBeInTheDocument();
-      expect(screen.getByText('2h')).toBeInTheDocument();
+      expect(screen.getByText("Total Time")).toBeInTheDocument();
+      expect(screen.getByText("2h")).toBeInTheDocument();
     });
 
-    it('should display total time with hours and minutes', () => {
+    it("should display total time with hours and minutes", () => {
       mockGetStatistics.mockReturnValue({
         totalSessions: 10,
         completedSessions: 8,
@@ -132,10 +134,10 @@ describe('TimerHistory', () => {
 
       render(<TimerHistory />);
 
-      expect(screen.getByText('2h 30m')).toBeInTheDocument();
+      expect(screen.getByText("2h 30m")).toBeInTheDocument();
     });
 
-    it('should display current streak', () => {
+    it("should display current streak", () => {
       mockGetStatistics.mockReturnValue({
         totalSessions: 10,
         completedSessions: 8,
@@ -147,11 +149,11 @@ describe('TimerHistory', () => {
 
       render(<TimerHistory />);
 
-      expect(screen.getByText('Current Streak')).toBeInTheDocument();
-      expect(screen.getByText('5 days')).toBeInTheDocument();
+      expect(screen.getByText("Current Streak")).toBeInTheDocument();
+      expect(screen.getByText("5 days")).toBeInTheDocument();
     });
 
-    it('should display longest streak', () => {
+    it("should display longest streak", () => {
       mockGetStatistics.mockReturnValue({
         totalSessions: 25,
         completedSessions: 20,
@@ -163,11 +165,11 @@ describe('TimerHistory', () => {
 
       render(<TimerHistory />);
 
-      expect(screen.getByText('Longest Streak')).toBeInTheDocument();
-      expect(screen.getByText('12 days')).toBeInTheDocument();
+      expect(screen.getByText("Longest Streak")).toBeInTheDocument();
+      expect(screen.getByText("12 days")).toBeInTheDocument();
     });
 
-    it('should display sessions by mode when available', () => {
+    it("should display sessions by mode when available", () => {
       mockGetStatistics.mockReturnValue({
         totalSessions: 15,
         completedSessions: 12,
@@ -184,14 +186,14 @@ describe('TimerHistory', () => {
 
       render(<TimerHistory />);
 
-      expect(screen.getByText('Sessions by Mode')).toBeInTheDocument();
+      expect(screen.getByText("Sessions by Mode")).toBeInTheDocument();
       expect(screen.getByText(/Study.*6/)).toBeInTheDocument();
       expect(screen.getByText(/Work.*5/)).toBeInTheDocument();
       expect(screen.getByText(/Yoga.*3/)).toBeInTheDocument();
       expect(screen.getByText(/Meditation.*1/)).toBeInTheDocument();
     });
 
-    it('should not display sessions by mode when empty', () => {
+    it("should not display sessions by mode when empty", () => {
       mockGetStatistics.mockReturnValue({
         totalSessions: 0,
         completedSessions: 0,
@@ -203,12 +205,12 @@ describe('TimerHistory', () => {
 
       render(<TimerHistory />);
 
-      expect(screen.queryByText('Sessions by Mode')).not.toBeInTheDocument();
+      expect(screen.queryByText("Sessions by Mode")).not.toBeInTheDocument();
     });
   });
 
-  describe('Rendering Session List', () => {
-    it('should render recent sessions section with title', () => {
+  describe("Rendering Session List", () => {
+    it("should render recent sessions section with title", () => {
       mockGetStatistics.mockReturnValue({
         totalSessions: 0,
         completedSessions: 0,
@@ -220,11 +222,13 @@ describe('TimerHistory', () => {
 
       render(<TimerHistory />);
 
-      expect(screen.getByText('Recent Sessions')).toBeInTheDocument();
-      expect(screen.getByText('Your 10 most recent timer sessions')).toBeInTheDocument();
+      expect(screen.getByText("Recent Sessions")).toBeInTheDocument();
+      expect(
+        screen.getByText("Your 10 most recent timer sessions")
+      ).toBeInTheDocument();
     });
 
-    it('should display empty state when no sessions', () => {
+    it("should display empty state when no sessions", () => {
       mockGetStatistics.mockReturnValue({
         totalSessions: 0,
         completedSessions: 0,
@@ -236,22 +240,24 @@ describe('TimerHistory', () => {
 
       render(<TimerHistory />);
 
-      expect(screen.getByText('No timer sessions yet')).toBeInTheDocument();
-      expect(screen.getByText('Start a timer to see your history here')).toBeInTheDocument();
+      expect(screen.getByText("No timer sessions yet")).toBeInTheDocument();
+      expect(
+        screen.getByText("Start a timer to see your history here")
+      ).toBeInTheDocument();
     });
 
-    it('should display session list when sessions exist', () => {
+    it("should display session list when sessions exist", () => {
       const sessions: TimerSession[] = [
         {
-          id: '1',
-          focusMode: 'study',
+          id: "1",
+          focusMode: "study",
           duration: 1500,
           completedAt: new Date().toISOString(),
           completed: true,
         },
         {
-          id: '2',
-          focusMode: 'work',
+          id: "2",
+          focusMode: "work",
           duration: 3600,
           completedAt: new Date(Date.now() - 3600000).toISOString(),
           completed: false,
@@ -271,15 +277,15 @@ describe('TimerHistory', () => {
 
       render(<TimerHistory />);
 
-      expect(screen.getByText('Study')).toBeInTheDocument();
-      expect(screen.getByText('Work')).toBeInTheDocument();
+      expect(screen.getByText("Study")).toBeInTheDocument();
+      expect(screen.getByText("Work")).toBeInTheDocument();
     });
 
-    it('should display session duration formatted', () => {
+    it("should display session duration formatted", () => {
       const sessions: TimerSession[] = [
         {
-          id: '1',
-          focusMode: 'study',
+          id: "1",
+          focusMode: "study",
           duration: 1500, // 25:00
           completedAt: new Date().toISOString(),
           completed: true,
@@ -299,14 +305,14 @@ describe('TimerHistory', () => {
 
       render(<TimerHistory />);
 
-      expect(screen.getByText('25:00')).toBeInTheDocument();
+      expect(screen.getByText("25:00")).toBeInTheDocument();
     });
 
-    it('should display completed badge for completed sessions', () => {
+    it("should display completed badge for completed sessions", () => {
       const sessions: TimerSession[] = [
         {
-          id: '1',
-          focusMode: 'study',
+          id: "1",
+          focusMode: "study",
           duration: 1500,
           completedAt: new Date().toISOString(),
           completed: true,
@@ -326,21 +332,21 @@ describe('TimerHistory', () => {
 
       render(<TimerHistory />);
 
-      const completedBadges = screen.getAllByText('Completed');
+      const completedBadges = screen.getAllByText("Completed");
       // Should have "Completed" in both statistics section and session badge
       expect(completedBadges.length).toBeGreaterThanOrEqual(1);
       // Verify at least one is in a badge (has the badge-specific class)
       const sessionCompletedBadge = completedBadges.find(
-        (el) => el.getAttribute('data-slot') === 'badge'
+        (el) => el.getAttribute("data-slot") === "badge"
       );
       expect(sessionCompletedBadge).toBeInTheDocument();
     });
 
-    it('should display incomplete badge for incomplete sessions', () => {
+    it("should display incomplete badge for incomplete sessions", () => {
       const sessions: TimerSession[] = [
         {
-          id: '1',
-          focusMode: 'work',
+          id: "1",
+          focusMode: "work",
           duration: 1800,
           completedAt: new Date().toISOString(),
           completed: false,
@@ -360,14 +366,14 @@ describe('TimerHistory', () => {
 
       render(<TimerHistory />);
 
-      expect(screen.getByText('Incomplete')).toBeInTheDocument();
+      expect(screen.getByText("Incomplete")).toBeInTheDocument();
     });
 
-    it('should display relative time for each session', () => {
+    it("should display relative time for each session", () => {
       const sessions: TimerSession[] = [
         {
-          id: '1',
-          focusMode: 'study',
+          id: "1",
+          focusMode: "study",
           duration: 1500,
           completedAt: new Date(Date.now() - 1800000).toISOString(), // 30 minutes ago
           completed: true,
@@ -390,10 +396,10 @@ describe('TimerHistory', () => {
       expect(screen.getByText(/minutes ago/)).toBeInTheDocument();
     });
 
-    it('should display only 10 most recent sessions', () => {
+    it("should display only 10 most recent sessions", () => {
       const sessions: TimerSession[] = Array.from({ length: 15 }, (_, i) => ({
         id: `session-${i}`,
-        focusMode: 'study' as const,
+        focusMode: "study" as const,
         duration: 1500,
         completedAt: new Date(Date.now() - i * 3600000).toISOString(),
         completed: true,
@@ -413,13 +419,15 @@ describe('TimerHistory', () => {
       const { container } = render(<TimerHistory />);
 
       // Count session items (they have specific structure)
-      const sessionItems = container.querySelectorAll('[class*="flex items-center justify-between p-3"]');
+      const sessionItems = container.querySelectorAll(
+        '[class*="flex items-center justify-between p-3"]'
+      );
       expect(sessionItems.length).toBe(10);
     });
   });
 
-  describe('Clear History Button', () => {
-    it('should render clear history button', () => {
+  describe("Clear History Button", () => {
+    it("should render clear history button", () => {
       mockGetStatistics.mockReturnValue({
         totalSessions: 1,
         completedSessions: 1,
@@ -430,8 +438,8 @@ describe('TimerHistory', () => {
       });
 
       mockSessions.push({
-        id: '1',
-        focusMode: 'study',
+        id: "1",
+        focusMode: "study",
         duration: 1500,
         completedAt: new Date().toISOString(),
         completed: true,
@@ -439,10 +447,12 @@ describe('TimerHistory', () => {
 
       render(<TimerHistory />);
 
-      expect(screen.getByRole('button', { name: /clear history/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: /clear history/i })
+      ).toBeInTheDocument();
     });
 
-    it('should disable clear history button when no sessions', () => {
+    it("should disable clear history button when no sessions", () => {
       mockGetStatistics.mockReturnValue({
         totalSessions: 0,
         completedSessions: 0,
@@ -454,11 +464,13 @@ describe('TimerHistory', () => {
 
       render(<TimerHistory />);
 
-      const clearButton = screen.getByRole('button', { name: /clear history/i });
+      const clearButton = screen.getByRole("button", {
+        name: /clear history/i,
+      });
       expect(clearButton).toBeDisabled();
     });
 
-    it('should open confirmation dialog when clear history is clicked', async () => {
+    it("should open confirmation dialog when clear history is clicked", async () => {
       const user = userEvent.setup();
 
       mockGetStatistics.mockReturnValue({
@@ -471,8 +483,8 @@ describe('TimerHistory', () => {
       });
 
       mockSessions.push({
-        id: '1',
-        focusMode: 'study',
+        id: "1",
+        focusMode: "study",
         duration: 1500,
         completedAt: new Date().toISOString(),
         completed: true,
@@ -480,18 +492,22 @@ describe('TimerHistory', () => {
 
       render(<TimerHistory />);
 
-      const clearButton = screen.getByRole('button', { name: /clear history/i });
+      const clearButton = screen.getByRole("button", {
+        name: /clear history/i,
+      });
       await user.click(clearButton);
 
       await waitFor(() => {
-        expect(screen.getByText('Clear Timer History?')).toBeInTheDocument();
+        expect(screen.getByText("Clear Timer History?")).toBeInTheDocument();
         expect(
-          screen.getByText(/This will permanently delete all your timer sessions/)
+          screen.getByText(
+            /This will permanently delete all your timer sessions/
+          )
         ).toBeInTheDocument();
       });
     });
 
-    it('should show cancel and confirm buttons in dialog', async () => {
+    it("should show cancel and confirm buttons in dialog", async () => {
       const user = userEvent.setup();
 
       mockGetStatistics.mockReturnValue({
@@ -504,8 +520,8 @@ describe('TimerHistory', () => {
       });
 
       mockSessions.push({
-        id: '1',
-        focusMode: 'study',
+        id: "1",
+        focusMode: "study",
         duration: 1500,
         completedAt: new Date().toISOString(),
         completed: true,
@@ -513,16 +529,22 @@ describe('TimerHistory', () => {
 
       render(<TimerHistory />);
 
-      const clearButton = screen.getByRole('button', { name: /clear history/i });
+      const clearButton = screen.getByRole("button", {
+        name: /clear history/i,
+      });
       await user.click(clearButton);
 
       await waitFor(() => {
-        expect(screen.getByRole('button', { name: /cancel/i })).toBeInTheDocument();
-        expect(screen.getByRole('button', { name: /^clear history$/i })).toBeInTheDocument();
+        expect(
+          screen.getByRole("button", { name: /cancel/i })
+        ).toBeInTheDocument();
+        expect(
+          screen.getByRole("button", { name: /^clear history$/i })
+        ).toBeInTheDocument();
       });
     });
 
-    it('should close dialog when cancel is clicked', async () => {
+    it("should close dialog when cancel is clicked", async () => {
       const user = userEvent.setup();
 
       mockGetStatistics.mockReturnValue({
@@ -535,8 +557,8 @@ describe('TimerHistory', () => {
       });
 
       mockSessions.push({
-        id: '1',
-        focusMode: 'study',
+        id: "1",
+        focusMode: "study",
         duration: 1500,
         completedAt: new Date().toISOString(),
         completed: true,
@@ -544,22 +566,26 @@ describe('TimerHistory', () => {
 
       render(<TimerHistory />);
 
-      const clearButton = screen.getByRole('button', { name: /clear history/i });
+      const clearButton = screen.getByRole("button", {
+        name: /clear history/i,
+      });
       await user.click(clearButton);
 
       await waitFor(() => {
-        expect(screen.getByText('Clear Timer History?')).toBeInTheDocument();
+        expect(screen.getByText("Clear Timer History?")).toBeInTheDocument();
       });
 
-      const cancelButton = screen.getByRole('button', { name: /cancel/i });
+      const cancelButton = screen.getByRole("button", { name: /cancel/i });
       await user.click(cancelButton);
 
       await waitFor(() => {
-        expect(screen.queryByText('Clear Timer History?')).not.toBeInTheDocument();
+        expect(
+          screen.queryByText("Clear Timer History?")
+        ).not.toBeInTheDocument();
       });
     });
 
-    it('should call clearHistory when confirm is clicked', async () => {
+    it("should call clearHistory when confirm is clicked", async () => {
       const user = userEvent.setup();
 
       mockGetStatistics.mockReturnValue({
@@ -572,8 +598,8 @@ describe('TimerHistory', () => {
       });
 
       mockSessions.push({
-        id: '1',
-        focusMode: 'study',
+        id: "1",
+        focusMode: "study",
         duration: 1500,
         completedAt: new Date().toISOString(),
         completed: true,
@@ -581,20 +607,24 @@ describe('TimerHistory', () => {
 
       render(<TimerHistory />);
 
-      const clearButton = screen.getByRole('button', { name: /clear history/i });
+      const clearButton = screen.getByRole("button", {
+        name: /clear history/i,
+      });
       await user.click(clearButton);
 
       await waitFor(() => {
-        expect(screen.getByText('Clear Timer History?')).toBeInTheDocument();
+        expect(screen.getByText("Clear Timer History?")).toBeInTheDocument();
       });
 
-      const confirmButton = screen.getByRole('button', { name: /^clear history$/i });
+      const confirmButton = screen.getByRole("button", {
+        name: /^clear history$/i,
+      });
       await user.click(confirmButton);
 
       expect(mockClearHistory).toHaveBeenCalledTimes(1);
     });
 
-    it('should close dialog after clearing history', async () => {
+    it("should close dialog after clearing history", async () => {
       const user = userEvent.setup();
 
       mockGetStatistics.mockReturnValue({
@@ -607,8 +637,8 @@ describe('TimerHistory', () => {
       });
 
       mockSessions.push({
-        id: '1',
-        focusMode: 'study',
+        id: "1",
+        focusMode: "study",
         duration: 1500,
         completedAt: new Date().toISOString(),
         completed: true,
@@ -616,28 +646,34 @@ describe('TimerHistory', () => {
 
       render(<TimerHistory />);
 
-      const clearButton = screen.getByRole('button', { name: /clear history/i });
+      const clearButton = screen.getByRole("button", {
+        name: /clear history/i,
+      });
       await user.click(clearButton);
 
       await waitFor(() => {
-        expect(screen.getByText('Clear Timer History?')).toBeInTheDocument();
+        expect(screen.getByText("Clear Timer History?")).toBeInTheDocument();
       });
 
-      const confirmButton = screen.getByRole('button', { name: /^clear history$/i });
+      const confirmButton = screen.getByRole("button", {
+        name: /^clear history$/i,
+      });
       await user.click(confirmButton);
 
       await waitFor(() => {
-        expect(screen.queryByText('Clear Timer History?')).not.toBeInTheDocument();
+        expect(
+          screen.queryByText("Clear Timer History?")
+        ).not.toBeInTheDocument();
       });
     });
   });
 
-  describe('Focus Mode Badges', () => {
-    it('should display Study badge with correct styling', () => {
+  describe("Focus Mode Badges", () => {
+    it("should display Study badge with correct styling", () => {
       const sessions: TimerSession[] = [
         {
-          id: '1',
-          focusMode: 'study',
+          id: "1",
+          focusMode: "study",
           duration: 1500,
           completedAt: new Date().toISOString(),
           completed: true,
@@ -657,14 +693,14 @@ describe('TimerHistory', () => {
 
       render(<TimerHistory />);
 
-      expect(screen.getByText('Study')).toBeInTheDocument();
+      expect(screen.getByText("Study")).toBeInTheDocument();
     });
 
-    it('should display Work badge with correct styling', () => {
+    it("should display Work badge with correct styling", () => {
       const sessions: TimerSession[] = [
         {
-          id: '1',
-          focusMode: 'work',
+          id: "1",
+          focusMode: "work",
           duration: 3600,
           completedAt: new Date().toISOString(),
           completed: true,
@@ -684,14 +720,14 @@ describe('TimerHistory', () => {
 
       render(<TimerHistory />);
 
-      expect(screen.getByText('Work')).toBeInTheDocument();
+      expect(screen.getByText("Work")).toBeInTheDocument();
     });
 
-    it('should display Yoga badge with correct styling', () => {
+    it("should display Yoga badge with correct styling", () => {
       const sessions: TimerSession[] = [
         {
-          id: '1',
-          focusMode: 'yoga',
+          id: "1",
+          focusMode: "yoga",
           duration: 1800,
           completedAt: new Date().toISOString(),
           completed: true,
@@ -711,14 +747,14 @@ describe('TimerHistory', () => {
 
       render(<TimerHistory />);
 
-      expect(screen.getByText('Yoga')).toBeInTheDocument();
+      expect(screen.getByText("Yoga")).toBeInTheDocument();
     });
 
-    it('should display Meditation badge with correct styling', () => {
+    it("should display Meditation badge with correct styling", () => {
       const sessions: TimerSession[] = [
         {
-          id: '1',
-          focusMode: 'meditation',
+          id: "1",
+          focusMode: "meditation",
           duration: 600,
           completedAt: new Date().toISOString(),
           completed: true,
@@ -738,12 +774,12 @@ describe('TimerHistory', () => {
 
       render(<TimerHistory />);
 
-      expect(screen.getByText('Meditation')).toBeInTheDocument();
+      expect(screen.getByText("Meditation")).toBeInTheDocument();
     });
   });
 
-  describe('Integration Tests', () => {
-    it('should update display when statistics change', () => {
+  describe("Integration Tests", () => {
+    it("should update display when statistics change", () => {
       mockGetStatistics.mockReturnValue({
         totalSessions: 5,
         completedSessions: 4,
@@ -755,7 +791,7 @@ describe('TimerHistory', () => {
 
       const { rerender } = render(<TimerHistory />);
 
-      expect(screen.getByText('5')).toBeInTheDocument();
+      expect(screen.getByText("5")).toBeInTheDocument();
 
       mockGetStatistics.mockReturnValue({
         totalSessions: 10,
@@ -768,35 +804,35 @@ describe('TimerHistory', () => {
 
       rerender(<TimerHistory />);
 
-      expect(screen.getByText('10')).toBeInTheDocument();
+      expect(screen.getByText("10")).toBeInTheDocument();
     });
 
-    it('should display multiple sessions with different focus modes', () => {
+    it("should display multiple sessions with different focus modes", () => {
       const sessions: TimerSession[] = [
         {
-          id: '1',
-          focusMode: 'study',
+          id: "1",
+          focusMode: "study",
           duration: 1500,
           completedAt: new Date().toISOString(),
           completed: true,
         },
         {
-          id: '2',
-          focusMode: 'work',
+          id: "2",
+          focusMode: "work",
           duration: 3600,
           completedAt: new Date(Date.now() - 3600000).toISOString(),
           completed: true,
         },
         {
-          id: '3',
-          focusMode: 'yoga',
+          id: "3",
+          focusMode: "yoga",
           duration: 1800,
           completedAt: new Date(Date.now() - 7200000).toISOString(),
           completed: false,
         },
         {
-          id: '4',
-          focusMode: 'meditation',
+          id: "4",
+          focusMode: "meditation",
           duration: 600,
           completedAt: new Date(Date.now() - 10800000).toISOString(),
           completed: true,
@@ -816,10 +852,10 @@ describe('TimerHistory', () => {
 
       render(<TimerHistory />);
 
-      expect(screen.getByText('Study')).toBeInTheDocument();
-      expect(screen.getByText('Work')).toBeInTheDocument();
-      expect(screen.getByText('Yoga')).toBeInTheDocument();
-      expect(screen.getByText('Meditation')).toBeInTheDocument();
+      expect(screen.getByText("Study")).toBeInTheDocument();
+      expect(screen.getByText("Work")).toBeInTheDocument();
+      expect(screen.getByText("Yoga")).toBeInTheDocument();
+      expect(screen.getByText("Meditation")).toBeInTheDocument();
     });
   });
 });

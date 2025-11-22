@@ -3,7 +3,7 @@
  * This is the single source of truth for all focus mode properties.
  */
 
-export const FOCUS_MODES = ['study', 'work', 'yoga', 'meditation'] as const;
+export const FOCUS_MODES = ['study', 'work', 'yoga', 'meditation', 'interval'] as const;
 
 export type FocusMode = typeof FOCUS_MODES[number];
 
@@ -44,6 +44,13 @@ export const FOCUS_MODE_CONFIG: Record<FocusMode, Omit<FocusModeConfig, 'value'>
     description: 'Calm timer for meditation practice',
     duration: 600, // 10 minutes
     color: 'bg-amber-500/10 text-amber-600 dark:text-amber-400',
+  },
+  interval: {
+    label: 'Interval',
+    title: 'Interval Timer',
+    description: 'Repeat timer for interval training',
+    duration: 0, // Custom duration
+    color: 'bg-orange-500/10 text-orange-600 dark:text-orange-400',
   },
 };
 
