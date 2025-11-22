@@ -310,4 +310,109 @@ describe('RepeatTimer', () => {
       vi.useRealTimers();
     });
   });
+
+  describe('Beep Sound Feature', () => {
+    it('should render beep sound checkbox in configuration', () => {
+      render(<RepeatTimer />);
+
+      expect(screen.getByRole('checkbox', { name: /beep sound/i })).toBeInTheDocument();
+    });
+
+    it('should have beep checkbox unchecked by default', () => {
+      render(<RepeatTimer />);
+
+      const checkbox = screen.getByRole('checkbox', { name: /beep sound/i });
+      expect(checkbox).not.toBeChecked();
+    });
+
+    it('should toggle beep checkbox when clicked', async () => {
+      const user = userEvent.setup();
+      render(<RepeatTimer />);
+
+      const checkbox = screen.getByRole('checkbox', { name: /beep sound/i });
+
+      expect(checkbox).not.toBeChecked();
+
+      await user.click(checkbox);
+      expect(checkbox).toBeChecked();
+
+      await user.click(checkbox);
+      expect(checkbox).not.toBeChecked();
+    });
+
+    it('should play beep sound when round completes if checkbox is enabled', async () => {
+      vi.useFakeTimers();
+      const user = userEvent.setup({ delay: null });
+
+      // Mock Audio
+      const mockPlay = vi.fn();
+      global.Audio = vi.fn().mockImplementation(() => ({
+        play: mockPlay,
+      })) as any;
+
+      render(<RepeatTimer />);
+
+      // Enable beep sound
+      const checkbox = screen.getByRole('checkbox', { name: /beep sound/i });
+      await user.click(checkbox);
+
+      // Configure and start timer
+      const durationInput = screen.getByLabelText(/duration/i);
+      const repsInput = screen.getByLabelText(/repetitions/i);
+
+      await user.clear(durationInput);
+      await user.type(durationInput, '60');
+      await user.clear(repsInput);
+      await user.type(repsInput, '2');
+
+      await user.click(screen.getByRole('button', { name: /start/i }));
+
+      // Complete first round
+      vi.advanceTimersByTime(60000);
+
+      await waitFor(() => {
+        expect(mockPlay).toHaveBeenCalled();
+      });
+
+      vi.useRealTimers();
+    });
+
+    it('should not play beep sound when round completes if checkbox is disabled', async () => {
+      vi.useFakeTimers();
+      const user = userEvent.setup({ delay: null });
+
+      // Mock Audio
+      const mockPlay = vi.fn();
+      global.Audio = vi.fn().mockImplementation(() => ({
+        play: mockPlay,
+      })) as any;
+
+      render(<RepeatTimer />);
+
+      // Keep beep sound disabled (default)
+
+      // Configure and start timer
+      const durationInput = screen.getByLabelText(/duration/i);
+      const repsInput = screen.getByLabelText(/repetitions/i);
+
+      await user.clear(durationInput);
+      await user.type(durationInput, '60');
+      await user.clear(repsInput);
+      await user.type(repsInput, '2');
+
+      await user.click(screen.getByRole('button', { name: /start/i }));
+
+      // Complete first round
+      vi.advanceTimersByTime(60000);
+
+      await waitFor(() => {
+        expect(screen.getByText(/round 2 of 2/i)).toBeInTheDocument();
+      });
+
+      // Beep should NOT have been played
+      expect(mockPlay).not.toHaveBeenCalled();
+
+      vi.useRealTimers();
+    });
+  });
 });

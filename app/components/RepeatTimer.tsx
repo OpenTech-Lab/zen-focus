@@ -1,19 +1,24 @@
-'use client';
+"use client";
 
-import { useState, useEffect, useCallback, useRef } from 'react';
-import { useTimer } from '@/lib/hooks/useTimer';
-import { useNotification } from '@/lib/hooks/useNotification';
-import { formatTime } from '@/lib/utils/formatTime';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Play, Pause, RotateCcw } from 'lucide-react';
+import { useState, useEffect, useCallback, useRef } from "react";
+import { useTimer } from "@/lib/hooks/useTimer";
+import { useNotification } from "@/lib/hooks/useNotification";
+import { formatTime } from "@/lib/utils/formatTime";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Play, Pause, RotateCcw } from "lucide-react";
 
 /**
  * Props for the RepeatTimer component.
  */
 interface RepeatTimerProps {
-  onSessionComplete?: (focusMode: string, duration: number, completed: boolean) => void;
+  onSessionComplete?: (
+    focusMode: string,
+    duration: number,
+    completed: boolean
+  ) => void;
 }
 
 /**
@@ -27,10 +32,19 @@ export default function RepeatTimer({ onSessionComplete }: RepeatTimerProps) {
   const [currentRound, setCurrentRound] = useState<number>(0);
   const [isConfiguring, setIsConfiguring] = useState<boolean>(true);
   const [allRoundsComplete, setAllRoundsComplete] = useState<boolean>(false);
+  const [beepEnabled, setBeepEnabled] = useState<boolean>(false);
   const processedRoundRef = useRef<number>(0);
 
-  const { timeLeft, isRunning, isComplete, start, pause, reset: resetTimer, setDuration } = useTimer(durationSeconds);
-  const { notify } = useNotification();
+  const {
+    timeLeft,
+    isRunning,
+    isComplete,
+    start,
+    pause,
+    reset: resetTimer,
+    setDuration,
+  } = useTimer(durationSeconds);
+  const { playSound, showNotification } = useNotification();
 
   // Validate inputs
   const isValidConfig = durationSeconds > 0 && totalRepetitions > 0;
@@ -46,16 +60,16 @@ export default function RepeatTimer({ onSessionComplete }: RepeatTimerProps) {
 
     const parts = [];
     if (hours > 0) {
-      parts.push(`${hours} ${hours === 1 ? 'hour' : 'hours'}`);
+      parts.push(`${hours} ${hours === 1 ? "hour" : "hours"}`);
     }
     if (minutes > 0) {
-      parts.push(`${minutes} ${minutes === 1 ? 'minute' : 'minutes'}`);
+      parts.push(`${minutes} ${minutes === 1 ? "minute" : "minutes"}`);
     }
     if (seconds > 0 || parts.length === 0) {
-      parts.push(`${seconds} ${seconds === 1 ? 'second' : 'seconds'}`);
+      parts.push(`${seconds} ${seconds === 1 ? "second" : "seconds"}`);
     }
 
-    return `Total: ${parts.join(' ')}`;
+    return `Total: ${parts.join(" ")}`;
   };
 
   /**
@@ -78,7 +92,14 @@ export default function RepeatTimer({ onSessionComplete }: RepeatTimerProps) {
       setDuration(durationSeconds);
       start();
     }
-  }, [isConfiguring, currentRound, durationSeconds, isRunning, setDuration, start]);
+  }, [
+    isConfiguring,
+    currentRound,
+    durationSeconds,
+    isRunning,
+    setDuration,
+    start,
+  ]);
 
   /**
    * Handle reset button click - return to configuration
@@ -94,41 +115,99 @@ export default function RepeatTimer({ onSessionComplete }: RepeatTimerProps) {
    * Handle round completion and advance to next round
    */
   useEffect(() => {
-    if (isComplete && currentRound > 0 && currentRound <= totalRepetitions && processedRoundRef.current !== currentRound) {
+    if (
+      isComplete &&
+      currentRound > 0 &&
+      currentRound <= totalRepetitions &&
+      processedRoundRef.current !== currentRound
+    ) {
       // Mark this round as processed
       processedRoundRef.current = currentRound;
 
       // Track completed round
       if (onSessionComplete) {
-        onSessionComplete('interval', durationSeconds, true);
+        onSessionComplete("interval", durationSeconds, true);
       }
 
       // Send notification
-      notify(`Round ${currentRound} of ${totalRepetitions} completed!`);
+      if (beepEnabled) {
+        playSound();
+      }
+      showNotification(
+        `Round ${currentRound} of ${totalRepetitions} completed!`,
+        "Keep going!"
+      );
 
       // Check if more rounds remaining
       if (currentRound < totalRepetitions) {
         // Advance to next round immediately
-        setCurrentRound(prev => prev + 1);
+        setCurrentRound((prev) => prev + 1);
       } else {
         // All rounds complete
         setAllRoundsComplete(true);
-        notify('All rounds completed! Great work! 🎉');
+        if (beepEnabled) {
+          playSound();
+        }
+        showNotification("All rounds completed!", "Great work! 🎉");
       }
     }
-  }, [isComplete, currentRound, totalRepetitions, durationSeconds, onSessionComplete, notify]);
+  }, [
+    isComplete,
+    currentRound,
+    totalRepetitions,
+    durationSeconds,
+    onSessionComplete,
+    beepEnabled,
+    playSound,
+    showNotification,
+  ]);
 
   /**
    * Auto-start next round when currentRound changes
    */
   useEffect(() => {
-    if (currentRound > 1 && currentRound <= totalRepetitions && !allRoundsComplete) {
+    if (
+      currentRound > 1 &&
+      currentRound <= totalRepetitions &&
+      !allRoundsComplete
+    ) {
       // Reset and start the next round
       resetTimer();
       setDuration(durationSeconds);
+    }
+  }, [
+    currentRound,
+    totalRepetitions,
+    allRoundsComplete,
+    resetTimer,
+    setDuration,
+    durationSeconds,
+  ]);
+
+  /**
+   * Effect to start the timer for subsequent rounds once reset is complete
+   */
+  useEffect(() => {
+    if (
+      currentRound > 1 &&
+      currentRound <= totalRepetitions &&
+      !allRoundsComplete &&
+      !isRunning &&
+      !isComplete &&
+      timeLeft === durationSeconds
+    ) {
       start();
     }
-  }, [currentRound, totalRepetitions, allRoundsComplete, resetTimer, setDuration, durationSeconds, start]);
+  }, [
+    currentRound,
+    totalRepetitions,
+    allRoundsComplete,
+    isRunning,
+    isComplete,
+    timeLeft,
+    durationSeconds,
+    start,
+  ]);
 
   return (
     <div className="flex flex-col items-center justify-center space-y-8">
@@ -151,8 +230,10 @@ export default function RepeatTimer({ onSessionComplete }: RepeatTimerProps) {
                 type="number"
                 min="1"
                 max="7200"
-                value={durationSeconds || ''}
-                onChange={(e) => setDurationSeconds(parseInt(e.target.value) || 0)}
+                value={durationSeconds || ""}
+                onChange={(e) =>
+                  setDurationSeconds(parseInt(e.target.value) || 0)
+                }
                 placeholder="Enter duration in seconds"
               />
             </div>
@@ -165,10 +246,28 @@ export default function RepeatTimer({ onSessionComplete }: RepeatTimerProps) {
                 type="number"
                 min="1"
                 max="99"
-                value={totalRepetitions || ''}
-                onChange={(e) => setTotalRepetitions(parseInt(e.target.value) || 0)}
+                value={totalRepetitions || ""}
+                onChange={(e) =>
+                  setTotalRepetitions(parseInt(e.target.value) || 0)
+                }
                 placeholder="Number of rounds"
               />
+            </div>
+
+            {/* Beep Sound Checkbox */}
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="beep-sound"
+                checked={beepEnabled}
+                onCheckedChange={(checked) => setBeepEnabled(checked === true)}
+                aria-label="Beep sound"
+              />
+              <Label
+                htmlFor="beep-sound"
+                className="text-sm font-normal cursor-pointer"
+              >
+                Beep sound when each round completes
+              </Label>
             </div>
 
             {/* Total Time Display */}
@@ -212,7 +311,8 @@ export default function RepeatTimer({ onSessionComplete }: RepeatTimerProps) {
               </div>
               <h2 className="text-3xl font-bold">All Rounds Completed!</h2>
               <p className="text-lg text-muted-foreground">
-                Great work! You completed {totalRepetitions} rounds of {formatTime(durationSeconds)} each.
+                Great work! You completed {totalRepetitions} rounds of{" "}
+                {formatTime(durationSeconds)} each.
               </p>
             </div>
           ) : (
@@ -242,7 +342,9 @@ export default function RepeatTimer({ onSessionComplete }: RepeatTimerProps) {
                 />
               </svg>
               <div className="absolute inset-0 flex items-center justify-center">
-                <span className="text-5xl font-bold">{formatTime(timeLeft)}</span>
+                <span className="text-5xl font-bold">
+                  {formatTime(timeLeft)}
+                </span>
               </div>
             </div>
           )}
@@ -253,8 +355,8 @@ export default function RepeatTimer({ onSessionComplete }: RepeatTimerProps) {
               <Button
                 onClick={isRunning ? pause : start}
                 size="lg"
-                variant={isRunning ? 'secondary' : 'default'}
-                aria-label={isRunning ? 'Pause' : 'Resume'}
+                variant={isRunning ? "secondary" : "default"}
+                aria-label={isRunning ? "Pause" : "Resume"}
               >
                 {isRunning ? (
                   <>
@@ -269,11 +371,7 @@ export default function RepeatTimer({ onSessionComplete }: RepeatTimerProps) {
                 )}
               </Button>
 
-              <Button
-                onClick={handleReset}
-                size="lg"
-                variant="outline"
-              >
+              <Button onClick={handleReset} size="lg" variant="outline">
                 <RotateCcw className="mr-2 h-5 w-5" />
                 Reset
               </Button>
@@ -282,10 +380,7 @@ export default function RepeatTimer({ onSessionComplete }: RepeatTimerProps) {
 
           {/* Reset Button after completion */}
           {allRoundsComplete && (
-            <Button
-              onClick={handleReset}
-              size="lg"
-            >
+            <Button onClick={handleReset} size="lg">
               <RotateCcw className="mr-2 h-5 w-5" />
               New Interval
             </Button>
