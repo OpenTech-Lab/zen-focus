@@ -1,6 +1,6 @@
 export interface TimerSession {
   id: string;
-  focusMode: 'study' | 'work' | 'yoga' | 'meditation';
+  focusMode: 'study' | 'work' | 'yoga' | 'meditation' | 'interval';
   duration: number; // in seconds
   completedAt: string; // ISO date string
   completed: boolean; // true if timer ran to completion

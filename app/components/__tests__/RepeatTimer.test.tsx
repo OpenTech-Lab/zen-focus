@@ -346,9 +346,11 @@ describe('RepeatTimer', () => {
 
       // Mock Audio
       const mockPlay = vi.fn();
-      global.Audio = vi.fn().mockImplementation(() => ({
+      const mockAudio = vi.fn().mockImplementation(() => ({
         play: mockPlay,
-      })) as any;
+        currentTime: 0,
+      }));
+      global.Audio = mockAudio as unknown as typeof Audio;
 
       render(<RepeatTimer />);
 
@@ -383,9 +385,11 @@ describe('RepeatTimer', () => {
 
       // Mock Audio
       const mockPlay = vi.fn();
-      global.Audio = vi.fn().mockImplementation(() => ({
+      const mockAudio = vi.fn().mockImplementation(() => ({
         play: mockPlay,
-      })) as any;
+        currentTime: 0,
+      }));
+      global.Audio = mockAudio as unknown as typeof Audio;
 
       render(<RepeatTimer />);
 
