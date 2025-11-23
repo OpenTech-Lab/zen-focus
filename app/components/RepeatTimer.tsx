@@ -51,6 +51,18 @@ export default function RepeatTimer({ onSessionComplete }: RepeatTimerProps) {
   // Validate inputs
   const isValidConfig = durationSeconds > 0 && totalRepetitions > 0;
 
+  // Calculate elapsed total time
+  const calculateElapsedTime = () => {
+    if (currentRound === 0) return 0;
+
+    // Time from completed rounds + time elapsed in current round
+    const completedRoundsTime = (currentRound - 1) * durationSeconds;
+    const currentRoundElapsed = durationSeconds - timeLeft;
+    return completedRoundsTime + currentRoundElapsed;
+  };
+
+  const elapsedSeconds = calculateElapsedTime();
+
   // Calculate and format total time
   const totalSeconds = durationSeconds * totalRepetitions;
   const formatTotalTime = () => {
@@ -164,7 +176,7 @@ export default function RepeatTimer({ onSessionComplete }: RepeatTimerProps) {
   }, [isComplete, onSessionComplete]);
 
   /**
-   * Prepare the next round's duration after advancing currentRound
+   * Prepare and start next round after advancing currentRound
    */
   useEffect(() => {
     if (
@@ -173,6 +185,7 @@ export default function RepeatTimer({ onSessionComplete }: RepeatTimerProps) {
       !allRoundsComplete
     ) {
       setDuration(durationSeconds);
+      start();
     }
   }, [
     currentRound,
@@ -180,30 +193,6 @@ export default function RepeatTimer({ onSessionComplete }: RepeatTimerProps) {
     allRoundsComplete,
     durationSeconds,
     setDuration,
-  ]);
-
-  /**
-   * Start the next round once duration has been reset
-   */
-  useEffect(() => {
-    if (
-      currentRound > 1 &&
-      currentRound <= totalRepetitions &&
-      !allRoundsComplete &&
-      !isRunning &&
-      !isComplete &&
-      timeLeft === durationSeconds
-    ) {
-      start();
-    }
-  }, [
-    currentRound,
-    totalRepetitions,
-    allRoundsComplete,
-    isRunning,
-    isComplete,
-    timeLeft,
-    durationSeconds,
     start,
   ]);
 
@@ -298,6 +287,9 @@ export default function RepeatTimer({ onSessionComplete }: RepeatTimerProps) {
               <p className="text-lg text-muted-foreground">
                 Round {currentRound} of {totalRepetitions}
               </p>
+              <p className="text-sm text-muted-foreground/80">
+                Elapsed: {formatTime(elapsedSeconds)}
+              </p>
             </div>
           )}
 
@@ -311,6 +303,9 @@ export default function RepeatTimer({ onSessionComplete }: RepeatTimerProps) {
               <p className="text-lg text-muted-foreground">
                 Great work! You completed {totalRepetitions} rounds of{" "}
                 {formatTime(durationSeconds)} each.
+              </p>
+              <p className="text-md text-muted-foreground/80">
+                Total Elapsed: {formatTime(elapsedSeconds)}
               </p>
             </div>
           ) : (
