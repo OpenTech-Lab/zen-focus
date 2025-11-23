@@ -392,35 +392,39 @@ export default function RepeatTimer({ onSessionComplete }: RepeatTimerProps) {
 
           {/* Control Buttons */}
           {!allRoundsComplete && (
-            <div className="flex gap-4">
-              <Button
-                onClick={isRunning ? pause : start}
-                size="lg"
-                variant={isRunning ? "secondary" : "default"}
-                aria-label={isRunning ? "Pause" : "Resume"}
-              >
-                {isRunning ? (
-                  <>
-                    <Pause className="mr-2 h-5 w-5" />
-                    Pause
-                  </>
-                ) : (
-                  <>
-                    <Play className="mr-2 h-5 w-5" />
-                    Resume
-                  </>
-                )}
-              </Button>
+            <div className="flex flex-col gap-3">
+              <div className="flex gap-4">
+                <Button
+                  onClick={isRunning ? pause : start}
+                  size="lg"
+                  variant={isRunning ? "secondary" : "default"}
+                  aria-label={isRunning ? "Pause" : "Resume"}
+                >
+                  {isRunning ? (
+                    <>
+                      <Pause className="mr-2 h-5 w-5" />
+                      Pause
+                    </>
+                  ) : (
+                    <>
+                      <Play className="mr-2 h-5 w-5" />
+                      Resume
+                    </>
+                  )}
+                </Button>
 
-              <Button onClick={handleReset} size="lg" variant="outline">
-                <RotateCcw className="mr-2 h-5 w-5" />
-                Reset
-              </Button>
+                <Button onClick={handleReset} size="lg" variant="outline">
+                  <RotateCcw className="mr-2 h-5 w-5" />
+                  Reset
+                </Button>
+              </div>
 
-              <Button onClick={handleSkip} size="lg" variant="outline">
-                <SkipForward className="mr-2 h-5 w-5" />
-                Skip
-              </Button>
+              <div className="flex justify-center">
+                <Button onClick={handleSkip} size="lg" variant="outline">
+                  <SkipForward className="mr-2 h-5 w-5" />
+                  Skip
+                </Button>
+              </div>
             </div>
           )}
 
