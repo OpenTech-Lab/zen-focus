@@ -49,4 +49,4 @@
 - [x] internal time is counting as 1, 2, 4, 6 ... but expected 1, 2, 3, 4
 - [x] first round cannot pause in internal timer. it will be reseted now.
 - [x] show elapsed total time in interval timer.
-- [ ] add a skip button under pause and reset buttons to skip this round and do not count whole time in elapsed total time.
+- [x] Cycle animations that show the passage of time can suddenly jump when the seconds change.

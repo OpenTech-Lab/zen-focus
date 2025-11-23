@@ -202,7 +202,7 @@ const Timer = memo(function Timer({ duration, title = 'Focus Session', onComplet
             fill="none"
             strokeDasharray={`${2 * Math.PI * 120}`}
             strokeDashoffset={`${2 * Math.PI * 120 * (1 - progress / 100)}`}
-            className="text-primary transition-all duration-1000 ease-linear"
+            className="text-primary transition-all duration-300 ease-out"
             strokeLinecap="round"
           />
         </svg>
