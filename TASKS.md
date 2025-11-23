@@ -50,3 +50,4 @@
 - [x] first round cannot pause in internal timer. it will be reseted now.
 - [x] show elapsed total time in interval timer.
 - [x] Cycle animations that show the passage of time can suddenly jump when the seconds change.
+- [x] Add a skip button under pause and reset button in interval timer, but do not count whole time of round in elapsed total time when skip.
