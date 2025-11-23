@@ -530,4 +530,91 @@ describe("RepeatTimer", () => {
       expect(mockPlay).not.toHaveBeenCalled();
     });
   });
+
+  describe("Elapsed Time Display", () => {
+    it("should display elapsed total time during interval timer", async () => {
+      vi.useFakeTimers();
+      const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+      render(<RepeatTimer />);
+
+      const durationInput = screen.getByLabelText(/duration/i);
+      const repsInput = screen.getByLabelText(/repetitions/i);
+
+      // Set up 3 rounds of 60 seconds each
+      await user.clear(durationInput);
+      await user.type(durationInput, "60");
+      await user.clear(repsInput);
+      await user.type(repsInput, "3");
+
+      await user.click(screen.getByRole("button", { name: /start/i }));
+
+      // Initial elapsed time should be 00:00
+      expect(screen.getByText(/elapsed.*00:00/i)).toBeInTheDocument();
+
+      // Complete round 1 (60 seconds)
+      act(() => {
+        vi.advanceTimersByTime(60000);
+      });
+
+      await waitFor(() => {
+        expect(screen.getByText(/round 2 of 3/i)).toBeInTheDocument();
+      });
+
+      // After 1 complete round, elapsed time should be 01:00
+      expect(screen.getByText(/elapsed.*01:00/i)).toBeInTheDocument();
+
+      // Complete round 2 (60 seconds)
+      act(() => {
+        vi.advanceTimersByTime(60000);
+      });
+
+      await waitFor(() => {
+        expect(screen.getByText(/round 3 of 3/i)).toBeInTheDocument();
+      });
+
+      // After 2 complete rounds, elapsed time should be 02:00
+      expect(screen.getByText(/elapsed.*02:00/i)).toBeInTheDocument();
+
+      // Complete round 3
+      act(() => {
+        vi.advanceTimersByTime(60000);
+      });
+
+      await waitFor(() => {
+        expect(screen.getByText(/all rounds completed/i)).toBeInTheDocument();
+      });
+
+      // After all rounds complete, elapsed time should be 03:00
+      expect(screen.getByText(/elapsed.*03:00/i)).toBeInTheDocument();
+
+      vi.useRealTimers();
+    });
+
+    it("should include partial round time in elapsed total", async () => {
+      vi.useFakeTimers();
+      const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+      render(<RepeatTimer />);
+
+      const durationInput = screen.getByLabelText(/duration/i);
+      const repsInput = screen.getByLabelText(/repetitions/i);
+
+      // Set up 2 rounds of 60 seconds each
+      await user.clear(durationInput);
+      await user.type(durationInput, "60");
+      await user.clear(repsInput);
+      await user.type(repsInput, "2");
+
+      await user.click(screen.getByRole("button", { name: /start/i }));
+
+      // Let 30 seconds pass in round 1
+      act(() => {
+        vi.advanceTimersByTime(30000);
+      });
+
+      // Elapsed time should be 0:30 (30 seconds into round 1)
+      expect(screen.getByText(/elapsed.*0:30/i)).toBeInTheDocument();
+
+      vi.useRealTimers();
+    });
+  });
 });
