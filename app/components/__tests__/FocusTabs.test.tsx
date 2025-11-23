@@ -80,12 +80,13 @@ describe('FocusTabs', () => {
   });
 
   describe('Tab Rendering', () => {
-    it('should render only 2 tabs: Focus and History', () => {
+    it('should render only 3 tabs: Focus, Intervals and History', () => {
       render(<FocusTabs />);
 
       const tabs = screen.getAllByRole('tab');
-      expect(tabs).toHaveLength(2);
+      expect(tabs).toHaveLength(3);
       expect(screen.getByRole('tab', { name: /focus/i })).toBeInTheDocument();
+      expect(screen.getByRole('tab', { name: /intervals/i })).toBeInTheDocument();
       expect(screen.getByRole('tab', { name: /history/i })).toBeInTheDocument();
     });
 
@@ -436,20 +437,21 @@ describe('FocusTabs', () => {
   });
 
   describe('Tabs Layout', () => {
-    it('should render tabs list with grid layout for 2 columns', () => {
+    it('should render tabs list with grid layout for 3 columns', () => {
       const { container } = render(<FocusTabs />);
 
       const tabsList = container.querySelector('[role="tablist"]');
-      expect(tabsList).toHaveClass('grid', 'w-full', 'grid-cols-2', 'mb-12');
+      expect(tabsList).toHaveClass('grid', 'w-full', 'grid-cols-3', 'mb-12');
     });
 
     it('should render tabs in the correct order', () => {
       render(<FocusTabs />);
 
       const tabs = screen.getAllByRole('tab');
-      expect(tabs).toHaveLength(2);
+      expect(tabs).toHaveLength(3);
       expect(tabs[0]).toHaveTextContent('Focus');
-      expect(tabs[1]).toHaveTextContent('History');
+      expect(tabs[1]).toHaveTextContent('Intervals');
+      expect(tabs[2]).toHaveTextContent('History');
     });
 
     it('should render main container with correct layout classes', () => {

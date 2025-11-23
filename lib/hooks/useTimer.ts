@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback } from "react";
 
 export interface UseTimerReturn {
   timeLeft: number;
@@ -20,11 +20,9 @@ export function useTimer(initialDuration: number = 1500): UseTimerReturn {
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const start = useCallback(() => {
-    if (timeLeft > 0) {
-      setIsRunning(true);
-      setIsComplete(false);
-    }
-  }, [timeLeft]);
+    setIsRunning(true);
+    setIsComplete(false);
+  }, []);
 
   const pause = useCallback(() => {
     setIsRunning(false);

@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Play, Pause, RotateCcw } from "lucide-react";
+import { Play, Pause, RotateCcw, SkipForward } from "lucide-react";
 
 /**
  * Props for the RepeatTimer component.
@@ -34,7 +34,10 @@ export default function RepeatTimer({ onSessionComplete }: RepeatTimerProps) {
   const [isConfiguring, setIsConfiguring] = useState<boolean>(true);
   const [allRoundsComplete, setAllRoundsComplete] = useState<boolean>(false);
   const [beepEnabled, setBeepEnabled] = useState<boolean>(false);
+  const [accumulatedElapsedTime, setAccumulatedElapsedTime] =
+    useState<number>(0);
   const processedRoundRef = useRef<number>(0);
+  const firstRoundStartedRef = useRef<boolean>(false);
 
   const {
     timeLeft,
@@ -49,6 +52,17 @@ export default function RepeatTimer({ onSessionComplete }: RepeatTimerProps) {
 
   // Validate inputs
   const isValidConfig = durationSeconds > 0 && totalRepetitions > 0;
+
+  // Calculate elapsed total time
+  const calculateElapsedTime = () => {
+    if (currentRound === 0) return 0;
+
+    // Accumulated time from completed/skipped rounds + time elapsed in current round
+    const currentRoundElapsed = durationSeconds - timeLeft;
+    return accumulatedElapsedTime + currentRoundElapsed;
+  };
+
+  const elapsedSeconds = calculateElapsedTime();
 
   // Calculate and format total time
   const totalSeconds = durationSeconds * totalRepetitions;
@@ -82,16 +96,24 @@ export default function RepeatTimer({ onSessionComplete }: RepeatTimerProps) {
     setIsConfiguring(false);
     setCurrentRound(1);
     setAllRoundsComplete(false);
+    setAccumulatedElapsedTime(0);
     processedRoundRef.current = 0;
+    firstRoundStartedRef.current = false;
   }, [isValidConfig]);
 
   /**
    * Auto-start first round when leaving configuration
    */
   useEffect(() => {
-    if (!isConfiguring && currentRound === 1 && !isRunning) {
+    if (
+      !isConfiguring &&
+      currentRound === 1 &&
+      !isRunning &&
+      !firstRoundStartedRef.current
+    ) {
       setDuration(durationSeconds);
       start();
+      firstRoundStartedRef.current = true;
     }
   }, [
     isConfiguring,
@@ -110,7 +132,50 @@ export default function RepeatTimer({ onSessionComplete }: RepeatTimerProps) {
     setIsConfiguring(true);
     setCurrentRound(0);
     setAllRoundsComplete(false);
+    setAccumulatedElapsedTime(0);
   }, [resetTimer]);
+
+  /**
+   * Handle skip button click - skip to next round without counting remaining time
+   */
+  const handleSkip = useCallback(() => {
+    if (currentRound === 0 || currentRound > totalRepetitions) return;
+
+    // Calculate elapsed time in current round (only count time actually spent)
+    const currentRoundElapsed = durationSeconds - timeLeft;
+
+    // Add only the elapsed time to accumulated (not the full duration)
+    setAccumulatedElapsedTime((prev) => prev + currentRoundElapsed);
+
+    // Mark this round as processed (skipped)
+    processedRoundRef.current = currentRound;
+
+    // Track skipped round (completed = false)
+    if (onSessionComplete) {
+      onSessionComplete("interval", currentRoundElapsed, false);
+    }
+
+    // Stop current timer before advancing
+    pause();
+
+    // Check if more rounds remaining
+    if (currentRound < totalRepetitions) {
+      // Move to next round (effect will reset timer and start it)
+      setCurrentRound((prev) => prev + 1);
+    } else {
+      // All rounds complete (last round was skipped)
+      setAllRoundsComplete(true);
+      showNotification("All rounds completed!", "Great work! 🎉");
+    }
+  }, [
+    currentRound,
+    totalRepetitions,
+    durationSeconds,
+    timeLeft,
+    onSessionComplete,
+    showNotification,
+    pause,
+  ]);
 
   /**
    * Handle round completion and advance to next round
@@ -124,6 +189,9 @@ export default function RepeatTimer({ onSessionComplete }: RepeatTimerProps) {
     ) {
       // Mark this round as processed
       processedRoundRef.current = currentRound;
+
+      // Add full round duration to accumulated time (completed normally)
+      setAccumulatedElapsedTime((prev) => prev + durationSeconds);
 
       // Track completed round
       if (onSessionComplete) {
@@ -141,7 +209,7 @@ export default function RepeatTimer({ onSessionComplete }: RepeatTimerProps) {
 
       // Check if more rounds remaining
       if (currentRound < totalRepetitions) {
-        // Advance to next round immediately
+        // Move to next round; dedicated effects will reset and restart timer
         setCurrentRound((prev) => prev + 1);
       } else {
         // All rounds complete
@@ -152,19 +220,11 @@ export default function RepeatTimer({ onSessionComplete }: RepeatTimerProps) {
         showNotification("All rounds completed!", "Great work! 🎉");
       }
     }
-  }, [
-    isComplete,
-    currentRound,
-    totalRepetitions,
-    durationSeconds,
-    onSessionComplete,
-    beepEnabled,
-    playSound,
-    showNotification,
-  ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isComplete, onSessionComplete]);
 
   /**
-   * Auto-start next round when currentRound changes
+   * Prepare and start next round after advancing currentRound
    */
   useEffect(() => {
     if (
@@ -172,41 +232,15 @@ export default function RepeatTimer({ onSessionComplete }: RepeatTimerProps) {
       currentRound <= totalRepetitions &&
       !allRoundsComplete
     ) {
-      // Reset and start the next round
-      resetTimer();
       setDuration(durationSeconds);
-    }
-  }, [
-    currentRound,
-    totalRepetitions,
-    allRoundsComplete,
-    resetTimer,
-    setDuration,
-    durationSeconds,
-  ]);
-
-  /**
-   * Effect to start the timer for subsequent rounds once reset is complete
-   */
-  useEffect(() => {
-    if (
-      currentRound > 1 &&
-      currentRound <= totalRepetitions &&
-      !allRoundsComplete &&
-      !isRunning &&
-      !isComplete &&
-      timeLeft === durationSeconds
-    ) {
       start();
     }
   }, [
     currentRound,
     totalRepetitions,
     allRoundsComplete,
-    isRunning,
-    isComplete,
-    timeLeft,
     durationSeconds,
+    setDuration,
     start,
   ]);
 
@@ -301,6 +335,9 @@ export default function RepeatTimer({ onSessionComplete }: RepeatTimerProps) {
               <p className="text-lg text-muted-foreground">
                 Round {currentRound} of {totalRepetitions}
               </p>
+              <p className="text-sm text-muted-foreground/80">
+                Elapsed: {formatTime(elapsedSeconds)}
+              </p>
             </div>
           )}
 
@@ -314,6 +351,9 @@ export default function RepeatTimer({ onSessionComplete }: RepeatTimerProps) {
               <p className="text-lg text-muted-foreground">
                 Great work! You completed {totalRepetitions} rounds of{" "}
                 {formatTime(durationSeconds)} each.
+              </p>
+              <p className="text-md text-muted-foreground/80">
+                Total Elapsed: {formatTime(elapsedSeconds)}
               </p>
             </div>
           ) : (
@@ -339,7 +379,7 @@ export default function RepeatTimer({ onSessionComplete }: RepeatTimerProps) {
                   strokeDashoffset={`${
                     2 * Math.PI * 120 * (1 - timeLeft / durationSeconds)
                   }`}
-                  className="text-primary transition-all duration-1000 ease-linear"
+                  className="text-primary transition-all duration-300 ease-out"
                 />
               </svg>
               <div className="absolute inset-0 flex items-center justify-center">
@@ -352,30 +392,39 @@ export default function RepeatTimer({ onSessionComplete }: RepeatTimerProps) {
 
           {/* Control Buttons */}
           {!allRoundsComplete && (
-            <div className="flex gap-4">
-              <Button
-                onClick={isRunning ? pause : start}
-                size="lg"
-                variant={isRunning ? "secondary" : "default"}
-                aria-label={isRunning ? "Pause" : "Resume"}
-              >
-                {isRunning ? (
-                  <>
-                    <Pause className="mr-2 h-5 w-5" />
-                    Pause
-                  </>
-                ) : (
-                  <>
-                    <Play className="mr-2 h-5 w-5" />
-                    Resume
-                  </>
-                )}
-              </Button>
+            <div className="flex flex-col gap-3">
+              <div className="flex gap-4">
+                <Button
+                  onClick={isRunning ? pause : start}
+                  size="lg"
+                  variant={isRunning ? "secondary" : "default"}
+                  aria-label={isRunning ? "Pause" : "Resume"}
+                >
+                  {isRunning ? (
+                    <>
+                      <Pause className="mr-2 h-5 w-5" />
+                      Pause
+                    </>
+                  ) : (
+                    <>
+                      <Play className="mr-2 h-5 w-5" />
+                      Resume
+                    </>
+                  )}
+                </Button>
 
-              <Button onClick={handleReset} size="lg" variant="outline">
-                <RotateCcw className="mr-2 h-5 w-5" />
-                Reset
-              </Button>
+                <Button onClick={handleReset} size="lg" variant="outline">
+                  <RotateCcw className="mr-2 h-5 w-5" />
+                  Reset
+                </Button>
+              </div>
+
+              <div className="flex justify-center">
+                <Button onClick={handleSkip} size="lg" variant="outline">
+                  <SkipForward className="mr-2 h-5 w-5" />
+                  Skip
+                </Button>
+              </div>
             </div>
           )}
 
