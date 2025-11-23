@@ -35,6 +35,7 @@ export default function RepeatTimer({ onSessionComplete }: RepeatTimerProps) {
   const [allRoundsComplete, setAllRoundsComplete] = useState<boolean>(false);
   const [beepEnabled, setBeepEnabled] = useState<boolean>(false);
   const processedRoundRef = useRef<number>(0);
+  const firstRoundStartedRef = useRef<boolean>(false);
 
   const {
     timeLeft,
@@ -83,15 +84,22 @@ export default function RepeatTimer({ onSessionComplete }: RepeatTimerProps) {
     setCurrentRound(1);
     setAllRoundsComplete(false);
     processedRoundRef.current = 0;
+    firstRoundStartedRef.current = false;
   }, [isValidConfig]);
 
   /**
    * Auto-start first round when leaving configuration
    */
   useEffect(() => {
-    if (!isConfiguring && currentRound === 1 && !isRunning) {
+    if (
+      !isConfiguring &&
+      currentRound === 1 &&
+      !isRunning &&
+      !firstRoundStartedRef.current
+    ) {
       setDuration(durationSeconds);
       start();
+      firstRoundStartedRef.current = true;
     }
   }, [
     isConfiguring,
@@ -141,7 +149,7 @@ export default function RepeatTimer({ onSessionComplete }: RepeatTimerProps) {
 
       // Check if more rounds remaining
       if (currentRound < totalRepetitions) {
-        // Advance to next round immediately
+        // Move to next round; dedicated effects will reset and restart timer
         setCurrentRound((prev) => prev + 1);
       } else {
         // All rounds complete
@@ -152,19 +160,11 @@ export default function RepeatTimer({ onSessionComplete }: RepeatTimerProps) {
         showNotification("All rounds completed!", "Great work! 🎉");
       }
     }
-  }, [
-    isComplete,
-    currentRound,
-    totalRepetitions,
-    durationSeconds,
-    onSessionComplete,
-    beepEnabled,
-    playSound,
-    showNotification,
-  ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isComplete, onSessionComplete]);
 
   /**
-   * Auto-start next round when currentRound changes
+   * Prepare the next round's duration after advancing currentRound
    */
   useEffect(() => {
     if (
@@ -172,21 +172,18 @@ export default function RepeatTimer({ onSessionComplete }: RepeatTimerProps) {
       currentRound <= totalRepetitions &&
       !allRoundsComplete
     ) {
-      // Reset and start the next round
-      resetTimer();
       setDuration(durationSeconds);
     }
   }, [
     currentRound,
     totalRepetitions,
     allRoundsComplete,
-    resetTimer,
-    setDuration,
     durationSeconds,
+    setDuration,
   ]);
 
   /**
-   * Effect to start the timer for subsequent rounds once reset is complete
+   * Start the next round once duration has been reset
    */
   useEffect(() => {
     if (

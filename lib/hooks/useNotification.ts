@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useCallback } from "react";
 
 export function useNotification() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -10,7 +10,7 @@ export function useNotification() {
     audioRef.current = new Audio("/beep.mp3");
   }, []);
 
-  const playSound = () => {
+  const playSound = useCallback(() => {
     if (!audioRef.current) {
       audioRef.current = new Audio("/beep.mp3");
     }
@@ -21,9 +21,9 @@ export function useNotification() {
         console.warn("Failed to play beep sound:", error);
       });
     }
-  };
+  }, []);
 
-  const showNotification = (title: string, body: string) => {
+  const showNotification = useCallback((title: string, body: string) => {
     if ("Notification" in window) {
       if (Notification.permission === "granted") {
         new Notification(title, { body, icon: "/icon.png" });
@@ -35,12 +35,12 @@ export function useNotification() {
         });
       }
     }
-  };
+  }, []);
 
-  const notify = (title: string, body: string) => {
+  const notify = useCallback((title: string, body: string) => {
     playSound();
     showNotification(title, body);
-  };
+  }, [playSound, showNotification]);
 
   return { notify, playSound, showNotification };
 }

@@ -118,7 +118,7 @@ describe('FocusModeSelector', () => {
       );
 
       const radios = screen.getAllByRole('radio');
-      expect(radios).toHaveLength(4);
+      expect(radios).toHaveLength(5);
     });
 
     it('should support keyboard navigation', async () => {
