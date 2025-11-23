@@ -1,11 +1,15 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, waitFor } from "@testing-library/react";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { render, screen, waitFor, act } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import RepeatTimer from "../RepeatTimer";
 
 describe("RepeatTimer", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
   });
 
   describe("Rendering", () => {
@@ -202,10 +206,55 @@ describe("RepeatTimer", () => {
       await user.click(screen.getByRole("button", { name: /start/i }));
       await user.click(screen.getByRole("button", { name: /pause/i }));
 
-      expect(
-        screen.getByRole("button", { name: /resume/i })
-      ).toBeInTheDocument();
+      await waitFor(() => {
+        expect(
+          screen.getByRole("button", { name: /resume/i })
+        ).toBeInTheDocument();
+      });
     });
+
+    it("should pause first round without resetting timer", async () => {
+      vi.useFakeTimers();
+      const user = userEvent.setup({ delay: null });
+      render(<RepeatTimer />);
+
+      const durationInput = screen.getByLabelText(/duration/i);
+      const repsInput = screen.getByLabelText(/repetitions/i);
+
+      await user.clear(durationInput);
+      await user.type(durationInput, "10");
+      await user.clear(repsInput);
+      await user.type(repsInput, "2");
+
+      await user.click(screen.getByRole("button", { name: /start/i }));
+
+      // Verify timer started
+      expect(screen.getByText(/round 1 of 2/i)).toBeInTheDocument();
+
+      // Let 5 seconds pass
+      vi.advanceTimersByTime(5000);
+
+      // Verify time is at 5 seconds remaining
+      await waitFor(() => {
+        expect(screen.getByText(/00:05/i)).toBeInTheDocument();
+      });
+
+      // Pause the timer
+      const pauseButton = screen.getByRole("button", { name: /pause/i });
+      await user.click(pauseButton);
+
+      // Wait for pause to take effect
+      await waitFor(() => {
+        expect(
+          screen.getByRole("button", { name: /resume/i })
+        ).toBeInTheDocument();
+      });
+
+      // Timer should still show 00:05 (not reset to 00:10)
+      expect(screen.getByText(/00:05/i)).toBeInTheDocument();
+
+      vi.useRealTimers();
+    }, 10000);
 
     it("should reset timer when reset button is clicked", async () => {
       const user = userEvent.setup();
@@ -231,14 +280,14 @@ describe("RepeatTimer", () => {
   describe("Round Progression", () => {
     it("should advance to next round after current round completes", async () => {
       vi.useFakeTimers();
-      const user = userEvent.setup({ delay: null });
+      const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
       render(<RepeatTimer />);
 
       const durationInput = screen.getByLabelText(/duration/i);
       const repsInput = screen.getByLabelText(/repetitions/i);
 
       await user.clear(durationInput);
-      await user.type(durationInput, "60");
+      await user.type(durationInput, "1");
       await user.clear(repsInput);
       await user.type(repsInput, "3");
 
@@ -246,46 +295,99 @@ describe("RepeatTimer", () => {
 
       expect(screen.getByText(/round 1 of 3/i)).toBeInTheDocument();
 
-      // Advance timer to complete first round (60 seconds)
-      vi.advanceTimersByTime(60000);
-
+      // Advance timer to complete first round (1 second)
+      act(() => {
+        vi.advanceTimersByTime(1000);
+      });
+      
       await waitFor(() => {
         expect(screen.getByText(/round 2 of 3/i)).toBeInTheDocument();
       });
-
-      vi.useRealTimers();
     });
 
     it("should show completion message when all rounds are done", async () => {
       vi.useFakeTimers();
-      const user = userEvent.setup({ delay: null });
+      const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
       render(<RepeatTimer />);
 
       const durationInput = screen.getByLabelText(/duration/i);
       const repsInput = screen.getByLabelText(/repetitions/i);
 
       await user.clear(durationInput);
-      await user.type(durationInput, "60");
+      await user.type(durationInput, "1");
       await user.clear(repsInput);
       await user.type(repsInput, "2");
 
       await user.click(screen.getByRole("button", { name: /start/i }));
 
-      // Complete round 1
-      vi.advanceTimersByTime(60000);
-
-      await waitFor(() => {
-        expect(screen.getByText(/round 2 of 2/i)).toBeInTheDocument();
+      // Complete both rounds
+      act(() => {
+        vi.advanceTimersByTime(2000);
       });
-
-      // Complete round 2
-      vi.advanceTimersByTime(60000);
 
       await waitFor(() => {
         expect(screen.getByText(/all rounds completed/i)).toBeInTheDocument();
       });
+    });
 
-      vi.useRealTimers();
+    it("should count rounds consecutively (1, 2, 3, 4) without skipping", async () => {
+      vi.useFakeTimers();
+      const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+      render(<RepeatTimer />);
+
+      const durationInput = screen.getByLabelText(/duration/i);
+      const repsInput = screen.getByLabelText(/repetitions/i);
+
+      // Set up 4 rounds of 2 seconds each (shorter for faster test)
+      await user.clear(durationInput);
+      await user.type(durationInput, "2");
+      await user.clear(repsInput);
+      await user.type(repsInput, "4");
+
+      await user.click(screen.getByRole("button", { name: /start/i }));
+
+      // Verify round 1
+      expect(screen.getByText(/round 1 of 4/i)).toBeInTheDocument();
+
+      // Complete round 1 (2 seconds)
+      act(() => {
+        vi.advanceTimersByTime(2000);
+      });
+
+      // Verify round 2 (should be 2, not skipped to 3 or 4)
+      await waitFor(() => {
+        expect(screen.getByText(/round 2 of 4/i)).toBeInTheDocument();
+      });
+
+      // Complete round 2
+      act(() => {
+        vi.advanceTimersByTime(2000);
+      });
+
+      // Verify round 3 (should be 3, not skipped)
+      await waitFor(() => {
+        expect(screen.getByText(/round 3 of 4/i)).toBeInTheDocument();
+      });
+
+      // Complete round 3
+      act(() => {
+        vi.advanceTimersByTime(2000);
+      });
+
+      // Verify round 4 (should be 4, not skipped)
+      await waitFor(() => {
+        expect(screen.getByText(/round 4 of 4/i)).toBeInTheDocument();
+      });
+
+      // Complete round 4
+      act(() => {
+        vi.advanceTimersByTime(2000);
+      });
+
+      // Verify all rounds complete
+      await waitFor(() => {
+        expect(screen.getByText(/all rounds completed/i)).toBeInTheDocument();
+      });
     });
   });
 
@@ -293,7 +395,7 @@ describe("RepeatTimer", () => {
     it("should call onSessionComplete for each completed round", async () => {
       vi.useFakeTimers();
       const onSessionComplete = vi.fn();
-      const user = userEvent.setup({ delay: null });
+      const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
 
       render(<RepeatTimer onSessionComplete={onSessionComplete} />);
 
@@ -301,27 +403,20 @@ describe("RepeatTimer", () => {
       const repsInput = screen.getByLabelText(/repetitions/i);
 
       await user.clear(durationInput);
-      await user.type(durationInput, "60");
+      await user.type(durationInput, "1");
       await user.clear(repsInput);
       await user.type(repsInput, "2");
 
       await user.click(screen.getByRole("button", { name: /start/i }));
 
-      // Complete round 1
-      vi.advanceTimersByTime(60000);
-
-      await waitFor(() => {
-        expect(onSessionComplete).toHaveBeenCalledTimes(1);
+      // Complete both rounds
+      act(() => {
+        vi.advanceTimersByTime(2000);
       });
-
-      // Complete round 2
-      vi.advanceTimersByTime(60000);
 
       await waitFor(() => {
         expect(onSessionComplete).toHaveBeenCalledTimes(2);
       });
-
-      vi.useRealTimers();
     });
   });
 
@@ -358,7 +453,7 @@ describe("RepeatTimer", () => {
 
     it("should play beep sound when round completes if checkbox is enabled", async () => {
       vi.useFakeTimers();
-      const user = userEvent.setup({ delay: null });
+      const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
 
       // Mock Audio
       const mockPlay = vi.fn();
@@ -379,25 +474,25 @@ describe("RepeatTimer", () => {
       const repsInput = screen.getByLabelText(/repetitions/i);
 
       await user.clear(durationInput);
-      await user.type(durationInput, "60");
+      await user.type(durationInput, "1");
       await user.clear(repsInput);
       await user.type(repsInput, "2");
 
       await user.click(screen.getByRole("button", { name: /start/i }));
 
       // Complete first round
-      vi.advanceTimersByTime(60000);
+      act(() => {
+        vi.advanceTimersByTime(1000);
+      });
 
       await waitFor(() => {
         expect(mockPlay).toHaveBeenCalled();
       });
-
-      vi.useRealTimers();
     });
 
     it("should not play beep sound when round completes if checkbox is disabled", async () => {
       vi.useFakeTimers();
-      const user = userEvent.setup({ delay: null });
+      const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
 
       // Mock Audio
       const mockPlay = vi.fn();
@@ -416,14 +511,16 @@ describe("RepeatTimer", () => {
       const repsInput = screen.getByLabelText(/repetitions/i);
 
       await user.clear(durationInput);
-      await user.type(durationInput, "60");
+      await user.type(durationInput, "1");
       await user.clear(repsInput);
       await user.type(repsInput, "2");
 
       await user.click(screen.getByRole("button", { name: /start/i }));
 
       // Complete first round
-      vi.advanceTimersByTime(60000);
+      act(() => {
+        vi.advanceTimersByTime(1000);
+      });
 
       await waitFor(() => {
         expect(screen.getByText(/round 2 of 2/i)).toBeInTheDocument();
@@ -431,8 +528,6 @@ describe("RepeatTimer", () => {
 
       // Beep should NOT have been played
       expect(mockPlay).not.toHaveBeenCalled();
-
-      vi.useRealTimers();
     });
   });
 });

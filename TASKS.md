@@ -40,8 +40,11 @@
 
 ## R1
 
-[x] Combine study, work, yoga, mediation into 1 feature.
-[x] Add a new feature with new tab. User can enter time and number of times, to that it will work as like many timers.
-[x] Show total time in intervals tab after enter duration and repetitions.
+- [x] Combine study, work, yoga, mediation into 1 feature.
+- [x] Add a new feature with new tab. User can enter time and number of times, to that it will work as like many timers.
+- [x] Show total time in intervals tab after enter duration and repetitions.
 
 - [x] I want a feature that makes a beep sound when the time for each stage is over. I want to be able to enable it with a checkbox.
+
+- [x] internal time is counting as 1, 2, 4, 6 ... but expected 1, 2, 3, 4
+- [x] first round cannot pause in internal timer. it will be reseted now.
