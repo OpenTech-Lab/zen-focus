@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Play, Pause, RotateCcw } from "lucide-react";
+import { Play, Pause, RotateCcw, SkipForward } from "lucide-react";
 
 /**
  * Props for the RepeatTimer component.
@@ -34,6 +34,8 @@ export default function RepeatTimer({ onSessionComplete }: RepeatTimerProps) {
   const [isConfiguring, setIsConfiguring] = useState<boolean>(true);
   const [allRoundsComplete, setAllRoundsComplete] = useState<boolean>(false);
   const [beepEnabled, setBeepEnabled] = useState<boolean>(false);
+  const [accumulatedElapsedTime, setAccumulatedElapsedTime] =
+    useState<number>(0);
   const processedRoundRef = useRef<number>(0);
   const firstRoundStartedRef = useRef<boolean>(false);
 
@@ -55,10 +57,9 @@ export default function RepeatTimer({ onSessionComplete }: RepeatTimerProps) {
   const calculateElapsedTime = () => {
     if (currentRound === 0) return 0;
 
-    // Time from completed rounds + time elapsed in current round
-    const completedRoundsTime = (currentRound - 1) * durationSeconds;
+    // Accumulated time from completed/skipped rounds + time elapsed in current round
     const currentRoundElapsed = durationSeconds - timeLeft;
-    return completedRoundsTime + currentRoundElapsed;
+    return accumulatedElapsedTime + currentRoundElapsed;
   };
 
   const elapsedSeconds = calculateElapsedTime();
@@ -95,6 +96,7 @@ export default function RepeatTimer({ onSessionComplete }: RepeatTimerProps) {
     setIsConfiguring(false);
     setCurrentRound(1);
     setAllRoundsComplete(false);
+    setAccumulatedElapsedTime(0);
     processedRoundRef.current = 0;
     firstRoundStartedRef.current = false;
   }, [isValidConfig]);
@@ -130,7 +132,50 @@ export default function RepeatTimer({ onSessionComplete }: RepeatTimerProps) {
     setIsConfiguring(true);
     setCurrentRound(0);
     setAllRoundsComplete(false);
+    setAccumulatedElapsedTime(0);
   }, [resetTimer]);
+
+  /**
+   * Handle skip button click - skip to next round without counting remaining time
+   */
+  const handleSkip = useCallback(() => {
+    if (currentRound === 0 || currentRound > totalRepetitions) return;
+
+    // Calculate elapsed time in current round (only count time actually spent)
+    const currentRoundElapsed = durationSeconds - timeLeft;
+
+    // Add only the elapsed time to accumulated (not the full duration)
+    setAccumulatedElapsedTime((prev) => prev + currentRoundElapsed);
+
+    // Mark this round as processed (skipped)
+    processedRoundRef.current = currentRound;
+
+    // Track skipped round (completed = false)
+    if (onSessionComplete) {
+      onSessionComplete("interval", currentRoundElapsed, false);
+    }
+
+    // Stop current timer before advancing
+    pause();
+
+    // Check if more rounds remaining
+    if (currentRound < totalRepetitions) {
+      // Move to next round (effect will reset timer and start it)
+      setCurrentRound((prev) => prev + 1);
+    } else {
+      // All rounds complete (last round was skipped)
+      setAllRoundsComplete(true);
+      showNotification("All rounds completed!", "Great work! 🎉");
+    }
+  }, [
+    currentRound,
+    totalRepetitions,
+    durationSeconds,
+    timeLeft,
+    onSessionComplete,
+    showNotification,
+    pause,
+  ]);
 
   /**
    * Handle round completion and advance to next round
@@ -144,6 +189,9 @@ export default function RepeatTimer({ onSessionComplete }: RepeatTimerProps) {
     ) {
       // Mark this round as processed
       processedRoundRef.current = currentRound;
+
+      // Add full round duration to accumulated time (completed normally)
+      setAccumulatedElapsedTime((prev) => prev + durationSeconds);
 
       // Track completed round
       if (onSessionComplete) {
@@ -367,6 +415,11 @@ export default function RepeatTimer({ onSessionComplete }: RepeatTimerProps) {
               <Button onClick={handleReset} size="lg" variant="outline">
                 <RotateCcw className="mr-2 h-5 w-5" />
                 Reset
+              </Button>
+
+              <Button onClick={handleSkip} size="lg" variant="outline">
+                <SkipForward className="mr-2 h-5 w-5" />
+                Skip
               </Button>
             </div>
           )}

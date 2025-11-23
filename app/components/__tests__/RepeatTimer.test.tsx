@@ -617,4 +617,176 @@ describe("RepeatTimer", () => {
       vi.useRealTimers();
     });
   });
+
+  describe("Skip Button", () => {
+    it("should render skip button when timer is running", async () => {
+      const user = userEvent.setup();
+      render(<RepeatTimer />);
+
+      const durationInput = screen.getByLabelText(/duration/i);
+      const repsInput = screen.getByLabelText(/repetitions/i);
+
+      await user.clear(durationInput);
+      await user.type(durationInput, "60");
+      await user.clear(repsInput);
+      await user.type(repsInput, "3");
+
+      await user.click(screen.getByRole("button", { name: /start/i }));
+
+      expect(
+        screen.getByRole("button", { name: /skip/i })
+      ).toBeInTheDocument();
+    });
+
+    it("should not show skip button during configuration", () => {
+      render(<RepeatTimer />);
+
+      expect(
+        screen.queryByRole("button", { name: /skip/i })
+      ).not.toBeInTheDocument();
+    });
+
+    it("should call handleSkip when skip button is clicked", async () => {
+      const onSessionComplete = vi.fn();
+      const user = userEvent.setup();
+      render(<RepeatTimer onSessionComplete={onSessionComplete} />);
+
+      const durationInput = screen.getByLabelText(/duration/i);
+      const repsInput = screen.getByLabelText(/repetitions/i);
+
+      await user.clear(durationInput);
+      await user.type(durationInput, "10");
+      await user.clear(repsInput);
+      await user.type(repsInput, "2");
+
+      await user.click(screen.getByRole("button", { name: /start/i }));
+
+      // Skip button should be visible
+      const skipButton = screen.getByRole("button", { name: /skip/i });
+      expect(skipButton).toBeInTheDocument();
+
+      // Click skip button
+      await user.click(skipButton);
+
+      // onSessionComplete should be called with completed=false for skipped round
+      // Note: We can't easily test the exact elapsed time without fake timers
+      expect(onSessionComplete).toHaveBeenCalled();
+    });
+
+    it("should advance to next round when skip is clicked", async () => {
+      vi.useFakeTimers();
+      const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+      render(<RepeatTimer />);
+
+      const durationInput = screen.getByLabelText(/duration/i);
+      const repsInput = screen.getByLabelText(/repetitions/i);
+
+      await user.clear(durationInput);
+      await user.type(durationInput, "60");
+      await user.clear(repsInput);
+      await user.type(repsInput, "3");
+
+      await user.click(screen.getByRole("button", { name: /start/i }));
+
+      expect(screen.getByText(/round 1 of 3/i)).toBeInTheDocument();
+
+      // Let 20 seconds pass
+      act(() => {
+        vi.advanceTimersByTime(20000);
+      });
+
+      // Click skip button
+      await user.click(screen.getByRole("button", { name: /skip/i }));
+
+      // Should advance to round 2
+      await waitFor(() => {
+        expect(screen.getByText(/round 2 of 3/i)).toBeInTheDocument();
+      });
+
+      vi.useRealTimers();
+    });
+
+    it("should not count skipped time in elapsed total when skip is clicked", async () => {
+      vi.useFakeTimers();
+      const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+      render(<RepeatTimer />);
+
+      const durationInput = screen.getByLabelText(/duration/i);
+      const repsInput = screen.getByLabelText(/repetitions/i);
+
+      // Set up 3 rounds of 60 seconds each
+      await user.clear(durationInput);
+      await user.type(durationInput, "60");
+      await user.clear(repsInput);
+      await user.type(repsInput, "3");
+
+      await user.click(screen.getByRole("button", { name: /start/i }));
+
+      // Initial elapsed time should be 00:00
+      expect(screen.getByText(/elapsed.*00:00/i)).toBeInTheDocument();
+
+      // Let 20 seconds pass in round 1 (40 seconds remaining)
+      act(() => {
+        vi.advanceTimersByTime(20000);
+      });
+
+      // Elapsed time should be 0:20
+      expect(screen.getByText(/elapsed.*0:20/i)).toBeInTheDocument();
+
+      // Skip round 1 (should not count the remaining 40 seconds)
+      await user.click(screen.getByRole("button", { name: /skip/i }));
+
+      await waitFor(() => {
+        expect(screen.getByText(/round 2 of 3/i)).toBeInTheDocument();
+      });
+
+      // Elapsed time should still be 0:20 (not 01:00 which would be full round)
+      expect(screen.getByText(/elapsed.*0:20/i)).toBeInTheDocument();
+
+      // Complete round 2 fully (60 seconds)
+      act(() => {
+        vi.advanceTimersByTime(60000);
+      });
+
+      await waitFor(() => {
+        expect(screen.getByText(/round 3 of 3/i)).toBeInTheDocument();
+      });
+
+      // Elapsed time should be 1:20 (20 seconds from round 1 + 60 seconds from round 2)
+      expect(screen.getByText(/elapsed.*1:20/i)).toBeInTheDocument();
+
+      vi.useRealTimers();
+    });
+
+    it("should not show skip button on completion screen", async () => {
+      vi.useFakeTimers();
+      const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+      render(<RepeatTimer />);
+
+      const durationInput = screen.getByLabelText(/duration/i);
+      const repsInput = screen.getByLabelText(/repetitions/i);
+
+      await user.clear(durationInput);
+      await user.type(durationInput, "1");
+      await user.clear(repsInput);
+      await user.type(repsInput, "1");
+
+      await user.click(screen.getByRole("button", { name: /start/i }));
+
+      // Complete the round
+      act(() => {
+        vi.advanceTimersByTime(1000);
+      });
+
+      await waitFor(() => {
+        expect(screen.getByText(/all rounds completed/i)).toBeInTheDocument();
+      });
+
+      expect(
+        screen.queryByRole("button", { name: /skip/i })
+      ).not.toBeInTheDocument();
+
+      vi.useRealTimers();
+    });
+  });
 });
