@@ -331,7 +331,7 @@ export default function RepeatTimer({ onSessionComplete }: RepeatTimerProps) {
                   strokeDashoffset={`${
                     2 * Math.PI * 120 * (1 - timeLeft / durationSeconds)
                   }`}
-                  className="text-primary transition-all duration-1000 ease-linear"
+                  className="text-primary transition-all duration-300 ease-out"
                 />
               </svg>
               <div className="absolute inset-0 flex items-center justify-center">
